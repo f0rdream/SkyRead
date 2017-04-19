@@ -1,3 +1,9 @@
+# IDEA
+.idea/
+
+# The Database
+db.sqlite3
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -9,7 +15,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
 develop-eggs/
 dist/
 downloads/
@@ -87,3 +92,11 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+#js
+.DS_Store
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+test/unit/coverage
