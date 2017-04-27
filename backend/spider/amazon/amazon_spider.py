@@ -55,22 +55,22 @@ class AmazonSpider():
         content_0 = soup.find_all(attrs={'id': 's_content_0'})[0]
         content_1 = soup.find_all(attrs={'id': 's_content_1'})[0]
         if content_0.h3.text == '编辑推荐':
-            self.edit_recommendation = content_0.p.text.strip()
+            self.edit_recommendation = content_0.text.strip().replace(' ','').replace('\n','')
             print self.edit_recommendation
             if content_1.h3.text == '名人推荐':
-                self.famous_recommendation = content_1.p.text.strip()
+                self.famous_recommendation = content_1.text.strip().replace(' ','').replace('\n','')
                 print self.famous_recommendation
             elif content_1.h3.text == '媒体推荐':
-                self.media_recommendation = content_1.text.split('媒体推荐')[1].strip()
+                self.media_recommendation = content_1.text.split('媒体推荐')[1].strip().replace(' ','').replace('\n','')
                 print self.media_recommendation
         elif content_0.h3.text == '名人推荐':
-            self.famous_recommendation = content_0.p.text.strip()
+            self.famous_recommendation = content_0.text.strip().replace(' ','').replace('\n','')
             print self.famous_recommendation
             if content_1.h3.text == '媒体推荐':
-                self.media_recommendation = content_1.p.text.strip()
+                self.media_recommendation = content_1.text.strip().replace(' ','').replace('\n','')
                 print self.media_recommendation
         elif content_0.h3.text == '媒体推荐':
-            self.media_recommendation = content_0.p.text.strip()
+            self.media_recommendation = content_0.text.strip().replace(' ','').replace('\n','')
         else:
             print "No commendation"
 
@@ -81,7 +81,7 @@ class AmazonSpider():
             comment = comments[i].find_all(
                 attrs={'class':'a-row a-spacing-small'})[0].find_all(
                  attrs={'class':'a-section'})[0].text
-            print comment.strip()
+
     def spider(self,keyword):
         self.keyword = keyword
         self.get_book_link()

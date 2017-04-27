@@ -1,3 +1,6 @@
 from django.contrib import admin
-
+from .models import BorrowItem
+from django.contrib.auth.models import Permission
 # Register your models here.
+admin.site.register(BorrowItem)
+admin.site.register(Permission)
