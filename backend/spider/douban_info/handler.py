@@ -319,23 +319,4 @@ def get_proxies():
     line = f.readline()
     proxies = {'http':'http://' + line.split('\n')[0]}
     return proxies
-# try:
-#     conn.ping()
-# except:
-#     print "重新连接数据库"
-#     conn = MySQLdb.Connect(
-#         host='127.0.0.1',
-#         port=3306,
-#         user='root',
-#         passwd='123456',
-#         db='softcup',
-#         charset='utf8'
-#     )
-# cursor = conn.cursor()
-# #sql = 'insert into book_info values("test","aaass","","","","","","","","","","","","","","","","","");'
-# sql = 'insert into douban_p01 values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-#
-# cursor.execute(sql,("978710123561",'','','','','','','','','','','','','','','','',''))
-# print "插入数据库成功"
-# conn.commit()
-# conn.close()
+
