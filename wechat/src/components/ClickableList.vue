@@ -1,10 +1,10 @@
 <template>
-  <div class="list-container">
-    <div class="book-label vux-1px-tb">
+  <div class="list-container" @click="changeSpread()">
+    <div class="book-label" :class="isSpread ? 'vux-1px-tb' : 'vux-1px-t'">
       <span class="label-text">{{ currentLabel }}</span>
-      <span class="label-btn">{{ isSpread ? '展开' : '收起'}}</span>
+      <span class="label-btn">{{ isSpread ? '收起' : '展开'}}</span>
     </div>
-    <div class="book-list vux-1px-b" v-for="book in currentbooks">
+    <div class="book-list vux-1px-b" v-for="book in currentbooks" v-show="isSpread">
       <div class="left">
         <p class="book-title">《孔子》</p>
         <p class="book-info">作者：(中)孔丘    著</p>
@@ -42,27 +42,35 @@ export default {
       return this.books
     }
   },
-  methods: {}
+  methods: {
+    changeSpread () {
+      console.log('lala')
+      this.isSpread = !this.isSpread
+    }
+  }
 }
 </script>
 
 <style>
+.list-container {
+  background-color: #ffffff;
+}
 .book-label, .book-list {
   display: flex;
   justify-content: space-between;
 }
 .book-label {
-  padding: 8px 25px;
+  padding: 8px 15px;
 }
 .book-list {
   margin: 8px 20px;
   padding: 0 5px 5px 5px;
 }
 .book-label .label-text {
-  font-weight: bold;
   line-height: 27px;
 }
 .book-label .label-btn {
+  color: #858585;
   font-size: 12px;
   line-height: 27px;
 }

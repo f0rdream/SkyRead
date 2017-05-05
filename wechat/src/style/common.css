@@ -4,6 +4,11 @@ html {
 *, *:before, *:after {
   box-sizing: inherit;
 }
+body {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 .main-center {
   justify-content: center;

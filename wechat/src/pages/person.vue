@@ -5,23 +5,39 @@
       <img class="avatar" src="../assets/logo.png">
       <p class="avatar-info">{{ username }}</p>
     </section>
-    <section class="book-part">
+    <group class="book-part">
       <clickable-list :books="books" labelText="想读的书"></clickable-list>
-    </section>
+      <clickable-list :books="books" labelText="已借阅"></clickable-list>
+      <clickable-list :books="books" labelText="已预订"></clickable-list>
+      <clickable-list :books="books" labelText="想读的书"></clickable-list>
+    </group>
+    <group class="setting-part">
+      <x-switch v-model="recommend" title="系统推荐"></x-switch>
+      <x-switch v-model="orderRemind" title="预定提醒"></x-switch>
+    </group>
+    <group class="about-part">
+      <cell title="关于我们"></cell>
+      <cell title="意见反馈"></cell>
+    </group>
   </div>
 </template>
 <script>
-import { XHeader } from 'vux'
+import { XHeader, Group, Cell, XSwitch } from 'vux'
 import ClickableList from '../components/ClickableList'
 
 export default {
   components: {
     XHeader,
-    ClickableList
+    ClickableList,
+    Group,
+    Cell,
+    XSwitch
   },
   data () {
     return {
       username: '微信名字',
+      recommend: true,
+      orderRemind: true,
       books: ['1', '1', '1']
     }
   }
@@ -30,7 +46,7 @@ export default {
 <style scoped>
 .avatar-part {
   text-align: center;
-  height: 1.7rem;
+  height: 1.5rem;
 }
 .avatar {
   margin-top: .15rem;
