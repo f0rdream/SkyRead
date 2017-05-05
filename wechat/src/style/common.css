@@ -1,0 +1,22 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+.main-center {
+  justify-content: center;
+}
+.axis-center {
+  align-items: center;
+}
+
+.ab-left {
+  position: absolute;
+  right: 10px;
+}
+.ab-right {
+  position: absolute;
+  right: 10px;
+}
