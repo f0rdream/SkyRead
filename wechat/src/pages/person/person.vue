@@ -2,7 +2,7 @@
   <div class="app-wrapper">
     <x-header :right-options="{showMore: true}">个人信息</x-header>
     <section class="avatar-part">
-      <img class="avatar" src="../assets/logo.png">
+      <img class="avatar" src="@/assets/logo.png">
       <p class="avatar-info">{{ username }}</p>
     </section>
     <group class="book-part">
@@ -19,13 +19,13 @@
       <cell title="关于我们"></cell>
       <cell title="意见反馈"></cell>
     </group>
-    <bottom-bar activeTab="首页"></bottom-bar>
+    <bottom-bar activeTab="我的"></bottom-bar>
   </div>
 </template>
 <script>
 import { XHeader, Group, Cell, XSwitch } from 'vux'
-import ClickableList from '../components/ClickableList'
-import BottomBar from '../components/BottomBar'
+import ClickableList from '@/components/ClickableList'
+import BottomBar from '@/components/BottomBar'
 
 export default {
   components: {
