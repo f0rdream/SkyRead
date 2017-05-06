@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
     url(r'^homepage/',homepage,name='homepage'),
     url(r'^library/',include('library.urls')),
+    url(r'^book/',include('bookdata.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

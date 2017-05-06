@@ -37,6 +37,9 @@ from utils import depwd
 
 
 class BorrowItemView(APIView):
+    """
+    借书item的list和post
+    """
     serializer_class = BorrowItemCreateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
@@ -140,7 +143,7 @@ class BorrowQrCodeView(APIView):
         qrtype = "borrow"
         create_qrcode(pk,ctime,qrtype)
         url = '/media/borrow_qrcode/'+str(pk)+".png"
-        borrow_item.qrcode=url
+        borrow_item.qrcode = url
         borrow_item.save()
         content = {'url':url}
         return Response(content,HTTP_200_OK)
@@ -180,7 +183,7 @@ class AddToReturnBarView(APIView):
                 borrow_item = BorrowItem.objects.get(pk=pk)
                 borrow_item.in_return_bar = True
                 borrow_item.save()
-                return Response({'MSG':'Add to return bar successful'},HTTP_200_OK)
+                return Response({'msg':'Add to return bar successful'},HTTP_200_OK)
             except:
                 return Response({'error','Borrow Item not found'},HTTP_404_NOT_FOUND)
         else:
@@ -278,7 +281,7 @@ class FinishReturnView(APIView):
                 borrow_item = BorrowItem.objects.get(pk=pk)
                 borrow_item.finish_return = True
                 borrow_item.save()
-                return Response({'MSG':'Finish returned  successful'},HTTP_200_OK)
+                return Response({'msg':'Finish returned successful'},HTTP_200_OK)
             except:
                 return Response({'error','Return Item not found'},HTTP_404_NOT_FOUND)
         else:

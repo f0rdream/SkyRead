@@ -127,9 +127,9 @@ class ReturnBookSerializer(serializers.Serializer):
         try:
             BorrowItem.objects.get(pk=id)
         except:
-            raise ValidationError('This borrow item is not exist')
+            raise ValidationError('This return item is not exist')
         if qrtype != 'return':
-            raise ValidationError('This is not a borrow qrcode')
+            raise ValidationError('This is not a return qrcode')
         return data
 class ReturnBookInfoToAdmin(ModelSerializer):
     title =  SerializerMethodField()

@@ -1,0 +1,29 @@
+create table douban_t111(
+isbn13 varchar(100) primary key,
+numraters varchar(100),
+average varchar(100),
+subtitle varchar(500),
+author varchar(1000),
+pubdate varchar(100),
+origin_title varchar(500),
+img_id varchar(100),
+bingding varchar(100),
+tags text,
+catalog text,
+pages varchar(100),
+d_id varchar(100),
+publisher varchar(500),
+title varchar(500),
+summary text,
+author_intro text,
+price varchar(100)
+)charset='utf8';
+
+create table amazon_comment111(
+isbn13 varchar(100),
+content text)charset='utf8';
+
+create table douban_comment111(
+isbn13 varchar(100),
+content text)charset='utf8';
+select average,amazon,mrecommand,frecommand,erecommand from douban_p111 where isbn13=9787111002871;
