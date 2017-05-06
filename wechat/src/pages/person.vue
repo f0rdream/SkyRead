@@ -19,16 +19,19 @@
       <cell title="关于我们"></cell>
       <cell title="意见反馈"></cell>
     </group>
+    <bottom-bar activeTab="首页"></bottom-bar>
   </div>
 </template>
 <script>
 import { XHeader, Group, Cell, XSwitch } from 'vux'
 import ClickableList from '../components/ClickableList'
+import BottomBar from '../components/BottomBar'
 
 export default {
   components: {
-    XHeader,
     ClickableList,
+    BottomBar,
+    XHeader,
     Group,
     Cell,
     XSwitch
@@ -44,6 +47,9 @@ export default {
 }
 </script>
 <style scoped>
+.app-wrapper {
+  height: 100%;
+}
 .avatar-part {
   text-align: center;
   height: 1.5rem;

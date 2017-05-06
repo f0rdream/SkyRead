@@ -74,6 +74,9 @@ export default {
   font-size: 12px;
   line-height: 27px;
 }
+.book-list.vux-1px-b:last-child::after {
+  border-bottom: none;
+}
 .book-list .book-title {
   font-size: 12px;
 }

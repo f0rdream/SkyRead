@@ -15,13 +15,7 @@ export default {
 @import '~vux/src/styles/reset.less';
 @import '~vux/src/styles/1px.less';
 
-body {
-  background-color: #fbfbfb;
-}
-html {
-  font-size: 100px;
-}
-body {
-  font-size: 16px;
+#app {
+  height: 100%;
 }
 </style>

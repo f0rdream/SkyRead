@@ -1,13 +1,24 @@
 html {
   box-sizing: border-box;
+  height: 100%;
+  font-size: 100px;
 }
 *, *:before, *:after {
   box-sizing: inherit;
 }
 body {
+  background-color: #fbfbfb;
+  font-size: 16px;
+  height: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.clear::after {
+  content: '';
+  height: 0;
+  display: block;
+  clear: both;
 }
 
 .main-center {
