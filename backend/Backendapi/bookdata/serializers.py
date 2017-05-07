@@ -17,7 +17,7 @@ from .models import Book
 
 class BookInfoSerializer(ModelSerializer):
     """
-    基本信息数据中,除了目录没放进来,其他的都放进来了
+    基本信息序列化器
     因为爬取数据的时候空数据为('',),所以需要处理
     author_intro暂时没有处理
     """
@@ -33,6 +33,7 @@ class BookInfoSerializer(ModelSerializer):
     pages =  SerializerMethodField()
     publisher = SerializerMethodField()
     summary =  SerializerMethodField()
+    catalog = SerializerMethodField()
     class Meta:
         model = Book
         fields = [
@@ -53,6 +54,7 @@ class BookInfoSerializer(ModelSerializer):
             'bingding',
             'price',
             'd_id',
+            'catalog',
         ]
 
     def get_numraters(self,obj):
@@ -148,4 +150,38 @@ class BookInfoSerializer(ModelSerializer):
 
     def get_isbn13(self,obj):
         return obj.isbn13
+    def get_catalog(self,obj):
+        catalog = obj.catalog
+        if catalog == "('',)":
+            return None
+        else:
+            return catalog.replace('(收起)','')
+class BookReviewSerializer(ModelSerializer):
+    """
+    豆瓣书评序列化器
+    """
 
+class AmazonSerializer(ModelSerializer):
+    """
+    亚马逊基本信息序列化器
+    """
+class BookCommentSerializer(ModelSerializer):
+    """
+    豆瓣评论序列化器
+    """
+class BookPreSerializer(ModelSerializer):
+    """
+    图书导读序列化器
+    """
+class BookReferSerializer(ModelSerializer):
+    """
+    相关书籍序列化器
+    """
+class BookLocationSerializer(ModelSerializer):
+    """
+    图书位置序列化器
+    """
+class BookAmazonCommentSerializer(ModelSerializer):
+    """
+    亚马逊评论序列化器
+    """
