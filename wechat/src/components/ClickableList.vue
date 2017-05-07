@@ -44,7 +44,6 @@ export default {
   },
   methods: {
     changeSpread () {
-      console.log('lala')
       this.isSpread = !this.isSpread
     }
   }

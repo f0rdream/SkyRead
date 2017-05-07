@@ -21,6 +21,17 @@ body {
   clear: both;
 }
 
+.vux-header {
+  background: linear-gradient(to right, #2bcba7, #2bc0cb);
+}
+.vux-search-box .weui-search-bar {
+  background: linear-gradient(to right, #2bcba7, #2bc0cb);
+}
+.vux-search-box .weui-search-bar:before {
+  height: 0;
+  border-top: none;
+}
+
 .main-center {
   justify-content: center;
 }

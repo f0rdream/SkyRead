@@ -2,7 +2,7 @@
   <div class="app-wrapper">
     <x-header :right-options="{showMore: true}">个人信息</x-header>
     <section class="avatar-part">
-      <img class="avatar" src="@/assets/logo.png">
+      <img class="avatar" src="../../assets/logo.png">
       <p class="avatar-info">{{ username }}</p>
     </section>
     <group class="book-part">

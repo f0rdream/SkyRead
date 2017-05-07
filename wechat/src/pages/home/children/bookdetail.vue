@@ -1,7 +1,6 @@
 <template>
   <div>
-    lalala
-    <div>babababa</div>
+    <
   </div>
 </template>
 

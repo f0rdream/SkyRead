@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-wrapper clear vux-1px-t">
+  <div class="bar-wrapper vux-1px-t">
     <div class="bar-left" :class="activeTab === '首页' ? 'active' : ''">首页</div>
     <div class="bar-right" :class="activeTab === '我的' ? 'active' : ''">我的</div>
     <div class="bar-center">扫码借书</div>
@@ -20,6 +20,7 @@ export default {
 </script>
 <style>
 .bar-wrapper {
+  display: flex;
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -30,7 +31,6 @@ export default {
   color: #2bc3c2;
 }
 .bar-wrapper .bar-left, .bar-wrapper .bar-right {
-  float: left;
   width: 50%;
   text-align: center;
   padding: 15px 0;
@@ -50,8 +50,8 @@ export default {
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  border: 1px solid #000;
   border-radius: 50%;
   text-align: center;
+  box-shadow: 0 0 5px #2bc0cb;
 }
 </style>
