@@ -54,6 +54,7 @@ class AmazonSpider():
         average_reviews = self.soup.find_all(attrs={'id': 'averageCustomerReviews'})
         average_span = average_reviews[0].find_all(attrs={'id': 'acrPopover'})[0]
         self.average = average_span.get('title').split('星')[0].split('平均')[1]
+        print self.average
 
     def get_commendation(self):
         soup = self.soup
@@ -73,6 +74,7 @@ class AmazonSpider():
             self.media_recommendation = content_0.text.strip().replace(' ','').replace('\n','')
         else:
             print "No commendation"
+
         conn = MySQLdb.Connect(
             host='127.0.0.1',
             port=3306,
@@ -108,6 +110,7 @@ class AmazonSpider():
                 attrs={'class':'a-row a-spacing-small'})[0].find_all(
                  attrs={'class':'a-section'})[0].text.strip()
             sql = 'insert into amazon_comment111 values (%s,%s)'
+            print comment
             try:
                 cursor.execute(sql, (str(self.isbn13), str(comment)))
             except Exception as e:
@@ -140,4 +143,5 @@ class AmazonSpider():
             print "can't find this book"
         print str(self.isbn13)+"success"
 
-
+amazon = AmazonSpider()
+amazon.spider("算法导论","9787111407010")

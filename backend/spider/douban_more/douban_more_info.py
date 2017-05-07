@@ -6,7 +6,6 @@ import requests
 import time
 from bs4 import BeautifulSoup as bs
 
-
 def author_intro_spider(main_soup):
     author_intro = ""
     try:
@@ -164,7 +163,6 @@ def comments_spider(id):
             comment_content = li.find('p', 'comment-content').text  # 评论具体内容
             comment_vote = li.find('span', 'vote-count').text  # 赞同数目
             comment_info = li.find_all('span', 'comment-info')  # 评价详情,时间和（很差,较差,还行,力荐,推荐)
-
             comment_star = comment_info[0].find_all('span')[0].get('title')
             if comment_star != None:
                 star = get_star(comment_star)
