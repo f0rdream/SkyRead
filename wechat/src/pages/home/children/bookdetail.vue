@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <
+  <div class="detail-box">
+
   </div>
 </template>
 

@@ -6,6 +6,7 @@ import person from '../pages/person/person'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
+import indexpage from '../pages/home/children/indexpage'
 
 Vue.use(Router)
 
@@ -18,6 +19,10 @@ export default new Router({
         {
           path: 'bookdetail',
           component: bookdetail
+        },
+        {
+          path: 'indexpage',
+          component: indexpage
         }
       ]
     },
