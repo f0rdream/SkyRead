@@ -1,26 +1,23 @@
 # coding:utf-8
 import time
 from django.shortcuts import render
-from rest_framework.generics import (
-    ListAPIView,
-    RetrieveAPIView,
-    DestroyAPIView,
-    CreateAPIView,
-    RetrieveUpdateAPIView,
-)
 from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticated,
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from .models import BorrowItem
+from .models import BorrowItem,SuccessOrderItem,WaitOrderItem
 from .serializers import (
     BorrowItemCreateSerializer,
     BorrowItemDetailSerializer,
     AddToReturnBarSerializer,
     ReturnBookInfoToAdmin,
-    ReturnBookSerializer,)
+    ReturnBookSerializer,
+    SuccessOrderItemCreateSerializer,
+    SuccessOrderItemDetailSerializer,
+    WaitOrderItemCreateSerializer,
+    WaitOrderItemDetailSerializer)
 from .utils import create_qrcode
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -205,6 +202,9 @@ class ReturnItemView(APIView):
 
 
 class ReturnItemDetailDeleteView(APIView):
+    """
+
+    """
     permission_classes = [IsAuthenticated]
     content = {}
     def get(self,request,pk):
@@ -287,5 +287,149 @@ class FinishReturnView(APIView):
         else:
             reply = {'error': 'you are not a admin'}
             return Response(reply, HTTP_403_FORBIDDEN)
+
+
+class OrderSuccessView(APIView):
+    """
+    这本书有藏书,那么就可以访问这个接口，加入订阅栏，状态为预约成功
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = SuccessOrderItemCreateSerializer
+
+    def post(self,request):
+        user= request.user
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        isbn13 = serializer.validated_data['isbn13']
+        order_time = serializer.validated_data['order_time']
+        location = serializer.validated_data['location']
+        find_id  = serializer.validated_data['find_id']
+        if_phone = serializer.validated_data['if_phone']
+        # try:
+        s = SuccessOrderItem.objects.create(user=user,isbn13=isbn13,order_time=order_time,
+                                            location=location,find_id=find_id,if_phone=if_phone)
+        s.save()
+        return Response(serializer.data,HTTP_201_CREATED)
+        # except Exception as e:
+        #     print e.message
+        #     reply = {}
+        #     reply['error_code'] = 20
+        #     reply['msg'] = 'fail'
+        #     return Response(reply,HTTP_400_BAD_REQUEST)
+
+    def get(self,request):
+        """
+        返回成功状态的订阅栏的详情
+        :param request:
+        :return:
+        """
+        user = request.user
+        queryset = SuccessOrderItem.objects.filter(user=user)
+        serializer = SuccessOrderItemDetailSerializer(queryset,data=request.data,many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data,HTTP_200_OK)
+
+
+class SuccessOrderDetailView(APIView):
+    """
+    返回或删除单个订阅成功的详情
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pk):
+        try:
+            s = SuccessOrderItem.objects.get(pk=pk)
+            serializer = SuccessOrderItemDetailSerializer(s,data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except:
+            reply = {}
+            reply['error_code'] = 22
+            reply['msg'] = 'not found'
+            return Response(reply,HTTP_404_NOT_FOUND)
+
+    def delete(self,request,pk):
+        try:
+            s = SuccessOrderItem.objects.get(pk=pk)
+            s.delete()
+            reply = {'msg':'success'}
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = {}
+            reply['error_code'] = 23
+            reply['msg'] = 'fail'
+            return Response(reply,HTTP_400_BAD_REQUEST)
+
+
+class OrderWaitView(APIView):
+    """
+    如果没有藏书,则加入订阅栏，状态为等待
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = WaitOrderItemCreateSerializer
+
+    def post(self, request):
+        user=request.user
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        isbn13 = serializer.validated_data['isbn13']
+        location = serializer.validated_data['location']
+        find_id = serializer.validated_data['find_id']
+        if_phone = serializer.validated_data['if_phone']
+        try:
+            s = WaitOrderItem.objects.create(user=user,
+                                             isbn13=isbn13,
+                                            location=location,
+                                            find_id=find_id,
+                                            if_phone=if_phone)
+            s.save()
+            return Response(serializer.data, HTTP_201_CREATED)
+        except:
+            reply = {}
+            reply['error_code'] = 21
+            reply['msg'] = 'fail'
+
+    def get(self, request):
+        """
+        返回等待状态的订阅栏的详情
+        :param request:
+        :return:
+        """
+        user = request.user
+        queryset = WaitOrderItem.objects.filter(user=user)
+        serializer = WaitOrderItemDetailSerializer(queryset, data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, HTTP_200_OK)
+
+
+class WaitOrderDetailView(APIView):
+    """
+    返回或删除单个订阅等待的详情
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pk):
+        try:
+            w = WaitOrderItem.objects.get(pk=pk)
+            print w
+            serializer = WaitOrderItemDetailSerializer(w,data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except:
+            reply = {}
+            reply['error_code'] = 24
+            reply['msg'] = 'not found'
+            return Response(reply,HTTP_404_NOT_FOUND)
+    def delete(self,request,pk):
+        try:
+            w = WaitOrderItem.objects.get(pk=pk)
+            w.delete()
+            reply = {'msg':'success'}
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = {}
+            reply['error_code'] = 23
+            reply['msg'] = 'fail'
+            return Response(reply,HTTP_400_BAD_REQUEST)
+
+
 
 

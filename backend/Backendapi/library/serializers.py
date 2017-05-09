@@ -1,5 +1,7 @@
 # coding:utf-8
 import time
+
+from rest_framework.response import Response
 from rest_framework.serializers import (
     SerializerMethodField,
     ModelSerializer,
@@ -8,10 +10,12 @@ from rest_framework.serializers import (
     CharField,
     IntegerField,
     )
-from .models import BorrowItem
+
 from accounts.models import WeChatUser
 from rest_framework import serializers
-from .models import BorrowItem
+from .models import BorrowItem,WaitOrderItem,SuccessOrderItem
+
+
 class BorrowItemCreateSerializer(ModelSerializer):
     class Meta:
         # borrow_time = DateTimeField(allow_null=False)
@@ -33,7 +37,7 @@ class BorrowItemCreateSerializer(ModelSerializer):
         location = data.get('location')
 
         if not isbn13:
-            raise ValidationError('lack isbn13')
+            raise ValidationError('lack borrow_time')
         if not borrow_time:
             raise ValidationError('lack borrow_time')
         if not return_time:
@@ -43,11 +47,14 @@ class BorrowItemCreateSerializer(ModelSerializer):
         if not location:
             raise ValidationError('lack location')
         return data
+
+
 class BorrowItemDetailSerializer(ModelSerializer):
     user = SerializerMethodField()
     nickname = SerializerMethodField()
     borrow_time = SerializerMethodField()
     return_time = SerializerMethodField()
+
     class Meta:
         model = BorrowItem
         fields = [
@@ -60,8 +67,10 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'location',
             'nickname',
         ]
+
     def get_user(self,obj):
         return str(obj.user.username)
+
     def get_nickname(self,obj):
         username = obj.user.username
         try:
@@ -70,13 +79,14 @@ class BorrowItemDetailSerializer(ModelSerializer):
             return nickname
         except:
             return None
+
     def get_borrow_time(self,obj):
         return obj.borrow_time
+
     def get_return_time(self,obj):
         return obj.return_time
 # class QrCodeSerializer(ModelSerializer):
 #     class
-
 
 
 class AddToReturnBarSerializer(serializers.Serializer):
@@ -106,6 +116,8 @@ class AddToReturnBarSerializer(serializers.Serializer):
         return data
 
     # def get_isbn13(self,vali):
+
+
 class ReturnBookSerializer(serializers.Serializer):
     id = IntegerField()
     ctime = CharField()
@@ -131,6 +143,8 @@ class ReturnBookSerializer(serializers.Serializer):
         if qrtype != 'return':
             raise ValidationError('This is not a return qrcode')
         return data
+
+
 class ReturnBookInfoToAdmin(ModelSerializer):
     title =  SerializerMethodField()
     prices = SerializerMethodField()
@@ -147,14 +161,17 @@ class ReturnBookInfoToAdmin(ModelSerializer):
             'library_name',
             'location',
         ]
+
     def get_title(self,obj):
         isbn13 = obj.isbn13
         # 这里通过BookModel 拿到标题
         return "This is a test title"
+
     def get_prices(self,obj):
         isbn13 = obj.isbn13
         # 这里通过BookModel 拿到价格
         return "This is a test price"
+
     def get_nickname(self,obj):
         username = obj.user.username
         try:
@@ -164,3 +181,107 @@ class ReturnBookInfoToAdmin(ModelSerializer):
         except:
             return None
 
+
+class SuccessOrderItemCreateSerializer(ModelSerializer):
+    """
+    订阅栏中预订成功的创建序列化器
+    """
+    class Meta:
+        model = SuccessOrderItem
+        fields = [
+            'isbn13',
+            'order_time',
+            'location',
+            'find_id',
+            'if_phone',
+        ]
+
+    def validate(self, data):
+        isbn13 = data.get('isbn13')
+        order_time = data.get('order_time')
+        location = data.get('location')
+        find_id = data.get('find_id')
+        if_phone = data.get('if_phone')
+
+        if not isbn13:
+            raise ValidationError('lack isbn13')
+        if not order_time:
+            raise ValidationError('lack order_time')
+        if not location:
+            raise ValidationError('lack location')
+        if not find_id:
+            raise ValidationError('lack find_id')
+        if not if_phone:
+            raise ValidationError('lack if_phone')
+        return data
+
+
+class WaitOrderItemCreateSerializer(ModelSerializer):
+    """
+    订阅栏中等待状态的创建序列化器
+    """
+    class Meta:
+        model = WaitOrderItem
+        fields = [
+            'isbn13',
+            'location',
+            'find_id',
+            'if_phone',
+        ]
+    def validate(self, data):
+        isbn13 = data.get('isbn13')
+        location = data.get('location')
+        find_id = data.get('find_id')
+        if_phone = data.get('if_phone')
+
+        if not isbn13:
+            raise ValidationError('lack isbn13')
+        if not location:
+            raise ValidationError('lack location')
+        if not find_id:
+            raise ValidationError('lack find_id')
+        if not if_phone:
+            raise ValidationError('lack if_phone')
+        return data
+
+
+class SuccessOrderItemDetailSerializer(ModelSerializer):
+    """
+    订阅栏中成功状态的详情的序列化器
+    """
+    id = SerializerMethodField()
+
+    class Meta:
+        model = SuccessOrderItem
+        fields= [
+            'id',
+            'isbn13',
+            'location',
+            'find_id',
+            'if_phone',
+            'status',
+            'order_time',
+        ]
+
+    def get_id(self,obj):
+        return obj.pk
+
+class WaitOrderItemDetailSerializer(ModelSerializer):
+    """
+    订阅栏中等待状态的详情的序列化器
+    """
+    id = SerializerMethodField()
+
+    class Meta:
+        model = WaitOrderItem
+        fields= [
+            'id',
+            'isbn13',
+            'location',
+            'find_id',
+            'if_phone',
+            'status',
+        ]
+
+    def get_id(self,obj):
+        return obj.pk

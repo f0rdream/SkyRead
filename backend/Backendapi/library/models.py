@@ -21,3 +21,22 @@ class BorrowItem(models.Model):
         permissions =(
             ('is_a_admin','can add book to bar'),
         )
+
+
+class SuccessOrderItem(models.Model):
+    isbn13 = models.CharField(max_length=100, default='')
+    user = models.ForeignKey(User)
+    order_time = models.DateTimeField(blank=True,null=True,default=None)
+    location = models.CharField(max_length=1000,default=None)
+    find_id = models.CharField(max_length=1000,default=None)
+    if_phone = models.IntegerField(default=0)
+    status = models.IntegerField(default=0)
+
+
+class WaitOrderItem(models.Model):
+    isbn13 = models.CharField(max_length=100, default='')
+    user = models.ForeignKey(User)
+    location = models.CharField(max_length=1000,default=None)
+    find_id = models.CharField(max_length=1000,default=None)
+    if_phone = models.IntegerField(default=0)
+    status = models.IntegerField(default=1)
