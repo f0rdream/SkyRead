@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'bookdata',
     'library',
     'douban',
+    'amazon',
 )
 
 MIDDLEWARE_CLASSES = (

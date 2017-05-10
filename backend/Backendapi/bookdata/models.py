@@ -21,7 +21,8 @@ class Book(models.Model):
     summary = models.TextField(default='')
     author_intro = models.TextField(default='')
     price = models.CharField(max_length=100,default='')
-
+    def __unicode__(self):
+        return self.title
 class BookReview(models.Model):
     """
     豆瓣书评

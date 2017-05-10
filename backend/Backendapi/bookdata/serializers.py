@@ -156,23 +156,8 @@ class BookInfoSerializer(ModelSerializer):
             return None
         else:
             return catalog.replace('(收起)','')
-class BookReviewSerializer(ModelSerializer):
-    """
-    豆瓣书评序列化器
-    """
 
-class AmazonSerializer(ModelSerializer):
-    """
-    亚马逊基本信息序列化器
-    """
-class BookCommentSerializer(ModelSerializer):
-    """
-    豆瓣评论序列化器
-    """
-class BookPreSerializer(ModelSerializer):
-    """
-    图书导读序列化器
-    """
+
 class BookReferSerializer(ModelSerializer):
     """
     相关书籍序列化器
@@ -180,8 +165,4 @@ class BookReferSerializer(ModelSerializer):
 class BookLocationSerializer(ModelSerializer):
     """
     图书位置序列化器
-    """
-class BookAmazonCommentSerializer(ModelSerializer):
-    """
-    亚马逊评论序列化器
     """
