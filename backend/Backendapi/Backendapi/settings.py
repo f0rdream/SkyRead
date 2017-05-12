@@ -42,6 +42,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'bookdata',
     'library',
+    'douban',
+    'amazon',
 )
 
 MIDDLEWARE_CLASSES = (

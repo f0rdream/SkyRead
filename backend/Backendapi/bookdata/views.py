@@ -32,9 +32,9 @@ class BookInfoView(APIView):
     permission_classes = [AllowAny]
     # authentication_classes = [SessionAuthentication]
     def get(self,request,isbn13):
-        isbn = str(isbn13)
+        isbn13 = str(isbn13)
         try:
-            book = Book.objects.get(isbn13=isbn)
+            book = Book.objects.get(isbn13=isbn13)
         except:
             return Response({'error': 'can not find this book'}, HTTP_404_NOT_FOUND)
         serializer = BookInfoSerializer(book,data=request.data)

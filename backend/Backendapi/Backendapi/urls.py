@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^homepage/',homepage,name='homepage'),
     url(r'^library/',include('library.urls')),
     url(r'^book/',include('bookdata.urls')),
+    url(r'^douban/',include('douban.urls')),
+    url(r'^amazon/', include('douban.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
