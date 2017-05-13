@@ -29,21 +29,35 @@ export default {
   },
   data () {
     return {
-      imgList: [{
-        url: 'javascript:',
-        img: 'https://static.vux.li/demo/1.jpg',
-        title: '送你一朵fua'
-      }, {
-        url: 'javascript:',
-        img: 'https://static.vux.li/demo/2.jpg',
-        title: '送你一辆车'
-      }, {
-        url: 'javascript:',
-        img: 'https://static.vux.li/demo/3.jpg',
-        title: '送你一次旅行'
-      }],
+      imgList: [
+        {
+          url: 'javascript:',
+          img: 'https://static.vux.li/demo/1.jpg',
+          title: '送你一朵fua'
+        },
+        {
+          url: 'javascript:',
+          img: 'https://static.vux.li/demo/2.jpg',
+          title: '送你一辆车'
+        },
+        {
+          url: 'javascript:',
+          img: 'https://static.vux.li/demo/3.jpg',
+          title: '送你一次旅行'
+        }
+      ],
       imgIndex: 0,
       books: [
+        {
+          img: '',
+          title: '资治通鉴',
+          isbn: '123456'
+        },
+        {
+          img: '',
+          title: '资治通鉴',
+          isbn: '123456'
+        },
         {
           img: '',
           title: '资治通鉴',
@@ -75,12 +89,13 @@ export default {
   display: flex;
   flex-flow: row wrap;
   background-color: #fff;
-  padding: 15px 0;;
+  padding: .15rem .15rem;
+  justify-content: space-between;
 }
 .cate-item {
   text-align: center;
   color: #5f5f5f;
   font-size: 12px;
-  width: 25%;
+  flex: 0 1 21%;
 }
 </style>

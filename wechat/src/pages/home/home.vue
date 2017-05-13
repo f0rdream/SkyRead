@@ -1,6 +1,6 @@
 <template>
   <view-box class="app">
-    <x-header :right-options="{showMore: true}" slot="header">个人信息</x-header>
+    <!-- <x-header :right-options="{showMore: true}" slot="header">个人信息</x-header> -->
     <search placeholder="搜索书籍"></search>
     <transition name="router-fade" mode="out-in">
       <router-view></router-view>
