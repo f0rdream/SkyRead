@@ -56,7 +56,7 @@ class AmazonSpider():
         self.average = average_span.get('title').split('星')[0].split('平均')[1]
         print self.average
 
-    def get_commendation(self):
+    def get_commendation(self,title):
         soup = self.soup
         content_0 = soup.find_all(attrs={'id': 's_content_0'})[0]
         content_1 = soup.find_all(attrs={'id': 's_content_1'})[0]
@@ -84,11 +84,11 @@ class AmazonSpider():
             charset='utf8'
         )
         cursor = conn.cursor()
-        sql = 'update douban_p111 set amazon=%s,frecommand=%s,mrecommand=%s,erecommand=%s where isbn13=%s'
+        sql = 'insert into ama_info values(%s,%s,%s,%s,%s,%s)'
         try:
-            cursor.execute(sql, (str(self.average), str(self.famous_recommendation),
-                                 str(self.media_recommendation),str(self.edit_recommendation),
-                                 str(self.isbn13)))
+            cursor.execute(sql, (str(title),str(self.isbn13),str(self.average), str(self.edit_recommendation),
+                                 str(self.famous_recommendation),str(self.media_recommendation),
+                                 ))
             conn.commit()
             conn.close()
         except Exception as e:
@@ -109,10 +109,10 @@ class AmazonSpider():
             comment = comments[i].find_all(
                 attrs={'class':'a-row a-spacing-small'})[0].find_all(
                  attrs={'class':'a-section'})[0].text.strip()
-            sql = 'insert into amazon_comment111 values (%s,%s)'
+            sql = 'insert into ama_comment values (%s,%s)'
             print comment
             try:
-                cursor.execute(sql, (str(self.isbn13), str(comment)))
+                cursor.execute(sql, (str(self.isbn13),str(comment)))
             except Exception as e:
                 print e
         conn.commit()
@@ -132,7 +132,7 @@ class AmazonSpider():
             except:
                 pass
             try:
-                self.get_commendation()
+                self.get_commendation(keyword)
             except:
                 pass
             try:
@@ -143,5 +143,3 @@ class AmazonSpider():
             print "can't find this book"
         print str(self.isbn13)+"success"
 
-amazon = AmazonSpider()
-amazon.spider("算法导论","9787111407010")

@@ -30,26 +30,29 @@ def SplitData(data,M,k,seed):
 def Recall(train,test,N):
     """
     召回率,即推荐列表的击中数目
-    :param train:
-    :param test:
+    :param train:训练集,格式{'user1':[item1,item2],
+                            'user2':[item1,item3]}
+    :param test:测试集
     :param N:向用户推荐的数目
     :return:
     """
     hit = 0
     all = 0
     for user in train.keys():
-        tu = test[user]
-        # GetRecommendation(user,N)是得到对这个用户N个推荐
-        rank = GetRecommendation(user,N)
-        for item,pui in rank:
+        tu = test[user] # 将训练集中的用户名字抽出,然后找到这个用户在测试集中的item集合
+        # GetRecommendation(user,N)#是得到对这个用户N个推荐
+        rank = GetRecommendation(user,N) # rank = ['item1','item2','item3']
+        for item in rank:
             if item in tu:
                 hit += 1
-        all += len(tu)
+        all += len(tu) # all 是测试集抽出的item数目
     return hit /(all*1.0)
+
+
 
 def Precision(train,test,N):
     """
-    计算准确率,即推荐的击中数处以总数
+    计算准确率,即推荐的击中数除以总数
     :param train:
     :param test:
     :param N:
@@ -63,22 +66,25 @@ def Precision(train,test,N):
         for item,pui in rank:
             if item in tu:
                 hit += 1
-        all += N
+        all += N  # 分子与召回率相同，分母变成推荐列表的item数目
     return hit /(all*1.0)
 
-def Coverage(train,test,N):
+def Coverage(train,N):
     """
-    得到覆盖率
+    :param train:
+    :param test:
+    :return:
     """
     recommend_items = set()
     all_items = set()
     for user in train.keys():
-        for item in train[user].keys():
+        for item in train[user]:
             all_items.add(item)
         rank = GetRecommendation(user,N)
-        for item,pui in rank:
+        for item in rank:
             recommend_items.add(item)
     return len(recommend_items) / (len(all_items) * 1.0)
+
 def Popularity(train,test,N):
     pass
 # 余弦相似度 = (交集) / sqrt(len(a) * len(b))

@@ -14,7 +14,9 @@ from rest_framework.serializers import (
 from accounts.models import WeChatUser
 from rest_framework import serializers
 from .models import BorrowItem,WaitOrderItem,SuccessOrderItem
-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class BorrowItemCreateSerializer(ModelSerializer):
     class Meta:
@@ -25,6 +27,7 @@ class BorrowItemCreateSerializer(ModelSerializer):
             'isbn13',
             'borrow_time',
             'return_time',
+            'find_id',
             'library_name',
             'location',
         ]
@@ -35,6 +38,7 @@ class BorrowItemCreateSerializer(ModelSerializer):
         return_time = data.get('return_time')
         library_name = data.get('library_name')
         location = data.get('location')
+        find_id = data.get('find_id')
 
         if not isbn13:
             raise ValidationError('lack borrow_time')
@@ -46,6 +50,8 @@ class BorrowItemCreateSerializer(ModelSerializer):
             raise ValidationError('lack library_name')
         if not location:
             raise ValidationError('lack location')
+        if not find_id:
+            raise ValidationError('lack find_id')
         return data
 
 
@@ -63,6 +69,7 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'user',
             'borrow_time',
             'return_time',
+            'find_id',
             'library_name',
             'location',
             'nickname',
@@ -90,15 +97,19 @@ class BorrowItemDetailSerializer(ModelSerializer):
 
 
 class AddToReturnBarSerializer(serializers.Serializer):
-    id = IntegerField()
+    """
+    验证部分
+    """
+    id1 = IntegerField()
+    id2 = IntegerField()
     ctime = CharField()
     qrtype = CharField()
     def validate(self, data):
-        id = data.get('id')
+        id1 = data.get('id1')
         ctime = data.get('ctime')
         qrtype = data.get('qrtype')
-        if not id:
-            raise ValidationError('lack id')
+        if not id1:
+            raise ValidationError('lack id1')
         if not ctime:
             raise ValidationError('lack ctime')
         if not qrtype:
@@ -152,12 +163,14 @@ class ReturnBookInfoToAdmin(ModelSerializer):
     class Meta:
         model = BorrowItem
         fields=[
+            'id',
             'nickname',
             'isbn13',
             'title',
             'prices',
             'borrow_time',
             'return_time',
+            'find_id',
             'library_name',
             'location',
         ]
@@ -285,3 +298,12 @@ class WaitOrderItemDetailSerializer(ModelSerializer):
 
     def get_id(self,obj):
         return obj.pk
+
+class IdSerializer(serializers.Serializer):
+    id1 = IntegerField()
+    id2 = IntegerField()
+    def validate(self,data):
+        id1 = data.get('id1')
+        if not id1:
+            raise ValidationError('lack id1')
+        return data

@@ -1,15 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
-# class OrderBar(models.Model):
-#     isbn13 = models.CharField(max_length=100,default='')
-#     timeline = models.DateTimeField()
+
 
 class BorrowItem(models.Model):
     isbn13 = models.CharField(max_length=100,default='')
     user = models.ForeignKey(User)
     borrow_time = models.DateTimeField(blank=True,null=True)
     return_time = models.DateTimeField(blank=True,null=True)
+    borrow_find_id = models.TextField(default=None,blank=False,null=False)
     library_name = models.CharField(max_length=100,blank=True,null=True)
     location = models.CharField(max_length=1000,blank=True,null=True)
     qrcode = models.CharField(max_length=1000,blank=True, null=True)
@@ -19,7 +18,7 @@ class BorrowItem(models.Model):
         return self.user.username
     class Meta:
         permissions =(
-            ('is_a_admin','can add book to bar'),
+            ('is_a_book_admin','can add book to bar'),
         )
 
 
