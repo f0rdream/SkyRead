@@ -158,11 +158,7 @@ class BookInfoSerializer(ModelSerializer):
             return catalog.replace('(收起)','')
 
 
-class BookReferSerializer(ModelSerializer):
+class ShortInto(ModelSerializer):
     """
-    相关书籍序列化器
-    """
-class BookLocationSerializer(ModelSerializer):
-    """
-    图书位置序列化器
+    图书信息的简短
     """

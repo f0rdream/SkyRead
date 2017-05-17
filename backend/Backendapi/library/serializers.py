@@ -7,6 +7,7 @@ from rest_framework.serializers import (
     ModelSerializer,
     ValidationError,
     DateTimeField,
+    ListField,
     CharField,
     IntegerField,
     )
@@ -27,7 +28,7 @@ class BorrowItemCreateSerializer(ModelSerializer):
             'isbn13',
             'borrow_time',
             'return_time',
-            'find_id',
+            'borrow_find_id',
             'library_name',
             'location',
         ]
@@ -38,10 +39,9 @@ class BorrowItemCreateSerializer(ModelSerializer):
         return_time = data.get('return_time')
         library_name = data.get('library_name')
         location = data.get('location')
-        find_id = data.get('find_id')
-
-        if not isbn13:
-            raise ValidationError('lack borrow_time')
+        find_id = data.get('borrow_find_id')
+        if isbn13 != '1':
+            raise ValidationError('lack isbn13')
         if not borrow_time:
             raise ValidationError('lack borrow_time')
         if not return_time:
@@ -53,7 +53,6 @@ class BorrowItemCreateSerializer(ModelSerializer):
         if not find_id:
             raise ValidationError('lack find_id')
         return data
-
 
 class BorrowItemDetailSerializer(ModelSerializer):
     user = SerializerMethodField()
@@ -69,7 +68,7 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'user',
             'borrow_time',
             'return_time',
-            'find_id',
+            'borrow_find_id',
             'library_name',
             'location',
             'nickname',
@@ -100,16 +99,17 @@ class AddToReturnBarSerializer(serializers.Serializer):
     """
     验证部分
     """
-    id1 = IntegerField()
-    id2 = IntegerField()
+    id_list = ListField(
+        child = IntegerField()
+    )
     ctime = CharField()
     qrtype = CharField()
     def validate(self, data):
-        id1 = data.get('id1')
+        id_list = data.get('id_list')
         ctime = data.get('ctime')
         qrtype = data.get('qrtype')
-        if not id1:
-            raise ValidationError('lack id1')
+        if not id_list:
+            raise ValidationError('lack id_list')
         if not ctime:
             raise ValidationError('lack ctime')
         if not qrtype:
@@ -123,22 +123,24 @@ class AddToReturnBarSerializer(serializers.Serializer):
         except:
             raise ValidationError('This borrow item is not exist')
         if qrtype != 'borrow':
-            raise ValidationError('This is not a borrow qrcode')
+            raise ValidationError('this is not a borrow qrcode')
         return data
 
     # def get_isbn13(self,vali):
 
 
 class ReturnBookSerializer(serializers.Serializer):
-    id = IntegerField()
+    id_list = ListField(
+        child=IntegerField()
+    )
     ctime = CharField()
     qrtype = CharField()
     def validate(self, data):
-        id = data.get('id')
+        id_list = data.get('id_list')
         ctime = data.get('ctime')
         qrtype = data.get('qrtype')
-        if not id:
-            raise ValidationError('lack id')
+        if not id_list:
+            raise ValidationError('lack id_list')
         if not ctime:
             raise ValidationError('lack ctime')
         if not qrtype:
@@ -299,11 +301,11 @@ class WaitOrderItemDetailSerializer(ModelSerializer):
     def get_id(self,obj):
         return obj.pk
 
-class IdSerializer(serializers.Serializer):
-    id1 = IntegerField()
-    id2 = IntegerField()
-    def validate(self,data):
-        id1 = data.get('id1')
-        if not id1:
-            raise ValidationError('lack id1')
-        return data
+
+class IdListSerializer(serializers.Serializer):
+    """
+    批量生成的id的list
+    """
+    id_list = ListField(
+        child = IntegerField()
+    )

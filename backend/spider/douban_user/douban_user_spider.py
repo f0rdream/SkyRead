@@ -20,7 +20,8 @@ def get_user_book(url):
     # firefox_profile.set_preference("permissions.default.stylesheet", 2)
     firefox_profile.set_preference("permissions.default.image", 2)
     firefox_profile.set_preference("javascript.enable", False)
-    browser = webdriver.Chrome()
+    # browser = webdriver.Firefox(firefox_profile=firefox_profile)
+    browser = webdriver.PhantomJS(executable_path='/home/zongyu/phantomjs/bin/phantomjs')
     browser.get(url)
     browser.find_element_by_class_name('nav-list').find_element_by_xpath('./li[6]').click()
     time.sleep(2)  # 要足够的时间去跳转

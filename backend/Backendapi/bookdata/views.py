@@ -41,3 +41,4 @@ class BookInfoView(APIView):
         serializer.is_valid(raise_exception=True)
         response = Response(serializer.data, HTTP_200_OK)
         return response
+

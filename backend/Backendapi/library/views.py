@@ -20,7 +20,7 @@ from .serializers import (
     SuccessOrderItemCreateSerializer,
     SuccessOrderItemDetailSerializer,
     WaitOrderItemCreateSerializer,
-    WaitOrderItemDetailSerializer, IdSerializer)
+    WaitOrderItemDetailSerializer,IdListSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -131,7 +131,6 @@ class BorrowQrCodeView(APIView):
     生成借书时给管理员扫的二维码(单本书籍)
     """
     permission_classes = [IsAuthenticated]
-
     def get(self,request,pk):
         borrow_item = BorrowItem.objects.get(pk=pk)
         ctime = time.time()
@@ -146,23 +145,20 @@ class BorrowQrCodeView(APIView):
 
 class ManyBorrowQrCodeView(APIView):
     """
-    生成借书时给管理员扫的二维码(2本书籍)
+    生成借书时给管理员扫的二维码,多本书籍,这个项目限定了2本
     """
     permission_classes = [IsAuthenticated]
-
-    def get(self,request):
-        user = request.user
-        # 得到所有的书籍
-        borrow_item = BorrowItem.objects.filter(user=user,
-                                                in_return_bar=False,
-                                                finish_return=False)
-        if len(borrow_item) > 2:
-            return get_reply(15,'something goes wrong')
-        id1 = borrow_item[0].pk
-        id2 = borrow_item[1].pk
+    serializer_class = IdListSerializer
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id_list = serializer.validated_data['id_list']
         ctime = time.time()
         qrtype = 'borrow'
-        create_qrcode_two(id1,id2,ctime,qrtype)
+        url = create_qrcode(id_list,ctime,qrtype)
+        reply = dict()
+        reply['url'] = url
+        return Response(reply,HTTP_200_OK)
 
 
 class VarifyAddToReturnBarView(APIView):
@@ -178,14 +174,14 @@ class VarifyAddToReturnBarView(APIView):
         if user.has_perm('library.is_a_admin'):
             serializer = AddToReturnBarSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            id1 = serializer.validated_data['id1']
-            id2 = serializer.validated_data['id2']
+            id_list = serializer.validated_data['id_list']
             queryset = list()
-            borrow_item1 = BorrowItem.objects.get(pk=id1)
-            queryset.append(borrow_item1)
-            if id2:
-                borrow_item2 = BorrowItem.objects.get(pk=id2)
-                queryset.append(borrow_item2)
+            for id in id_list:
+                try:
+                    borrow_item = BorrowItem.objects.get(pk=id)
+                    queryset.append(borrow_item)
+                except:
+                    pass
             serializer = ReturnBookInfoToAdmin(queryset,
                                                data=request.data,
                                                many=True)
@@ -201,26 +197,20 @@ class AddToReturnBarView(APIView):
     管理员核对无误后把书籍加入还书栏
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = IdSerializer
+    serializer_class = IdListSerializer
+
     def post(self,request):
         user = request.user
         if user.has_perm('library.is_a_admin'):
             serializer = self.serializer_class(data=request.data)
-            id1 = serializer.validated_data['id1']
-            id2 = serializer.validated_data['id2']
-            try:
-                borrow_item1 = BorrowItem.objects.get(pk=id1)
-                borrow_item1.in_return_bar = True
-                borrow_item1.save()
-            except:
-                return get_reply(12,'item not found')
-            if id2:
+            id_list = serializer.validated_data['id_list']
+            for id in id_list:
                 try:
-                    borrow_item2 = BorrowItem.objects.get(pk=id2)
-                    borrow_item2.in_return_bar = True
-                    borrow_item2.save()
+                    borrow_item1 = BorrowItem.objects.get(pk=id)
+                    borrow_item1.in_return_bar = True
+                    borrow_item1.save()
                 except:
-                    return get_reply(12,'item not found')
+                    pass
             return get_reply(17,'success')
         else:
             reply = get_reply(16,'not a admin')
@@ -284,6 +274,20 @@ class ManyReturnQrCodeView(APIView):
     """
     难写的生成还书时给管理员扫的二维码,批量还书
     """
+    permission_classes = [IsAuthenticated]
+    serializer_class  = IdListSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id_list = serializer.validated_data['id_list']
+        ctime = time.time()
+        qrtype = 'return'
+        url = create_qrcode(id_list,ctime,qrtype)
+        reply = dict()
+        reply['url'] = url
+        return Response(reply,HTTP_200_OK)
+
 
 
 class VarifyReturnBookBarView(APIView):
@@ -298,12 +302,28 @@ class VarifyReturnBookBarView(APIView):
         if user.has_perm('library.is_a_admin'):
             serializer = ReturnBookSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            # 返回书籍信息
-            id = serializer.validated_data['id']
-            borrow_item = BorrowItem.objects.get(pk=id)
-            serializer = ReturnBookInfoToAdmin(borrow_item,data=request.data)
+            id_list = serializer.validated_data['id_list']
+            queryset = list()
+            for id in id_list:
+                try:
+                    borrow_item = BorrowItem.objects.get(pk=id)
+                    queryset.append(borrow_item)
+                except:
+                    pass
+            serializer = ReturnBookInfoToAdmin(queryset,
+                                               data=request.data,
+                                               many=True)
             serializer.is_valid(raise_exception=True)
-            return Response(serializer.data,HTTP_200_OK)
+            return Response(serializer.data, HTTP_200_OK)
+
+            # serializer = ReturnBookSerializer(data=request.data)
+            # serializer.is_valid(raise_exception=True)
+            # # 返回书籍信息
+            # id = serializer.validated_data['id']
+            # borrow_item = BorrowItem.objects.get(pk=id)
+            # serializer = ReturnBookInfoToAdmin(borrow_item,data=request.data)
+            # serializer.is_valid(raise_exception=True)
+            # return Response(serializer.data,HTTP_200_OK)
         else:
             reply = {'error': 'you are not a admin'}
             return Response(reply, HTTP_403_FORBIDDEN)
@@ -314,19 +334,36 @@ class FinishReturnView(APIView):
     管理员核对无误后完成借书
     """
     permission_classes = [IsAuthenticated]
-    def get(self,request,pk):
+    serializer_class = IdListSerializer
+
+    def post(self,request):
         user = request.user
         if user.has_perm('library.is_a_admin'):
-            try:
-                borrow_item = BorrowItem.objects.get(pk=pk)
-                borrow_item.finish_return = True
-                borrow_item.save()
-                return Response({'msg':'Finish returned successful'},HTTP_200_OK)
-            except:
-                return Response({'error','Return Item not found'},HTTP_404_NOT_FOUND)
+            serializer = self.serializer_class(data=request.data)
+            id_list = serializer.validated_data['id_list']
+            for id in id_list:
+                try:
+                    borrow_item1 = BorrowItem.objects.get(pk=id)
+                    borrow_item1.finish_return = True
+                    borrow_item1.save()
+                except:
+                    pass
+            return get_reply(18, 'success')
         else:
-            reply = {'error': 'you are not a admin'}
+            reply = get_reply(16, 'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)
+        # user = request.user
+        # if user.has_perm('library.is_a_admin'):
+        #     try:
+        #         borrow_item = BorrowItem.objects.get(pk=pk)
+        #         borrow_item.finish_return = True
+        #         borrow_item.save()
+        #         return Response({'msg':'Finish returned successful'},HTTP_200_OK)
+        #     except:
+        #         return Response({'error','Return Item not found'},HTTP_404_NOT_FOUND)
+        # else:
+        #     reply = {'error': 'you are not a admin'}
+        #     return Response(reply, HTTP_403_FORBIDDEN)
 
 
 class OrderSuccessView(APIView):
@@ -471,5 +508,19 @@ class WaitOrderDetailView(APIView):
             return Response(reply,HTTP_400_BAD_REQUEST)
 
 
+class CurlListView(APIView):
+    """
+    测试curl
+    """
+    permission_classes = [AllowAny]
+    serializer_class = IdListSerializer
+
+    def post(self,request):
+        serializer = IdListSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reply = dict()
+        reply['id1'] = serializer.data['id_list'][0]
+        reply['id2'] = serializer.data['id_list'][1]
+        return Response(reply,HTTP_200_OK)
 
 

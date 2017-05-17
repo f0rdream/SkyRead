@@ -92,7 +92,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'localhost',
         'PORT': 3306,
-        'NAME': 'backendapi',
+        'NAME': 'skyread',
         'USER': 'root',
         'PASSWORD': '123456',
         'CHARSET': 'utf8'
