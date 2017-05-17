@@ -7,10 +7,10 @@ html {
   box-sizing: inherit;
 }
 body {
-  background-color: #fbfbfb;
+  background-color: #f3f3f3;
   font-size: 16px;
   height: 100%;
-  font-family: 'Avenir', Helvetica, Arial, sans-serif, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei';
+  font-family: 'Avenir', Arial, sans-serif, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -19,6 +19,11 @@ body {
   height: 0;
   display: block;
   clear: both;
+}
+.ellipsis {
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 }
 
 .vux-header {
@@ -46,4 +51,10 @@ body {
 .ab-right {
   position: absolute;
   right: 10px;
+}
+
+p.body-info {
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 }

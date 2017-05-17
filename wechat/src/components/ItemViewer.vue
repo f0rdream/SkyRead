@@ -4,13 +4,13 @@
       <span class="title">
         新书速递
       </span>
-      <span class="view-changer" @click="changeView">
+      <span class="view-changer" @click="changeView" v-if="listable">
         {{ isList ? '网格视图' : '列表视图' }}
       </span>
     </div>
     <div class="viewer-block" v-if="!isList">
       <div v-for="item in currentItems" class="viewer-item">
-        <img src="../images/s3083552.jpg"class="item-img">
+        <img src="../assets/s3083552.jpg"class="item-img">
         <p class="item-title">资治通鉴</p>
       </div>
     </div>
@@ -27,7 +27,11 @@
 <script>
 export default {
   props: {
-    items: Array
+    items: Array,
+    listable: {
+      type: Boolean,
+      default: true
+    }
   },
   data () {
     return {
@@ -42,6 +46,9 @@ export default {
   methods: {
     changeView () {
       this.isList = !this.isList
+    },
+    logU (event) {
+      console.log(event.target)
     }
   }
 }
@@ -51,9 +58,6 @@ export default {
 .viewer-box {
   margin-top: .25rem;
   background-color: #fff;
-}
-.viewer-box .title-box {
-  padding: .15rem .20rem .10rem .20rem;
 }
 .viewer-block {
   margin: 0 .20rem;
@@ -70,8 +74,6 @@ export default {
 }
 .viewer-item .item-title {
   font-size: 12px;
-}
-.list-block {
 }
 .list-item {
   padding: .10rem .20rem;
