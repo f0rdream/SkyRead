@@ -1,19 +1,27 @@
 <template>
   <div class="bar-wrapper vux-1px-t">
-    <div class="bar-left" :class="activeTab === '首页' ? 'active' : ''">首页</div>
-    <div class="bar-right" :class="activeTab === '我的' ? 'active' : ''">我的</div>
+    <div class="" :class="activeTab === 'currentTabs[0]' ? 'active' : ''">{{currentTabs[0]}}</div>
+    <div class="bar-left" :class="activeTab === 'currentTabs[1]' ? 'active' : ''">{{currentTabs[1]}}</div>
+    <div class="bar-right" :class="activeTab === 'currentTabs[2]' ? 'active' : ''">{{currentTabs[2]}}</div>
+    <div class="" :class="activeTab === 'currentTabs[3]' ? 'active' : ''">{{currentTabs[3]}}</div>
     <div class="bar-center">扫码借书</div>
   </div>
 </template>
 <script>
 export default {
   props: {
-    activeTab: String
+    activeTab: String,
+    tabs: Array
   },
   data () {
     return {}
   },
-  computed () {},
+  computed: {
+    currentTabs () {
+      let defaultTabs = ['首页', '搜索', '书架', '我的']
+      return this.tabs || defaultTabs
+    }
+  },
   mounted () {},
   methods: {}
 }
@@ -26,14 +34,16 @@ export default {
   width: 100%;
   font-size: 12px;
   background-color: #f4f4f4;
+  flex-flow: row nowrap;
 }
 .bar-wrapper .active {
   color: #2bc3c2;
 }
-.bar-wrapper .bar-left, .bar-wrapper .bar-right {
-  width: 50%;
+.bar-wrapper>div:not(.bar-center) {
   text-align: center;
-  padding: 15px 0;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  width: 25%;
 }
 .bar-wrapper .bar-left {
   padding-right: 34px;
