@@ -4,7 +4,7 @@ import qrcode
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
 import time
-def create_qrcode(id,ctime,qrtype):
+def create_qrcode(id_list,ctime,qrtype):
     """
     :param bid:表示书籍的唯一id,用isbn号码
     :param ctime: 创建时间,一分钟后过期
@@ -17,13 +17,24 @@ def create_qrcode(id,ctime,qrtype):
         box_size=10,
         border=4,
     )
-    url = "http://baidu.com/?ctime="+str(ctime)+"&id="+id+"&qrtype="+qrtype
-    print ctime,id
+    id = None
+    for i in id_list:
+        id += 'b'+str(i)  # 参数最后的样子:id = b1b2b3b56
+    url = "http://baidu.com/?ctime="+str(ctime)+"&id="+str(id)+"&qrtype="+qrtype
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image()
-    filename = 'media_root/borrow_qrcode/'+str(id) + ".png"
-    img.save(filename)
+    if qrtype == 'borrow':
+        filename = 'media_root/borrow_qrcode/'+str(id) + ".png"
+        img.save(filename)
+        return filename
+    elif qrtype == 'return':
+        filename = 'media_root/return_qrcode/'+str(id) + ".png"
+        img.save(filename)
+        return filename
+
+def create_qrcode_two(id1,id2,ctime,qrtype):
+    pass
 key = "tangzongyuisgood"
 mode = AES.MODE_CBC
 # 加密函数，如果text不是16的倍数【加密文本text必须为16的倍数！】，那就补足为16的倍数

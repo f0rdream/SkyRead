@@ -1,5 +1,7 @@
 # coding:utf-8
 import time
+
+from django.db.models import Q
 from django.shortcuts import render
 from rest_framework.generics import (
     ListAPIView,
@@ -15,7 +17,8 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly
 )
 from .models import Book
-from .serializers import (BookInfoSerializer)
+from .serializers import (BookInfoSerializer,
+                          ShortInto,SearchSerializer)
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -41,3 +44,23 @@ class BookInfoView(APIView):
         serializer.is_valid(raise_exception=True)
         response = Response(serializer.data, HTTP_200_OK)
         return response
+
+class Serach(APIView):
+    permission_classes = [AllowAny]
+    def get(self,request):
+        key = self.request.GET.get("key")
+        if key:
+            title_queryset = Book.objects.filter(Q(title__icontains=key) |
+                                                 Q(subtitle__icontains=key))
+            author_queryset = Book.objects.filter(Q(author__icontains=key))
+            title_serializer = ShortInto(title_queryset,data=request.data,many=True)
+            title_serializer.is_valid(raise_exception=True)
+            author_serializer = ShortInto(author_queryset,data=request.data,many=True)
+            author_serializer.is_valid(raise_exception=True)
+            reply = dict()
+            reply['title_result'] = title_serializer.data
+            reply['author_result'] = author_serializer.data
+            return Response(reply,HTTP_200_OK)
+        else:
+            reply = {'msg':'None'}
+            return Response(reply,HTTP_200_OK)
