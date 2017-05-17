@@ -50,26 +50,27 @@ class BorrowItemView(APIView):
         return_time = serializer.validated_data['return_time']
         library_name = serializer.validated_data['library_name']
         location = serializer.validated_data['location']
-        find_id = serializer.validated_data['find_id']
+        borrow_find_id = serializer.validated_data['borrow_find_id']
         user = request.user
         try:
-            if BorrowItem.objects.get(user=user,find_id=find_id,in_return_bar=False,
+            if BorrowItem.objects.get(user=user,borrow_find_id=borrow_find_id,in_return_bar=False,
                                       finish_return=False):
                 reply = get_reply(10,'item existed')
-                return reply
+                return Response(reply,HTTP_200_OK)
         except:
             pass
         # 判断借书栏中是否超过2本书籍
         borrow_item_list = BorrowItem.objects.filter(user=user,in_return_bar=False,
                                                      finish_return=False)
-        if len(borrow_item_list) > 2:
+        if len(borrow_item_list) >= 2:
             reply = get_reply(11,'item over 2')
-            return reply
+            return Response(reply,HTTP_200_OK)
 
-        borrow_item = BorrowItem.objects.create(user=user,isbn13=isbn13,
+        borrow_item = BorrowItem.objects.create(user=user,
+                                                isbn13=isbn13,
                                                 borrow_time=borrow_time,
                                                 return_time=return_time,
-                                                find_id=find_id,
+                                                borrow_find_id=borrow_find_id,
                                                 library_name=str(library_name),
                                                 location=str(location))
         borrow_item.save()
@@ -78,6 +79,7 @@ class BorrowItemView(APIView):
 
     def get(self,request):
         user = request.user
+        # 判断借书栏中是否超过2本书籍
         queryset = BorrowItem.objects.filter(user=user,in_return_bar=False,finish_return=False)
         serializer = BorrowItemDetailSerializer(queryset,data=request.data,many=True)
         serializer.is_valid(raise_exception=True)

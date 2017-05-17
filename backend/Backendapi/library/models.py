@@ -16,6 +16,8 @@ class BorrowItem(models.Model):
     finish_return = models.BooleanField(default=False)
     def get_username(self):
         return self.user.username
+    def __unicode__(self):
+        return self.user.username+"find_id="+str(self.borrow_find_id)
     class Meta:
         permissions =(
             ('is_a_book_admin','can add book to bar'),

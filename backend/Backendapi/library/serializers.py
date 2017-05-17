@@ -40,7 +40,7 @@ class BorrowItemCreateSerializer(ModelSerializer):
         library_name = data.get('library_name')
         location = data.get('location')
         find_id = data.get('borrow_find_id')
-        if isbn13 != '1':
+        if not isbn13:
             raise ValidationError('lack isbn13')
         if not borrow_time:
             raise ValidationError('lack borrow_time')
