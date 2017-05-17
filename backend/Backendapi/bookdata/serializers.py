@@ -11,17 +11,16 @@ from rest_framework.serializers import (
     DateTimeField,
     CharField,
     IntegerField,
+    Serializer
     )
 from .models import Book
-
-
 class BookInfoSerializer(ModelSerializer):
     """
     基本信息序列化器
     因为爬取数据的时候空数据为('',),所以需要处理
     author_intro暂时没有处理
     """
-    isbn13 =  SerializerMethodField()
+    isbn13 = SerializerMethodField()
     numraters = SerializerMethodField()
     subtitle = SerializerMethodField()
     author = SerializerMethodField()
@@ -160,5 +159,54 @@ class BookInfoSerializer(ModelSerializer):
 
 class ShortInto(ModelSerializer):
     """
-    图书信息的简短
+    图书信息的简短信息
     """
+    isbn13 = SerializerMethodField()
+    author = SerializerMethodField()
+    img_id = SerializerMethodField()
+    publisher = SerializerMethodField()
+    class Meta:
+        model = Book
+        fields = [
+            'isbn13',
+            'title',
+            'author',
+            'img_id',
+            'publisher',
+            'price',
+        ]
+
+    def get_isbn13(self,obj):
+        return obj.isbn13
+
+    def get_img_id(self,obj):
+        img_id = obj.img_id
+        if img_id == "update_image":
+            return None
+        else:
+            return img_id
+
+    def get_publisher(self,obj):
+        publisher = obj.publisher
+        if publisher == "('',)":
+            return None
+        else:
+            return publisher
+
+    def get_author(self,obj):
+        authors = obj.author
+        if authors == '' or authors == '&':
+            return None
+        else:
+            author_list = []
+            authors = authors.split('&')
+            for author in authors:
+                if author == '':
+                    continue
+                else:
+                    author_list.append(author)
+            return author_list
+
+
+class SearchSerializer(Serializer):
+    key = CharField()
