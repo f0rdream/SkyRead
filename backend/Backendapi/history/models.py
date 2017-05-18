@@ -13,7 +13,7 @@ class SearchHistory(models.Model):
     time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return str(self.title)
+        return str(self.user.username)+str(self.key)
 
 
 class OrderHistory(models.Model):
