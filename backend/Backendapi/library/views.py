@@ -146,6 +146,7 @@ class BorrowQrCodeView(APIView):
     生成借书时给管理员扫的二维码(单本书籍)
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pk):
         if not have_phone_register(user=request.user):
             reply = get_reply(17,'not register with phone')
@@ -167,6 +168,7 @@ class ManyBorrowQrCodeView(APIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdListSerializer
+
     def post(self,request):
         if not have_phone_register(user=request.user):
             reply = get_reply(17,'not register with phone')
@@ -258,6 +260,7 @@ class ReturnItemView(APIView):
     serializer_class = BorrowItemCreateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
+    
     def get(self,request):
         if not have_phone_register(user=request.user):
             reply = get_reply(17,'not register with phone')
