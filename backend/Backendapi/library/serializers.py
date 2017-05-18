@@ -15,6 +15,7 @@ from rest_framework.serializers import (
 from accounts.models import WeChatUser
 from rest_framework import serializers
 from .models import BorrowItem,WaitOrderItem,SuccessOrderItem
+from bookdata.models import Book
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -59,7 +60,8 @@ class BorrowItemDetailSerializer(ModelSerializer):
     nickname = SerializerMethodField()
     borrow_time = SerializerMethodField()
     return_time = SerializerMethodField()
-
+    title = SerializerMethodField()
+    price = SerializerMethodField()
     class Meta:
         model = BorrowItem
         fields = [
@@ -72,6 +74,8 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'library_name',
             'location',
             'nickname',
+            'title',
+            'price',
         ]
 
     def get_user(self,obj):
@@ -91,6 +95,25 @@ class BorrowItemDetailSerializer(ModelSerializer):
 
     def get_return_time(self,obj):
         return obj.return_time
+
+    def get_title(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+            return title
+        except:
+            return None
+
+    def get_price(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            price = book.price
+            return price
+        # 这里通过BookModel 拿到价格
+        except:
+            return None
 # class QrCodeSerializer(ModelSerializer):
 #     class
 
@@ -114,16 +137,6 @@ class AddToReturnBarSerializer(serializers.Serializer):
             raise ValidationError('lack ctime')
         if not qrtype:
             raise ValidationError('lack type')
-        ctime = float(ctime)
-        now_time = time.time()
-        if now_time - ctime > 120.00:
-            raise ValidationError('This qrcode is overdue')
-        try:
-            BorrowItem.objects.get(pk=id)
-        except:
-            raise ValidationError('This borrow item is not exist')
-        if qrtype != 'borrow':
-            raise ValidationError('this is not a borrow qrcode')
         return data
 
     # def get_isbn13(self,vali):
@@ -145,23 +158,15 @@ class ReturnBookSerializer(serializers.Serializer):
             raise ValidationError('lack ctime')
         if not qrtype:
             raise ValidationError('lack type')
-        ctime = float(ctime)
-        now_time = time.time()
-        if now_time - ctime > 120.00:
-            raise ValidationError('This qrcode is overdue')
-        try:
-            BorrowItem.objects.get(pk=id)
-        except:
-            raise ValidationError('This return item is not exist')
-        if qrtype != 'return':
-            raise ValidationError('This is not a return qrcode')
+
         return data
 
 
 class ReturnBookInfoToAdmin(ModelSerializer):
     title =  SerializerMethodField()
-    prices = SerializerMethodField()
+    price = SerializerMethodField()
     nickname =  SerializerMethodField()
+
     class Meta:
         model = BorrowItem
         fields=[
@@ -169,23 +174,32 @@ class ReturnBookInfoToAdmin(ModelSerializer):
             'nickname',
             'isbn13',
             'title',
-            'prices',
+            'price',
             'borrow_time',
             'return_time',
-            'find_id',
+            'borrow_find_id',
             'library_name',
             'location',
         ]
 
     def get_title(self,obj):
         isbn13 = obj.isbn13
-        # 这里通过BookModel 拿到标题
-        return "This is a test title"
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+            return title
+        except:
+            return None
 
-    def get_prices(self,obj):
+    def get_price(self,obj):
         isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            price = book.price
+            return price
         # 这里通过BookModel 拿到价格
-        return "This is a test price"
+        except:
+            return None
 
     def get_nickname(self,obj):
         username = obj.user.username

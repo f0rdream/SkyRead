@@ -2,9 +2,7 @@ from django.test import TestCase
 
 # Create your tests here.
 import time
-print time.time()
-
-id = None
-print id
-
+a =  time.time()
+time.sleep(60)
+print time.time()-a
 

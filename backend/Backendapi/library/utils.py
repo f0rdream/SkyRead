@@ -17,21 +17,23 @@ def create_qrcode(id_list,ctime,qrtype):
         box_size=10,
         border=4,
     )
-    id = None
+    id = ''
     for i in id_list:
-        id += 'b'+str(i)  # 参数最后的样子:id = b1b2b3b56
+        id += 'b'+ str(i)  # 参数最后的样子:id = b1b2b3b56
     url = "http://baidu.com/?ctime="+str(ctime)+"&id="+str(id)+"&qrtype="+qrtype
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image()
     if qrtype == 'borrow':
         filename = 'media_root/borrow_qrcode/'+str(id) + ".png"
+        url = '/media/borrow_qrcode/'+str(id) + ".png"
         img.save(filename)
-        return filename
+        return url
     elif qrtype == 'return':
         filename = 'media_root/return_qrcode/'+str(id) + ".png"
+        url = '/media/return_qrcode/' + str(id) + ".png"
         img.save(filename)
-        return filename
+        return url
 
 def create_qrcode_two(id1,id2,ctime,qrtype):
     pass

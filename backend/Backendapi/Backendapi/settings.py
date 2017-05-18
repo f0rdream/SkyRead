@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'Backendapi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
-        'PORT': 3306,
+        'HOST': '591c80963f816.gz.cdb.myqcloud.com',
+        'PORT': 9502,
         'NAME': 'skyread',
-        'USER': 'root',
-        'PASSWORD': '123456',
+        'USER': 'cdb_outerroot',
+        'PASSWORD': 'skyread614',
         'CHARSET': 'utf8'
     }
 }

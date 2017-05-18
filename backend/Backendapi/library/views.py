@@ -98,6 +98,7 @@ class BorrowItemDetailDeleteView(APIView):
         user = request.user
         try:
             borrow_item = BorrowItem.objects.get(user=user,pk=pk)
+
             serializer = BorrowItemDetailSerializer(borrow_item,data=request.data)
             serializer.is_valid(raise_exception=True)
             response = Response(serializer.data,HTTP_200_OK)
@@ -166,7 +167,6 @@ class ManyBorrowQrCodeView(APIView):
 class VarifyAddToReturnBarView(APIView):
     """
     将借书栏里的书加入到还书栏,验证部分,验证通过则返回书籍信息
-    如果是批量处理的则将id2传入一起处理
     """
     permission_classes = [IsAuthenticated]
     serializer_class = AddToReturnBarSerializer
@@ -174,9 +174,20 @@ class VarifyAddToReturnBarView(APIView):
     def post(self,request):
         user = request.user
         if user.has_perm('library.is_a_admin'):
+            print request.data
             serializer = AddToReturnBarSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
+            ctime  = serializer.validated_data['ctime']
+            qrtype = serializer.validated_data['qrtype']
+            ctime = float(ctime)
+            now_time = time.time()
+            if now_time - ctime > 120.00:
+                reply = get_reply(18,'over time')
+                return Response(reply,HTTP_400_BAD_REQUEST)
+            if qrtype != 'borrow':
+                reply = get_reply(19,'not a borrow')
+                return Response(reply,HTTP_400_BAD_REQUEST)
             queryset = list()
             for id in id_list:
                 try:
@@ -185,7 +196,7 @@ class VarifyAddToReturnBarView(APIView):
                 except:
                     pass
             serializer = ReturnBookInfoToAdmin(queryset,
-                                               data=request.data,
+                                               data=[],
                                                many=True)
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data,HTTP_200_OK)
@@ -204,7 +215,9 @@ class AddToReturnBarView(APIView):
     def post(self,request):
         user = request.user
         if user.has_perm('library.is_a_admin'):
+            print request.data
             serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
             for id in id_list:
                 try:
@@ -213,7 +226,8 @@ class AddToReturnBarView(APIView):
                     borrow_item1.save()
                 except:
                     pass
-            return get_reply(17,'success')
+            reply =  get_reply(0,'success')
+            return Response(reply,HTTP_200_OK)
         else:
             reply = get_reply(16,'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)
@@ -250,8 +264,8 @@ class ReturnItemDetailDeleteView(APIView):
             response = Response(serializer.data,HTTP_200_OK)
             return response
         except BorrowItem.DoesNotExist:
-            content = {'error':"Can't find the item or you don't have this item"}
-            response = Response(content,HTTP_404_NOT_FOUND)
+            reply = get_reply(20,'item not found')
+            response = Response(reply,HTTP_404_NOT_FOUND)
             return response
 
 
@@ -305,6 +319,16 @@ class VarifyReturnBookBarView(APIView):
             serializer = ReturnBookSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
+            ctime = serializer.validated_data['ctime']
+            qrtype = serializer.validated_data['qrtype']
+            ctime = float(ctime)
+            now_time = time.time()
+            if now_time - ctime > 120.00:
+                reply = get_reply(21,'over time')
+                return Response(reply, HTTP_400_BAD_REQUEST)
+            if qrtype != 'return':
+                reply = get_reply(22, 'not a return')
+                return Response(reply, HTTP_400_BAD_REQUEST)
             queryset = list()
             for id in id_list:
                 try:
@@ -313,7 +337,7 @@ class VarifyReturnBookBarView(APIView):
                 except:
                     pass
             serializer = ReturnBookInfoToAdmin(queryset,
-                                               data=request.data,
+                                               data=[],
                                                many=True)
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, HTTP_200_OK)
@@ -327,13 +351,13 @@ class VarifyReturnBookBarView(APIView):
             # serializer.is_valid(raise_exception=True)
             # return Response(serializer.data,HTTP_200_OK)
         else:
-            reply = {'error': 'you are not a admin'}
+            reply = get_reply(23, 'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)
 
 
 class FinishReturnView(APIView):
     """
-    管理员核对无误后完成借书
+    管理员核对无误后完成还书
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdListSerializer
@@ -342,6 +366,7 @@ class FinishReturnView(APIView):
         user = request.user
         if user.has_perm('library.is_a_admin'):
             serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
             for id in id_list:
                 try:
@@ -350,9 +375,10 @@ class FinishReturnView(APIView):
                     borrow_item1.save()
                 except:
                     pass
-            return get_reply(18, 'success')
+            reply = get_reply(0, 'success')
+            return Response(reply,HTTP_200_OK)
         else:
-            reply = get_reply(16, 'not a admin')
+            reply = get_reply(23, 'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)
         # user = request.user
         # if user.has_perm('library.is_a_admin'):
