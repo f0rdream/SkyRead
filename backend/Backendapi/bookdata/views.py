@@ -19,7 +19,6 @@ from rest_framework.permissions import (
 from .models import Book
 from .serializers import (BookInfoSerializer,
                           ShortInto,SearchSerializer)
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -28,8 +27,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
+from history.models import SearchHistory
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]
@@ -45,10 +43,18 @@ class BookInfoView(APIView):
         response = Response(serializer.data, HTTP_200_OK)
         return response
 
+
 class Serach(APIView):
     permission_classes = [AllowAny]
+
     def get(self,request):
         key = self.request.GET.get("key")
+        # 存入搜索历史
+        try:
+            s = SearchHistory.objects.create(user=request.user,key=key)
+            s.save()
+        except:
+            pass
         if key:
             title_queryset = Book.objects.filter(Q(title__icontains=key) |
                                                  Q(subtitle__icontains=key))

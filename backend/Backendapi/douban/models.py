@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.db import models
 
-# test isbn13:9787111013853
+# isbn13:9787111013853
 
 class Comment(models.Model):
     """

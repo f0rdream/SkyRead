@@ -32,7 +32,7 @@ from rest_framework.status import (
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
 from .utils import create_qrcode,create_qrcode_two
-# Create your views here.
+from permissions import have_phone_register
 
 
 class BorrowItemView(APIView):
@@ -43,6 +43,9 @@ class BorrowItemView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     def post(self,request):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         serializer = BorrowItemCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         isbn13 = serializer.validated_data['isbn13']
@@ -78,6 +81,9 @@ class BorrowItemView(APIView):
         return response
 
     def get(self,request):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         user = request.user
         # 判断借书栏中是否超过2本书籍
         queryset = BorrowItem.objects.filter(user=user,in_return_bar=False,finish_return=False)
@@ -95,6 +101,9 @@ class BorrowItemDetailDeleteView(APIView):
     content = {}
 
     def get(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         user = request.user
         try:
             borrow_item = BorrowItem.objects.get(user=user,pk=pk)
@@ -109,6 +118,9 @@ class BorrowItemDetailDeleteView(APIView):
             return response
 
     def delete(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         user = request.user
         try:
             borrow_item = BorrowItem.objects.get(user=user, pk=pk)
@@ -134,7 +146,11 @@ class BorrowQrCodeView(APIView):
     生成借书时给管理员扫的二维码(单本书籍)
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         borrow_item = BorrowItem.objects.get(pk=pk)
         ctime = time.time()
         qrtype = "borrow"
@@ -152,7 +168,11 @@ class ManyBorrowQrCodeView(APIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdListSerializer
+
     def post(self,request):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         id_list = serializer.validated_data['id_list']
@@ -240,7 +260,11 @@ class ReturnItemView(APIView):
     serializer_class = BorrowItemCreateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
+    
     def get(self,request):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         user = request.user
         queryset = BorrowItem.objects.filter(user=user,in_return_bar=True,finish_return=False)
         serializer = BorrowItemDetailSerializer(queryset,data=request.data,many=True)
@@ -256,6 +280,9 @@ class ReturnItemDetailDeleteView(APIView):
     permission_classes = [IsAuthenticated]
     content = {}
     def get(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         user = request.user
         try:
             borrow_item = BorrowItem.objects.get(user=user,pk=pk)
@@ -275,6 +302,9 @@ class ReturnQrCodeView(APIView):
     """
     permission_classes = [IsAuthenticated]
     def get(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         borrow_item = BorrowItem.objects.get(pk=pk)
         ctime = time.time()
         qrcode = "return"
@@ -294,6 +324,9 @@ class ManyReturnQrCodeView(APIView):
     serializer_class  = IdListSerializer
 
     def post(self,request):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         id_list = serializer.validated_data['id_list']
