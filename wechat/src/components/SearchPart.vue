@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import RecommendCard from './RecommendCard'
+import RecommendCardMulti from './RecommendCardMulti'
 export default {
   components: {
-    RecommendCard
+    RecommendCardMulti
   },
   data () {
     return {

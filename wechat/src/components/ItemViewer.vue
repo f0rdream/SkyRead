@@ -10,14 +10,14 @@
     </div>
     <div class="viewer-block" v-if="!isList">
       <div v-for="item in currentItems" class="viewer-item">
-        <img src="../assets/s3083552.jpg"class="item-img">
-        <p class="item-title">资治通鉴</p>
+        <img :src="item.img_id" class="item-img" @click="$router.push(`/home/bookdetail/${item.isbn13}`)">
+        <p class="item-title">{{ item.title }}</p>
       </div>
     </div>
     <div class="list-block" v-else>
-      <div v-for="item in currentItems" class="list-item vux-1px-b">
-        <p class="item-title">《孔子》</p>
-        <p class="item-info">作者：(中)孔丘    著</p>
+      <div v-for="item in currentItems" class="list-item vux-1px-b" @click="$router.push(`/home/bookdetail/${item.isbn13}`)">
+        <p class="item-title">{{ item.title }}</p>
+        <p class="item-info">作者：<span v-for="authorItem in item.author">{{ authorItem }}</span></p>
         <p class="item-info">出版信息：北京 中央书局   2011</p>
       </div>
     </div>

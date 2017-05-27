@@ -105,7 +105,7 @@ backend/Backendapi/env/*
 
 # Xcode
 #
-build/
+Admin/*/build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -125,7 +125,7 @@ project.xcworkspace
 
 # Android/IntelliJ
 #
-build/
+Admin/*/build/
 .idea
 .gradle
 local.properties

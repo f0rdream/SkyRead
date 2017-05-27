@@ -2,25 +2,29 @@
   <section class="main-part">
     <swiper :list="imgList" v-model="imgIndex"></swiper>
     <div class="category">
-      <div class="cate-item">马列主义</div>
+      <div class="cate-item" v-for="(value, key) in bookTypes2" v-if="key < 8 || isMore">
+        <router-link :to="`/home/category/${ key }`">{{ value }}</router-link>
+      </div>
+      <!-- <div class="cate-item">马列主义</div>
       <div class="cate-item">哲学宗教</div>
       <div class="cate-item">自然科学</div>
       <div class="cate-item">数理科学</div>
       <div class="cate-item">社会科学</div>
       <div class="cate-item">政治法律</div>
-      <div class="cate-item">工业技术</div>
-      <div class="cate-item">更多分类</div>
+      <div class="cate-item">工业技术</div> -->
+      <div class="cate-item" @click="toggleMore">{{ isMore ? '收起分类' : '更多分类'}}</div>
        <!--TODO
        Add the more cate page
        -->
     </div>
-    <item-viewer :items="books"></item-viewer>
+    <item-viewer :items="books" ></item-viewer>
   </section>
 </template>
 
 <script>
 import { Swiper } from 'vux'
 import ItemViewer from '@/components/ItemViewer'
+import { bookTypes } from '@/config/data'
 
 export default {
   components: {
@@ -29,6 +33,8 @@ export default {
   },
   data () {
     return {
+      isMore: false,
+      bookTypes2: bookTypes,
       imgList: [
         {
           url: 'javascript:',
@@ -49,36 +55,91 @@ export default {
       imgIndex: 0,
       books: [
         {
-          img: '',
-          title: '资治通鉴',
-          isbn: '123456'
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
         },
         {
-          img: '',
-          title: '资治通鉴',
-          isbn: '123456'
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
         },
         {
-          img: '',
-          title: '资治通鉴',
-          isbn: '123456'
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
         },
         {
-          img: '',
-          title: '资治通鉴',
-          isbn: '123456'
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
         },
         {
-          img: '',
-          title: '资治通鉴',
-          isbn: '123456'
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
         },
         {
-          img: '',
-          title: '资治通鉴',
-          isbn: '123456'
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
+        },
+        {
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
+        },
+        {
+          'isbn13': '9787111077039',
+          'title': '编译原理及实践',
+          'author': [
+            'Kenneth C·Louden'
+          ],
+          'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
+          'publisher': '机械工业出版社',
+          'price': '39.00元'
         }
       ]
+    }
+  },
+  methods: {
+    toggleMore () {
+      this.isMore = !this.isMore
     }
   }
 }

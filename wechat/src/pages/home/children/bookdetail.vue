@@ -3,22 +3,23 @@
     <div class="recommend-card">
       <div class="recommend-body">
         <div class="left">
-          <img src="../../../assets/s3083552.jpg" class="book-img">
-          <p class="body-title ellipsis">嫌疑人X的献身</p>
+          <img :src="'https://img3.doubanio.com/lpic/' + bookDetail.img_id" class="book-img">
+          <p class="body-title ellipsis">{{ bookDetail.title }}</p>
           <div class="opt-box">
+            <!--  TODO  添加收藏的mutation -->
             <router-link to="">推荐</router-link>
             <router-link to="">收藏</router-link>
           </div>
         </div>
         <div class="right">
-          <p class="body-info">作者：[日]东野圭吾</p>
-          <p class="body-info">作者简介：这行一共有一二三四五六个字</p>
-          <p class="body-info">出版社：南海出版社</p>
-          <p class="body-info">出版时间：2010-09-09</p>
-          <p class="body-info">价格：37.5元</p>
-          <p class="body-info">ISBN：xxxxxxxxxxx</p>
-          <p class="body-info">页数：502页</p>
-          <p class="body-info">标签：悬疑，爱情</p>
+          <p class="body-info">作者：{{ bookDetail.author }}</p>
+          <p class="body-info">作者简介：{{ bookDetail.author_intro }}</p>
+          <p class="body-info">出版社：{{ bookDetail.publisher }}</p>
+          <p class="body-info">出版时间：{{ bookDetail.pubdate }}</p>
+          <p class="body-info">价格：{{ bookDetail.price }}</p>
+          <p class="body-info">ISBN：{{ bookDetail.isbn13 }}</p>
+          <p class="body-info">页数：{{ bookDetail.pages }}页</p>
+          <p class="body-info">标签： <router-link v-for="item in bookDetail.tags" to="" :key="bookDetail.tags">{{ item }} </router-link></p>
           <div class="times-box">
             <div class="times-info">
               <p>16524人</p>
@@ -29,7 +30,7 @@
               <p>收藏</p>
             </div>
             <div class="times-info">
-              <p class="times-score">9.0</p>
+              <p class="times-score">{{ bookDetail.average }}</p>
               <p>豆瓣评分</p>
             </div>
           </div>
@@ -37,7 +38,7 @@
       </div>
       <div class="recommend-description recommend-part">
         <p class="part-title">内容简介</p>
-        <p class="part-body">一行共有三十个字，该字号为二十像素，内容简介字号二十八像素，测试</p>
+        <p class="part-body">{{ bookDetail.summary }}</p>
       </div>
       <div class="recommend-index recommend-part">
         <p class="part-title">内容简介</p>
@@ -69,7 +70,34 @@ export default {
   components: {},
   data () {
     return {
-      // imgSrc: 'static/img/s3083552.jpg'
+      isbn13: this.$route.params.isbn13 || '9787111251217',
+      bookDetail: {
+        isbn13: '',
+        title: '',
+        author: [],
+        summary: '',
+        average: '',
+        pubdate: '',
+        publisher: '',
+        img_id: '',
+        pages: '',
+        tags: [],
+        price: ''
+      },
+      imgId: ''
+    }
+  },
+  mounted () {
+    this.getBook()
+  },
+  methods: {
+    getBook () {
+      this.$http.get(`book/isbn/${this.isbn13}`).then((res) => {
+        this.bookDetail = res.data
+        this.imgId = res.data.img_id
+      }).catch((err) => {
+        console.log(err)
+      })
     }
   }
 }
@@ -89,6 +117,7 @@ export default {
   text-align: center;
   width: 1.3rem;
   flex: 1 1 auto;
+  height: 100%;
 }
 .recommend-body .left .book-img {
   width: 100%;

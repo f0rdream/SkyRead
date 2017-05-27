@@ -10,7 +10,14 @@
 </template>
 
 <script>
+import ItemViewer from '@/components/ItemViewer'
 export default {
+  components: {
+    ItemViewer
+  },
+  data () {
+    return {}
+  }
 }
 </script>
 

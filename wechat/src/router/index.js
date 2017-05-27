@@ -18,7 +18,7 @@ export default new Router({
       component: home,
       children: [
         {
-          path: 'bookdetail',
+          path: 'bookdetail/:isbn13',
           component: bookdetail
         },
         {
