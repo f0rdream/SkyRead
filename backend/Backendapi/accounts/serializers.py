@@ -12,7 +12,6 @@ from rest_framework.serializers import (
     )
 
 from .a_lib.vlidators import CheckString,PhoneValid
->>>>>>> fa6dd802a9733da1692cdc1ed1cd74d2e3c7bca6
 from rest_framework import serializers
 
 
