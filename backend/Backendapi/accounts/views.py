@@ -18,7 +18,7 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import WeChatUser,PhoneUser
-from lib.phone_verify import send_message,verify
+from a_lib.phone_verify import send_message,verify
 
 
 class UserProfileDetailAPIView(APIView):
