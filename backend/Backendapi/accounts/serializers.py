@@ -10,7 +10,7 @@ from rest_framework.serializers import (
     CharField,
     IntegerField,
     )
-from .lib.vlidators import CheckString,PhoneValid
+
 from rest_framework import serializers
 
 
@@ -120,17 +120,3 @@ class SendMessageSerializer(serializers.Serializer):
         if not phone_number:
             serializers.ValidationError('lack phone number')
         return data
-
-
-
-
-
-
-
-
-
-
-
-
-
-
