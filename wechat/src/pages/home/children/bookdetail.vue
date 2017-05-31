@@ -1,7 +1,7 @@
 <template>
   <div class="detail-box">
-    <div class="recommend-card">
-      <div class="recommend-body">
+    <div class="book-card">
+      <div class="book-body">
         <div class="left">
           <img :src="'https://img3.doubanio.com/lpic/' + bookDetail.img_id" class="book-img">
           <p class="body-title ellipsis">{{ bookDetail.title }}</p>
@@ -36,11 +36,11 @@
           </div>
         </div>
       </div>
-      <div class="recommend-description recommend-part">
+      <div class="book-description book-part">
         <p class="part-title">内容简介</p>
         <p class="part-body">{{ bookDetail.summary }}</p>
       </div>
-      <div class="recommend-index recommend-part">
+      <div class="book-index book-part">
         <p class="part-title">内容简介</p>
         <p class="part-body">一行共有三十个字，该字号为二十像素，内容简介字号二十八像素，测试</p>
       </div>
@@ -107,61 +107,61 @@ export default {
 .detail-box>div {
   background-color: #fbfbfb;
 }
-.recommend-body {
+.book-body {
   display: flex;
   flex-flow: row nowrap;
   padding: .05rem .15rem ;
   justify-content: space-between;
 }
-.recommend-body .left {
+.book-body .left {
   text-align: center;
   width: 1.3rem;
   flex: 1 1 auto;
   height: 100%;
 }
-.recommend-body .left .book-img {
+.book-body .left .book-img {
   width: 100%;
 }
-.recommend-body .left .body-title {
+.book-body .left .body-title {
   font-size: 14px;
 }
-.recommend-body .left .opt-box {
+.book-body .left .opt-box {
   font-size: 12px;
 }
-.recommend-part {
+.book-part {
   margin: .05rem 0;
   padding: .10rem .15rem;
   border-top: 1px solid #333;
 }
-.recommend-part .part-title {
+.book-part .part-title {
   font-size: 14px;
 }
-.recommend-part .part-body {
+.book-part .part-body {
   font-size: 10px;
 }
 
-.recommend-body .right {
+.book-body .right {
   font-size: 10px;
   max-width: 2.4rem;
   flex: 1.5 1 auto;
   margin: 0 0.10rem;
 }
-.recommend-body .right .body-info {
+.book-body .right .body-info {
   margin: .08rem 0;
 }
-.recommend-body .times-box {
+.book-body .times-box {
   display: flex;
   justify-content: space-between;
 }
-.recommend-body .times-box .times-info {
+.book-body .times-box .times-info {
   text-align: center;
 }
-.recommend-body .times-box .times-info:nth-child(2) {
+.book-body .times-box .times-info:nth-child(2) {
   border-left: 1px solid #000;
   border-right: 1px solid #000;
   padding: 0 .15rem;
 }
-.recommend-body .times-box .times-score{
+.book-body .times-box .times-score{
   color: #ff8019;
 }
 

@@ -3,12 +3,12 @@ import Router from 'vue-router'
 import Hello from '@/components/HelloFromVux'
 
 import person from '../pages/person/person'
-
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
 import indexpage from '../pages/home/children/indexpage'
-import SearchPart from '../components/SearchPart'
+import category from '../pages/home/children/category'
 
+import SearchPart from '../components/SearchPart'
 Vue.use(Router)
 
 export default new Router({
@@ -24,6 +24,10 @@ export default new Router({
         {
           path: 'indexpage',
           component: indexpage
+        },
+        {
+          path: 'category/:typeid',
+          component: category
         }
       ]
     },
