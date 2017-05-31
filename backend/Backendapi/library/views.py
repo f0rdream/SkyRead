@@ -3,7 +3,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 import time
-from lib.function import get_reply
+from l_lib.function import get_reply
 from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticated,
