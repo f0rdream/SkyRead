@@ -41,3 +41,12 @@ def get_tags(tags):
             else:
                 taglist.append(tag)
         return taglist
+
+
+refer_id = "&1461903&1016300&1040771&1856285&1084336&1141406&1008145&25862578&2256039&3259440"
+refer_list = list()
+refer = refer_id.split("&")
+for i in range(1,len(refer)):
+    print refer[i]
+    refer_list.append(refer[i])
+

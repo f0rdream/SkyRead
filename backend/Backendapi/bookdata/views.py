@@ -16,7 +16,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from .models import Book
+from .models import Book,Refer
 from .serializers import (BookInfoSerializer,
                           ShortInto,SearchSerializer)
 from rest_framework.views import APIView
@@ -28,6 +28,7 @@ from rest_framework.status import (
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
 from history.models import SearchHistory
+from l_lib.function import get_reply
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]
@@ -70,3 +71,29 @@ class Serach(APIView):
         else:
             reply = {'msg':'None'}
             return Response(reply,HTTP_200_OK)
+
+class ReferBookView(APIView):
+    """
+    相关书籍
+    """
+    permission_classes = [AllowAny]
+
+    def get(self,request,isbn13):
+        try:
+            r = Refer.objects.get(isbn13=isbn13)
+            refer_id = r.refer_id
+            refer_object_list = list()
+            refer = refer_id.split("&")
+            for i in range(1, len(refer)):
+                try:
+                    b = Book.objects.get(d_id=refer[i])
+                    refer_object_list.append(b)
+                except:
+                    pass
+            serializer = ShortInto(refer_object_list, data=request.data, many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except:
+            reply = get_reply(91,"not found")
+            return Response(reply,HTTP_404_NOT_FOUND)
+

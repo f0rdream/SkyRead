@@ -4,4 +4,5 @@ urlpatterns = [
     url(r'^$',views.wexin,name='wexin'),
     url(r'^connect/oauth2/authorize$',views.redict,name='auth'),
     url(r'^redict/$',views.redict,name="redict"),
+    url(r'^test_page/$',views.test_page,name="test")
 ]
