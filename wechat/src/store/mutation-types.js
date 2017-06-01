@@ -1,0 +1,4 @@
+export const COLLECTION_CART = 'COLLECTION_CART'
+export const SCANED_CART = 'SCANED_CART'
+export const RENTED_CART = 'RENTED_CART'
+export const RENTED_HISTORY = 'RENTED_HISTORY'

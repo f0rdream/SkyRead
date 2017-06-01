@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="cate-box">
     <recommend-card :recommendDetail="bookDetail"></recommend-card>
-    <item-viewer></item-viewer>
+    <item-viewer :item="typeList"></item-viewer>
   </div>
 </template>
 
@@ -30,11 +30,14 @@ export default {
         tags: [],
         price: ''
       },
-      imgId: ''
+      imgId: '',
+      typeId: this.$route.params.typeid,
+      typeList: []
     }
   },
   mounted () {
     this.getBook()
+    this.getTypelist()
   },
   methods: {
     getBook () {
@@ -43,6 +46,13 @@ export default {
         this.imgId = res.data.img_id
       }).catch((err) => {
         console.log(err)
+      })
+    },
+    getTypelist () {
+      this.$http.get(`book/guide/${this.typeId}`).then((res) => {
+        this.typeList = res
+      }).catch((err) => {
+        console.error(err)
       })
     }
   }
