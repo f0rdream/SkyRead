@@ -99,5 +99,5 @@ def get_user_href(begin,end):
         log(i)
 
 a = time.time()
-get_user_href(2000,2500)  # 500-560页码
+get_user_href(2165,2500)  # 500-560页码
 print time.time() - a
