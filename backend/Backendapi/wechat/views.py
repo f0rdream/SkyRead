@@ -40,13 +40,17 @@ def wexin(request):
         xml = request.body
         msg = parse_message(xml)
         if msg.type == 'text':
+            print msg.type
             content = "你好"
-            reply = TextReply(content=content,message=msg)
-            r_xml = reply.render()
-            openid = msg.source
-            with open('openid.txt',"w") as f:
-                f.write(openid)
-            return HttpResponse(r_xml)
+            try:
+                reply = TextReply(content=content,message=msg)
+                r_xml = reply.render()
+                openid = msg.source
+                with open('openid.txt',"w") as f:
+                    f.write(openid)
+                return HttpResponse(r_xml)
+            except Exception as e:
+                print e
         elif msg.type == 'event':
             push = ScanCodeWaitMsgEvent(msg)
             content = msg.scan_result
@@ -141,10 +145,6 @@ def redict(request):
                 return HttpResponse('登录失败')
         else:
             return HttpResponse('登录失败')
-
-# 获取签名
-def get_signature(reqeust):
-    acces_token = get_access_token()
 
 
 
