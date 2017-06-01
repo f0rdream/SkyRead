@@ -1,7 +1,6 @@
 # coding:utf-8
 from django.db import models
 from django.contrib.auth.models import User
-
 class Book(models.Model):
     isbn13 = models.CharField(max_length=100,primary_key=True)
     numraters = models.CharField(max_length=100,default='')
@@ -24,12 +23,11 @@ class Book(models.Model):
     def __unicode__(self):
         return self.title
 
-# class Refer(models.Model):
-#     # create
-#     # table
-#     # douban_refer(
-#     #     isbn13
-#     # varchar(200),
-#     # refer_id
-#     # text)
-
+class Refer(models.Model):
+    """
+    相关书籍
+    """
+    isbn13 = models.CharField(max_length=100, primary_key=True)
+    refer_id = models.TextField(default=None)
+    def __unicode__(self):
+        return self.isbn13

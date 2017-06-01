@@ -13,7 +13,7 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book
+from .models import Book,Refer
 class BookInfoSerializer(ModelSerializer):
     """
     基本信息序列化器
@@ -210,3 +210,4 @@ class ShortInto(ModelSerializer):
 
 class SearchSerializer(Serializer):
     key = CharField()
+
