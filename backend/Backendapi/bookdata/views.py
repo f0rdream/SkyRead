@@ -93,8 +93,7 @@ class ReferBookView(APIView):
             serializer = ShortInto(refer_object_list, data=request.data, many=True)
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data,HTTP_200_OK)
-        except Exception as e:
-            print e
-            reply = get_reply(91,e)
+        except:
+            reply = get_reply(91,"not found")
             return Response(reply,HTTP_404_NOT_FOUND)
 
