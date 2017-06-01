@@ -11,9 +11,9 @@ from wechatpy.oauth import WeChatOAuth
 from accounts.models import WeChatUser
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login
-
-
 # Create your views here.
+from bookdata.models import  Book
+from function import get_access_token
 @csrf_exempt
 def wexin(request):
     """
@@ -50,7 +50,35 @@ def wexin(request):
         elif msg.type == 'event':
             push = ScanCodeWaitMsgEvent(msg)
             content = msg.scan_result
-            reply = TextReply(content=content, message=msg)
+            # 利用content找到书籍信息
+            book = Book.objects.get(isbn13=content)
+            title = book.title
+            authors = book.author
+            author = None
+            if authors == '' or authors == '&':
+                return None
+            else:
+                authors = authors.split('&')
+                for i in authors:
+                    if i == '':
+                        continue
+                    else:
+                        author += i +"/"
+            price = book.price
+            publisher = book.publisher
+            if publisher == "('',)":
+                publisher = None
+            summary = book.summary
+            if summary == "('',)":
+                summary = None
+            else:
+                summary = summary[0:200] + "......"
+            book_info = title+"\n"+\
+                        "作者:"+author+"\n"+\
+                        "价格:"+price+"\n"+\
+                        "出版社:"+publisher+"\n"+\
+                        "内容简介:"+summary+"\n"+"完整信息请进入应用主界面查看"
+            reply = TextReply(content=book_info, message=msg)
             r_xml = reply.render()
             return HttpResponse(r_xml)
         else:
@@ -64,22 +92,27 @@ def auth(request):
 @csrf_exempt
 def redict(request):
     # 本地模拟时候假设已经拿到数据
-    # id = "wx06e40e988b339f37"
-    # secret = "85a43e84aec7ea073877fab4349ee226"
-    # wechatouath = WeChatOAuth(id,secret,"redirect_uri=http://tangzongyu.com/redict",scope=u'snsapi_userinfo')
-    # code = request.GET.get('code')
-    # wechatouath.fetch_access_token(code)
-    # wechatouath.check_access_token()
-    # json_data = wechatouath.get_user_info()
-    # nickname = json_data['nickname']
-    # return HttpResponse(nickname)
-    openid = 'oYMTS0jjf2rhak6v6AxjC_nKl5hQ'
-    nickname = 'testuser'
-    sex = 1
-    province = '浙江'
-    city = '温州'
-    country = '中国'
-    headimgurl = 'http://wx.qlogo.cn/mmopen/dDqE5bg9gbZXkq2EOaHsnHRwN1xLiawElO4oKKfMvZYeFcf2U7yTvxHhIzkWCydiaVWh7xic5waUlw6daLtAxMEQCjRIKiaXWYjJ/0'
+    id = "wx06e40e988b339f37"
+    secret = "85a43e84aec7ea073877fab4349ee226"
+    wechatouath = WeChatOAuth(id,secret,"redirect_uri=http://tangzongyu.com/redict",scope=u'snsapi_userinfo')
+    code = request.GET.get('code')
+    wechatouath.fetch_access_token(code)
+    wechatouath.check_access_token()
+    json_data = wechatouath.get_user_info()
+    openid = json_data['openid']
+    nickname = json_data['nickname']
+    sex = json_data['sex']
+    province = json_data['province']
+    city = json_data['city']
+    country = json_data['country']
+    headimgurl = json_data['headimgurl']
+    # openid = 'oYMTS0jjf2rhak6v6AxjC_nKl5hQ'
+    # nickname = 'testuser'
+    # sex = 1
+    # province = '浙江'
+    # city = '温州'
+    # country = '中国'
+    # headimgurl = 'http://wx.qlogo.cn/mmopen/dDqE5bg9gbZXkq2EOaHsnHRwN1xLiawElO4oKKfMvZYeFcf2U7yTvxHhIzkWCydiaVWh7xic5waUlw6daLtAxMEQCjRIKiaXWYjJ/0'
     try:
         wechat_user = WeChatUser.objects.get(openid=openid)
         user = authenticate(username=openid, password="pwd"+openid)
@@ -109,8 +142,9 @@ def redict(request):
         else:
             return HttpResponse('登录失败')
 
-
-
+# 获取签名
+def get_signature(reqeust):
+    acces_token = get_access_token()
 
 
 
