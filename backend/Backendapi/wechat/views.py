@@ -52,39 +52,46 @@ def wexin(request):
             except Exception as e:
                 print e
         elif msg.type == 'event':
-            push = ScanCodeWaitMsgEvent(msg)
-            content = msg.scan_result
-            # 利用content找到书籍信息
-            book = Book.objects.get(isbn13=content)
-            title = book.title
-            authors = book.author
-            author = None
-            if authors == '' or authors == '&':
-                return None
-            else:
-                authors = authors.split('&')
-                for i in authors:
-                    if i == '':
-                        continue
-                    else:
-                        author += i +"/"
-            price = book.price
-            publisher = book.publisher
-            if publisher == "('',)":
-                publisher = None
-            summary = book.summary
-            if summary == "('',)":
-                summary = None
-            else:
-                summary = summary[0:200] + "......"
-            book_info = title+"\n"+\
-                        "作者:"+author+"\n"+\
-                        "价格:"+price+"\n"+\
-                        "出版社:"+publisher+"\n"+\
-                        "内容简介:"+summary+"\n"+"完整信息请进入应用主界面查看"
-            reply = TextReply(content=book_info, message=msg)
-            r_xml = reply.render()
-            return HttpResponse(r_xml)
+            try:
+                push = ScanCodeWaitMsgEvent(msg)
+                content = msg.scan_result
+                print content
+                # 利用content找到书籍信息
+                book = Book.objects.get(isbn13=content)
+                title = book.title
+                authors = book.author
+                author = None
+                if authors == '' or authors == '&':
+                    return None
+                else:
+                    authors = authors.split('&')
+                    for i in authors:
+                        if i == '':
+                            continue
+                        else:
+                            author += i +"/"
+                price = book.price
+                publisher = book.publisher
+                if publisher == "('',)":
+                    publisher = None
+                summary = book.summary
+                if summary == "('',)":
+                    summary = None
+                else:
+                    summary = summary[0:200] + "......"
+                book_info = title+"\n"+\
+                            "作者:"+author+"\n"+\
+                            "价格:"+price+"\n"+\
+                            "出版社:"+publisher+"\n"+\
+                            "内容简介:"+summary+"\n"+"完整信息请进入应用主界面查看"
+                reply = TextReply(content=book_info, message=msg)
+                r_xml = reply.render()
+                return HttpResponse(r_xml)
+            except Exception as e:
+                print e
+                reply = TextReply(content="抱歉,暂时处理不了", message=msg)
+                r_xml = reply.render()
+                return HttpResponse(r_xml)
         else:
             reply = TextReply(content="抱歉,暂时处理不了", message=msg)
             r_xml = reply.render()
