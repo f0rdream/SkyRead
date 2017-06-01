@@ -54,36 +54,36 @@ def wexin(request):
         elif msg.type == 'event':
             try:
                 push = ScanCodeWaitMsgEvent(msg)
-                content = msg.scan_result
+                content = msg.scan_result[7:]
                 print content
                 # 利用content找到书籍信息
                 book = Book.objects.get(isbn13=content)
                 title = book.title
                 authors = book.author
-                author = None
+                author = ' '
                 if authors == '' or authors == '&':
-                    return None
+                    return ' '
                 else:
                     authors = authors.split('&')
                     for i in authors:
                         if i == '':
                             continue
                         else:
-                            author += i +"/"
+                            author += i + "/"
                 price = book.price
                 publisher = book.publisher
                 if publisher == "('',)":
-                    publisher = None
+                    publisher = ' '
                 summary = book.summary
                 if summary == "('',)":
-                    summary = None
+                    summary = ' '
                 else:
                     summary = summary[0:200] + "......"
                 book_info = title+"\n"+\
                             "作者:"+author+"\n"+\
                             "价格:"+price+"\n"+\
                             "出版社:"+publisher+"\n"+\
-                            "内容简介:"+summary+"\n"+"完整信息请进入应用主界面查看"
+                            "内容简介:"+summary+"\n"+"----完整信息请进入应用主界面查看"
                 reply = TextReply(content=book_info, message=msg)
                 r_xml = reply.render()
                 return HttpResponse(r_xml)
@@ -152,7 +152,42 @@ def redict(request):
                 return HttpResponse('登录失败')
         else:
             return HttpResponse('登录失败')
-
-
+@csrf_exempt
+def test_page(request):
+    openid = 'oYMTS0jjf2rhak6v6AxjC_nKl5hQ'
+    nickname = 'testuser'
+    sex = 1
+    province = '浙江'
+    city = '温州'
+    country = '中国'
+    headimgurl = 'http://wx.qlogo.cn/mmopen/dDqE5bg9gbZXkq2EOaHsnHRwN1xLiawElO4oKKfMvZYeFcf2U7yTvxHhIzkWCydiaVWh7xic5waUlw6daLtAxMEQCjRIKiaXWYjJ/0'
+    try:
+        wechat_user = WeChatUser.objects.get(openid=openid)
+        user = authenticate(username=openid, password="pwd" + openid)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                # response = HttpResponseRedirect('/homepage',status=200)
+                # response.set_cookie()
+                return HttpResponseRedirect('/homepage')
+            else:
+                return HttpResponse('登录失败')
+        else:
+            return HttpResponse('登录失败')
+    except:
+        wechat_user = WeChatUser.objects.create(openid=openid, sex=sex, nickname=nickname, city=city,
+                                                province=province, country=country, headimgurl=headimgurl)
+        wechat_user.save()
+        user = User.objects.create_user(username=openid, email='email', password="pwd" + openid)
+        user.save()
+        login_user = authenticate(username=openid, password="pwd" + openid)
+        if login_user is not None:
+            if login_user.is_active:
+                login(request, login_user)
+                return HttpResponseRedirect('/homepage')
+            else:
+                return HttpResponse('登录失败')
+        else:
+            return HttpResponse('登录失败')
 
 
