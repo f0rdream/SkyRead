@@ -1,6 +1,5 @@
 # coding:utf-8
 import time
-
 from rest_framework.response import Response
 from rest_framework.serializers import (
     SerializerMethodField,

@@ -81,7 +81,7 @@ def get_user_href(begin,end):
     count = 0
     for i in range(begin,end):
         print begin
-        user_home = "https://book.douban.com/subject/1770782/comments/"+"hot?p="+str(i)
+        user_home = "https://book.douban.com/subject/6709783/comments/"+"hot?p="+str(i)
         response = urllib2.urlopen(user_home).read()
         soup = bs(response,"lxml")
         comment_item = soup.find_all(attrs={'class':'comment-item'})
@@ -99,5 +99,5 @@ def get_user_href(begin,end):
         log(i)
 
 a = time.time()
-get_user_href(2165,2500)  # 500-560页码
+get_user_href(1,378)  # 500-560页码
 print time.time() - a
