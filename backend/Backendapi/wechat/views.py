@@ -197,7 +197,6 @@ def test_page(request):
         else:
             return HttpResponse('登录失败')
 
-
 # 得到微信签名:
 
 class Sign(APIView):
