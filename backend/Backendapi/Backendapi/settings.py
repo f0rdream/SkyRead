@@ -92,10 +92,10 @@ WSGI_APPLICATION = 'Backendapi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '10.66.218.14',
-        'PORT': 3306,
+        'HOST': '593befbd766f4.sh.cdb.myqcloud.com',
+        'PORT': 17715,
         'NAME': 'skyread',
-        'USER': 'root',
+        'USER': 'cdb_outerroot',
         'PASSWORD': 'skyread614',
         'CHARSET': 'utf8'
     }
@@ -137,5 +137,5 @@ MEDIA_URL = '/media/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-
+STATIC_ROOT = os.path.join(BASE_DIR,'static_root')
 STATIC_URL = '/static/'
