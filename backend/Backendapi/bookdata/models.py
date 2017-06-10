@@ -40,7 +40,7 @@ class Holiding(models.Model):
     book = models.ForeignKey(Book)
     isbn13 = models.CharField(max_length=100)
     state = models.BooleanField(default=True)  # 是否在架上
-    back_time = models.CharField(default=None)  # 应还日期
+    back_time = models.CharField(max_length=300,default=None)  # 应还日期
     location = models.CharField(max_length=300)
     find_id = models.CharField(max_length=300)
     order_number = models.IntegerField(default=0)
