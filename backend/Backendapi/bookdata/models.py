@@ -33,7 +33,7 @@ class Refer(models.Model):
         return self.isbn13
 
 
-class Holiding(models.Model):
+class Holding(models.Model):
     """
     馆藏信息
     """
