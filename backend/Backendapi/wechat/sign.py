@@ -10,8 +10,8 @@ from django.core.cache import cache
 def get_access_token():
     api ="https://api.weixin.qq.com/cgi-bin/token?" \
          "grant_type=client_credential" \
-         "&appid=wx3dd514b1ed8d2610" \
-         "&secret=a386ecb287752ea6b3a21ed000a711cf"
+         "&appid=wx06e40e988b339f37" \
+         "&secret=85a43e84aec7ea073877fab4349ee226"
     response = requests.get(api)
     if response.status_code == 200:
         return response.json()['access_token']
