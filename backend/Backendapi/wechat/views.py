@@ -1,4 +1,4 @@
-#coding:UTF-8
+# coding:UTF-8
 import json
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt

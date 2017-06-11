@@ -92,10 +92,10 @@ WSGI_APPLICATION = 'Backendapi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '593befbd766f4.sh.cdb.myqcloud.com',
-        'PORT': 17715,
+        'HOST': '10.66.218.14',
+        'PORT': 3306,
         'NAME': 'skyread',
-        'USER': 'cdb_outerroot',
+        'USER': 'root',
         'PASSWORD': 'skyread614',
         'CHARSET': 'utf8'
     }
@@ -138,5 +138,5 @@ MEDIA_URL = '/media/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT = '/web/SkyRead/backend/Backendapi/static_root/'
+STATIC_ROOT = '/web/SkyRead/backend/Backendapi/wechat/static/'
 STATIC_URL = '/static/'
