@@ -42,7 +42,7 @@ def wexin(request):
         if tmp_str == signature:
             return HttpResponse(echostr)
         else:
-            return HttpResponse("唐宗钰")
+            return HttpResponse("SkyRead")
     else:
         xml = request.body
         msg = parse_message(xml)
