@@ -173,6 +173,7 @@ class ShortInto(ModelSerializer):
             'author',
             'img_id',
             'publisher',
+            'average',
             'price',
         ]
 

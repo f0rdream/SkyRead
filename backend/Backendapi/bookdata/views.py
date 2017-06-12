@@ -2,6 +2,7 @@
 import time
 
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.generics import (
     ListAPIView,
@@ -16,7 +17,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from .models import Book,Refer
+from .models import Book,Refer,Holding
 from .serializers import (BookInfoSerializer,
                           ShortInto,SearchSerializer)
 from rest_framework.views import APIView
@@ -96,4 +97,37 @@ class ReferBookView(APIView):
         except:
             reply = get_reply(91,"not found")
             return Response(reply,HTTP_404_NOT_FOUND)
+
+def create_holding(request):
+    """
+    创建馆藏信息
+    :param request:
+    :return:
+    """
+    books = Book.objects.all()
+    count = 0
+    f = open('bookdata/find_id.txt','r')
+    flines = f.readlines()
+    l = open('bookdata/location.txt','r')
+    llines = l.readlines()
+    for b in books:
+        for i in range(0,7):
+            find_id = flines[count%5000]
+            location = llines[count%5000]
+            count += 1
+            if count%3 == 0:
+                state = "已经借出"
+                backtime = "2017-7-29"
+            else:
+                state = "在架上"
+                backtime = ''
+            isbn13 = b.isbn13
+            holding = Holding.objects.create(book=b,isbn13=isbn13,find_id=find_id,
+                                              location=location,state=state,back_time=backtime)
+            holding.save()
+            time.sleep(0.5)
+    return HttpResponse("SkyRead")
+
+
+
 

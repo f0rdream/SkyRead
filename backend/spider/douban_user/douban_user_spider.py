@@ -70,10 +70,10 @@ def get_book_item(href):
         print e
 
 def log(i):
-    with open('log.txt','a') as l:
-        l.write(str(i)+"success"+"\n")
+    with open('newlog.txt','a') as l:
+        l.write(i+"success"+"\n")
         l.close()
-def get_user_href(begin,end):
+def get_user_href(book_id,begin,end):
     """
     通过追风筝的人的评论详情爬取用户href
     :return:
@@ -81,7 +81,7 @@ def get_user_href(begin,end):
     count = 0
     for i in range(begin,end):
         print begin
-        user_home = "https://book.douban.com/subject/1770782/comments/"+"hot?p="+str(i)
+        user_home = "https://book.douban.com/subject/"+book_id+"/comments/"+"hot?p="+str(i)
         response = urllib2.urlopen(user_home).read()
         soup = bs(response,"lxml")
         comment_item = soup.find_all(attrs={'class':'comment-item'})
@@ -96,8 +96,13 @@ def get_user_href(begin,end):
                 print str(count) + "========success"
             except:
                 pass
-        log(i)
+        log(book_id+"----"+str(i))
 
 a = time.time()
-get_user_href(2165,2500)  # 500-560页码
-print time.time() - a
+dict = ["4242172","1083428","2256039","1090043","1026425","1873231","1071241","3995526",
+        "1400705","1039487","1041482","1059406","2209098","1023045","4742918","1022060",
+        "3879301","1529893","1009257","1057244","1066462","1858513","1082334","4913064"]
+# 第二页结束
+for i  in dict:
+    get_user_href(i,1,10)  # 500-560页码
+    print time.time() - a

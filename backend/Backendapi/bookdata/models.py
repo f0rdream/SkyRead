@@ -31,3 +31,16 @@ class Refer(models.Model):
     refer_id = models.TextField(default=None)
     def __unicode__(self):
         return self.isbn13
+
+
+class Holding(models.Model):
+    """
+    馆藏信息
+    """
+    book = models.ForeignKey(Book)
+    isbn13 = models.CharField(max_length=100)
+    state = models.BooleanField(default=True)  # 是否在架上
+    back_time = models.CharField(max_length=300,default=None)  # 应还日期
+    location = models.CharField(max_length=300)
+    find_id = models.CharField(max_length=300)
+    order_number = models.IntegerField(default=0)

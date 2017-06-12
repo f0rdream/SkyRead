@@ -1,8 +1,11 @@
-#coding:UTF-8
+# coding:UTF-8
 import json
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse,HttpResponseRedirect
 import hashlib
+
+from rest_framework.permissions import AllowAny
 from wechatpy import parse_message
 from wechatpy.replies import TextReply
 from wechatpy.events import ScanCodeWaitMsgEvent
@@ -13,7 +16,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login
 # Create your views here.
 from bookdata.models import  Book
-from function import get_access_token
+from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from sign import get_signature
+from rest_framework.status import HTTP_200_OK
 @csrf_exempt
 def wexin(request):
     """
@@ -35,7 +42,7 @@ def wexin(request):
         if tmp_str == signature:
             return HttpResponse(echostr)
         else:
-            return HttpResponse("唐宗钰")
+            return HttpResponse("SkyRead")
     else:
         xml = request.body
         msg = parse_message(xml)
@@ -132,7 +139,7 @@ def redict(request):
                 login(request, user)
                 # response = HttpResponseRedirect('/homepage',status=200)
                 # response.set_cookie()
-                return HttpResponseRedirect('/homepage')
+                return render(request,'index.html')
             else:
                 return HttpResponse('登录失败')
         else:
@@ -147,7 +154,7 @@ def redict(request):
         if login_user is not None:
             if login_user.is_active:
                 login(request, login_user)
-                return HttpResponseRedirect('/homepage')
+                return render(request, 'index.html')
             else:
                 return HttpResponse('登录失败')
         else:
@@ -169,7 +176,7 @@ def test_page(request):
                 login(request, user)
                 # response = HttpResponseRedirect('/homepage',status=200)
                 # response.set_cookie()
-                return HttpResponseRedirect('/homepage')
+                return render(request, 'index.html')
             else:
                 return HttpResponse('登录失败')
         else:
@@ -184,10 +191,20 @@ def test_page(request):
         if login_user is not None:
             if login_user.is_active:
                 login(request, login_user)
-                return HttpResponseRedirect('/homepage')
+                return render(request, 'index.html')
             else:
                 return HttpResponse('登录失败')
         else:
             return HttpResponse('登录失败')
+
+# 得到微信签名:
+
+class Sign(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self,request):
+        url = self.request.GET.get("url")
+        reply = get_signature(url)
+        return Response(reply,HTTP_200_OK)
 
 
