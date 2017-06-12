@@ -1,9 +1,9 @@
 <template>
   <div class="bar-wrapper vux-1px-t">
-    <div class="" :class="activeTab === 'currentTabs[0]' ? 'active' : ''">{{currentTabs[0]}}</div>
-    <div class="bar-left" :class="activeTab === 'currentTabs[1]' ? 'active' : ''">{{currentTabs[1]}}</div>
-    <div class="bar-right" :class="activeTab === 'currentTabs[2]' ? 'active' : ''">{{currentTabs[2]}}</div>
-    <div class="" :class="activeTab === 'currentTabs[3]' ? 'active' : ''">{{currentTabs[3]}}</div>
+    <div :class="activeTab === currentTabs[0] ? 'active' : ''" @click="$router.push(currentTabs[0].url)">{{currentTabs[0].name}}</div>
+    <div class="bar-left" :class="activeTab === currentTabs[1] ? 'active' : ''" @click="$router.push(currentTabs[1].url)">{{currentTabs[1].name}}</div>
+    <div class="bar-right" :class="activeTab === currentTabs[2] ? 'active' : ''" @click="$router.push(currentTabs[2].url)">{{currentTabs[2].name}}</div>
+    <div :class="activeTab === currentTabs[3] ? 'active' : ''" @click="$router.push(currentTabs[3].url)">{{currentTabs[3].name}}</div>
     <div class="bar-center">扫码借书</div>
   </div>
 </template>
@@ -18,7 +18,24 @@ export default {
   },
   computed: {
     currentTabs () {
-      let defaultTabs = ['首页', '搜索', '书架', '我的']
+      let defaultTabs = [
+        {
+          name: '首页',
+          url: '/home/indexpage'
+        },
+        {
+          name: '搜索',
+          url: '/search'
+        },
+        {
+          name: '书架',
+          url: '/bookshelf'
+        },
+        {
+          name: '个人',
+          url: '/person'
+        }
+      ]
       return this.tabs || defaultTabs
     }
   },

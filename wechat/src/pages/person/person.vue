@@ -2,8 +2,8 @@
   <view-box class="app-wrapper">
     <!-- <x-header :right-options="{showMore: true}">个人信息</x-header> -->
     <section class="avatar-part">
-      <img class="avatar" src="../../assets/logo.png">
-      <p class="avatar-info">{{ username }}</p>
+      <img class="avatar" :src="userInfo.headimgurl">
+      <p class="avatar-info">{{ userInfo.nickname }}</p>
     </section>
     <group class="book-part">
       <clickable-list :books="books" labelText="我的借阅"></clickable-list>
@@ -43,6 +43,13 @@ export default {
   },
   data () {
     return {
+      userInfo: {
+        nickname: '',
+        headimgurl: '',
+        phone_number: '',
+        email: '',
+        have_phone: 0
+      },
       username: '微信名字',
       recommend: true,
       orderRemind: true,
@@ -56,7 +63,7 @@ export default {
   methods: {
     getAccount () {
       this.$http.get('accounts').then((res) => {
-        console.log(res.body)
+        this.userInfo = res.data
       })
     }
   }

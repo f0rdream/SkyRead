@@ -201,7 +201,7 @@ asn1.js@^4.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
-asn1@~0.2.3:
+asn1@~0.2.0, asn1@~0.2.3:
   version "0.2.3"
   resolved "http://registry.npm.taobao.org/asn1/download/asn1-0.2.3.tgz#dac8787713c9966849fc8180777ebe9c1ddf3b86"
 
@@ -2718,7 +2718,7 @@ glob-parent@^2.0.0:
   dependencies:
     is-glob "^2.0.0"
 
-glob@7.0.5:
+glob@7.0.5, glob@~7.0.3:
   version "7.0.5"
   resolved "http://registry.npm.taobao.org/glob/download/glob-7.0.5.tgz#b4202a69099bbb4d292a7c1b95b6682b67ebdc95"
   dependencies:
@@ -3773,6 +3773,10 @@ lodash@^3.8.0:
 lodash@^4.0.0, lodash@^4.0.1, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0, lodash@^4.5.0:
   version "4.17.4"
   resolved "http://registry.npm.taobao.org/lodash/download/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
+
+lodash@~4.11.1:
+  version "4.11.2"
+  resolved "http://registry.npm.taobao.org/lodash/download/lodash-4.11.2.tgz#d6b4338b110a58e21dae5cebcfdbbfd2bc4cdb3b"
 
 log-symbols@^1.0.2:
   version "1.0.2"
@@ -4931,7 +4935,7 @@ read-pkg@^1.0.0:
     normalize-package-data "^2.3.2"
     path-type "^1.0.0"
 
-readable-stream@1.0, readable-stream@~1.0.2:
+readable-stream@1.0, readable-stream@~1.0.0, readable-stream@~1.0.2:
   version "1.0.34"
   resolved "http://registry.npm.taobao.org/readable-stream/download/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
   dependencies:
@@ -5276,6 +5280,15 @@ sax@~1.2.1:
   version "1.2.2"
   resolved "http://registry.npm.taobao.org/sax/download/sax-1.2.2.tgz#fd8631a23bc7826bef5d871bdb87378c95647828"
 
+scp2@^0.5.0:
+  version "0.5.0"
+  resolved "http://registry.npm.taobao.org/scp2/download/scp2-0.5.0.tgz#64ee74bc3685f3a4c6290f2da8c1e3b4eef92e8d"
+  dependencies:
+    async "~0.9.0"
+    glob "~7.0.3"
+    lodash "~4.11.1"
+    ssh2 "~0.4.10"
+
 selenium-server@^3.0.1:
   version "3.4.0"
   resolved "http://registry.npm.taobao.org/selenium-server/download/selenium-server-3.4.0.tgz#f9303656d956c8d6c856e4942167e0dec97fa7a8"
@@ -5533,6 +5546,21 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "http://registry.npm.taobao.org/sprintf-js/download/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
+ssh2-streams@~0.0.22:
+  version "0.0.23"
+  resolved "http://registry.npm.taobao.org/ssh2-streams/download/ssh2-streams-0.0.23.tgz#aeef30831bb5fc4af6aa3f6d0a261a413531612b"
+  dependencies:
+    asn1 "~0.2.0"
+    readable-stream "~1.0.0"
+    streamsearch "~0.1.2"
+
+ssh2@~0.4.10:
+  version "0.4.15"
+  resolved "http://registry.npm.taobao.org/ssh2/download/ssh2-0.4.15.tgz#07c6f4106d9f7b6ea6e4df636c6c53f1f9817ff8"
+  dependencies:
+    readable-stream "~1.0.0"
+    ssh2-streams "~0.0.22"
+
 sshpk@^1.7.0:
   version "1.13.0"
   resolved "http://registry.npm.taobao.org/sshpk/download/sshpk-1.13.0.tgz#ff2a3e4fd04497555fed97b39a0fd82fafb3a33c"
@@ -5586,6 +5614,10 @@ stream-to-buffer@0.1.0:
 stream-to@~0.2.0:
   version "0.2.2"
   resolved "http://registry.npm.taobao.org/stream-to/download/stream-to-0.2.2.tgz#84306098d85fdb990b9fa300b1b3ccf55e8ef01d"
+
+streamsearch@~0.1.2:
+  version "0.1.2"
+  resolved "http://registry.npm.taobao.org/streamsearch/download/streamsearch-0.1.2.tgz#808b9d0e56fc273d809ba57338e929919a1a9f1a"
 
 strict-uri-encode@^1.0.0:
   version "1.1.0"

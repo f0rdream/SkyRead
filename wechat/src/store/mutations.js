@@ -1,5 +1,7 @@
-import * as types from './mutation-types'
+import { SET_WECHATSIGN } from './mutation-types'
 
 export default {
-  [types.]
+  [SET_WECHATSIGN] (state, sign) {
+    state.wechatSign = sign
+  }
 }

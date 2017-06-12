@@ -3,11 +3,10 @@
     <div class="book-card">
       <div class="book-body">
         <div class="left">
-          <img :src="'https://img3.doubanio.com/lpic/' + bookDetail.img_id" class="book-img">
+          <img :src="bookDetail.imgSrc" class="book-img">
           <p class="body-title ellipsis">{{ bookDetail.title }}</p>
           <div class="opt-box">
             <!--  TODO  添加收藏的mutation -->
-            <router-link to="">推荐</router-link>
             <router-link to="">收藏</router-link>
           </div>
         </div>
@@ -66,8 +65,11 @@
 </template>
 
 <script>
+import { XImg } from 'vux'
 export default {
-  components: {},
+  components: {
+    XImg
+  },
   data () {
     return {
       isbn13: this.$route.params.isbn13 || '9787111251217',
@@ -79,12 +81,12 @@ export default {
         average: '',
         pubdate: '',
         publisher: '',
+        imgSrc: '',
         img_id: '',
         pages: '',
         tags: [],
         price: ''
-      },
-      imgId: ''
+      }
     }
   },
   mounted () {
@@ -94,7 +96,7 @@ export default {
     getBook () {
       this.$http.get(`book/isbn/${this.isbn13}`).then((res) => {
         this.bookDetail = res.data
-        this.imgId = res.data.img_id
+        this.bookDetail.imgSrc = 'https://img3.doubanio.com/lpic/' + res.data.img_id
       }).catch((err) => {
         console.log(err)
       })

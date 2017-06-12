@@ -1,20 +1,17 @@
 <template>
   <div class="list-container" @click="changeSpread()">
-    <div class="book-label" :class="isSpread ? 'vux-1px-tb' : 'vux-1px-t'">
+    <div class="book-label" :class="isSpread ? 'vux-1px-tb' : 'vux-1px-t'" v-if="currentIsLabel">
       <span class="label-text">{{ currentLabel }}</span>
       <span class="label-btn">{{ isSpread ? '收起' : '展开'}}</span>
     </div>
-    <div class="book-list vux-1px-b" v-for="book in currentbooks" v-show="isSpread">
+    <div class="book-list vux-1px-b" v-for="book in currentbooks" v-show="isSpread" @click="$router.push(`/home/details/${book.isbn13}`)">
       <div class="left">
-        <p class="book-title">《孔子》</p>
-        <p class="book-info">作者：(中)孔丘    著</p>
-        <p class="book-info">出版信息：北京 中央书局   2011</p>
-        <p class="book-info">取书日期：2017-5-14</p>
-        <p class="book-info">取书地点：信息学部图书馆</p>
+        <p class="book-title">{{ book.title}}</p>
+        <p class="book-info">{{ book.author }}</p>
+        <slot name="addition-info"></slot>
       </div>
       <div class="right">
-        <router-link to="/detail" class="book-detail">详情</router-link>
-        <span class="book-del">删除</span>
+        <slot name="right"></slot>
       </div>
     </div>
   </div>
@@ -24,6 +21,10 @@
 
 export default {
   props: {
+    isLabel: {
+      type: Boolean,
+      default: true
+    },
     labelText: String,
     books: Array
   },
@@ -40,6 +41,9 @@ export default {
     },
     currentbooks () {
       return this.books
+    },
+    currentIsLabel () {
+      return this.isLabel
     }
   },
   methods: {
