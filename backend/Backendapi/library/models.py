@@ -27,21 +27,18 @@ class BorrowItem(models.Model):
 
 class SuccessOrderItem(models.Model):
     isbn13 = models.CharField(max_length=100, default='')
+    title = models.TextField(default=None)
     user = models.ForeignKey(User)
-    order_time = models.DateTimeField(blank=True,null=True,default=None)
-    location = models.CharField(max_length=1000,default=None)
-    find_id = models.CharField(max_length=1000,default=None)
-    if_phone = models.IntegerField(default=0)
-    status = models.IntegerField(default=0)
-
+    order_time = models.DateTimeField(blank=False,null=False,default=None)
+    book_id = models.IntegerField(default=0)
+    qrcode = models.CharField(max_length=1000, blank=True, null=True)
 
 class WaitOrderItem(models.Model):
     isbn13 = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User)
-    location = models.CharField(max_length=1000,default=None)
-    find_id = models.CharField(max_length=1000,default=None)
-    if_phone = models.IntegerField(default=0)
-    status = models.IntegerField(default=1)
+    title = models.TextField(default=None)
+    book_id = models.IntegerField(default=0)
+    may_return_time = models.CharField(max_length=200,default=None)
 
 class PayItem(models.Model):
     """

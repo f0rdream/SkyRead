@@ -34,7 +34,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .utils import create_qrcode,create_qrcode_two, get_price
+from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode
 from permissions import have_phone_register
 from bookdata.models import Holding
 
@@ -463,12 +463,20 @@ class OrderSuccessView(APIView):
         serializer.is_valid(raise_exception=True)
         isbn13 = serializer.validated_data['isbn13']
         order_time = serializer.validated_data['order_time']
-        location = serializer.validated_data['location']
-        find_id  = serializer.validated_data['find_id']
-        if_phone = serializer.validated_data['if_phone']
+        book_id = serializer.validated_data['book_id']
+        try:
+            holding=Holding.objects.get(id=book_id)
+            title = holding.book.title
+        except:
+            title = ''
         # try:
-        s = SuccessOrderItem.objects.create(user=user,isbn13=isbn13,order_time=order_time,
-                                            location=location,find_id=find_id,if_phone=if_phone)
+        s = SuccessOrderItem.objects.create(user=user,
+                                            isbn13=isbn13,
+                                            order_time=order_time,
+                                            book_id=book_id,
+                                            title=title)
+        qrcode = create_order_qrcode(book_id,user.id,title,s.id)
+        s.qrcode= qrcode
         s.save()
         return Response(serializer.data,HTTP_201_CREATED)
         # except Exception as e:
@@ -533,15 +541,20 @@ class OrderWaitView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         isbn13 = serializer.validated_data['isbn13']
-        location = serializer.validated_data['location']
-        find_id = serializer.validated_data['find_id']
-        if_phone = serializer.validated_data['if_phone']
+        book_id = serializer.validated_data['book_id']
+        try:
+            holding = Holding.objects.get(id=book_id)
+            title = holding.book.title
+            may_return_time = holding.back_time
+        except:
+            title = ''
+            may_return_time = ''
         try:
             s = WaitOrderItem.objects.create(user=user,
-                                             isbn13=isbn13,
-                                            location=location,
-                                            find_id=find_id,
-                                            if_phone=if_phone)
+                                            isbn13=isbn13,
+                                            book_id=book_id,
+                                            title=title,
+                                            may_return_time=may_return_time)
             s.save()
             return Response(serializer.data, HTTP_201_CREATED)
         except:

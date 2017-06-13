@@ -58,6 +58,25 @@ def get_price(id_list):
             pass
     return sum_price
 
+
+def create_order_qrcode(book_id,user_id,title,order_id):
+    qr = qrcode.QRCode(
+        version =1,
+        error_correction = qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    data ="http://115.159.185.170/library/order_info/?" \
+          "book_id=%s&id=%s&title=%s" % (book_id,user_id,title)
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image()
+    filename = 'media_root/order_qrcode/' + str(order_id)+ ".png"
+    url = '/media/order_qrcode/' + str(order_id) + ".png"
+    img.save(filename)
+    return url
+
+
 def create_qrcode_two(id1,id2,ctime,qrtype):
     pass
 key = "tangzongyuisgood"
