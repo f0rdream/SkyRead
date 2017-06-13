@@ -26,7 +26,7 @@ def get_ticket():
     cache_key = 'jsapi_ticket'
     ticket = cache.get(cache_key)
     if ticket:
-        print "成功找到ticket缓存--------\n"+ticket
+        print "success-find-ticket--------\n"+ticket
         return ticket
     else:
         api = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?" \

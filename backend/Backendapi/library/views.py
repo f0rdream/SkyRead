@@ -1,7 +1,7 @@
 # coding:utf-8
 import sys
-
 from django.http import HttpResponse
+from rest_framework.decorators import api_view
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -13,7 +13,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from .models import BorrowItem,SuccessOrderItem,WaitOrderItem
+from .models import BorrowItem,SuccessOrderItem,WaitOrderItem,PayItem
 from .serializers import (
     BorrowItemCreateSerializer,
     BorrowItemDetailSerializer,
@@ -166,7 +166,7 @@ class BorrowQrCodeView(APIView):
         borrow_item = BorrowItem.objects.get(pk=pk)
         ctime = time.time()
         qrtype = "borrow"
-        create_qrcode(pk,ctime,qrtype)
+        create_qrcode(pk,ctime,qrtype,None)
         url = '/media/borrow_qrcode/'+str(pk)+".png"
         borrow_item.qrcode = url
         borrow_item.save()
@@ -190,11 +190,14 @@ class ManyBorrowQrCodeView(APIView):
         id_list = serializer.validated_data['id_list']
         ctime = time.time()
         qrtype = 'borrow'
-        # 在这里创建一个pay
-
-        url = create_qrcode(id_list,ctime,qrtype)
+        # 在这里创建一个pay,得到唯一的pay_id
+        pay = PayItem.objects.create(user=request.user,state=False)
+        pay.save()
+        pay_id = pay.id
+        url = create_qrcode(id_list,ctime,qrtype,pay_id)
         reply = dict()
         reply['url'] = url
+        reply['pay_id'] = pay_id
         return Response(reply,HTTP_200_OK)
 
 
@@ -322,7 +325,7 @@ class ReturnQrCodeView(APIView):
         borrow_item = BorrowItem.objects.get(pk=pk)
         ctime = time.time()
         qrcode = "return"
-        create_qrcode(pk,ctime,qrcode)
+        create_qrcode(pk,ctime,qrcode,None)
         url = '/media/return_qrcode/'+str(pk)+".png"
         borrow_item.qrcode = url
         borrow_item.save()
@@ -346,7 +349,7 @@ class ManyReturnQrCodeView(APIView):
         id_list = serializer.validated_data['id_list']
         ctime = time.time()
         qrtype = 'return'
-        url = create_qrcode(id_list,ctime,qrtype)
+        url = create_qrcode(id_list,ctime,qrtype,None)
         reply = dict()
         reply['url'] = url
         return Response(reply,HTTP_200_OK)
@@ -598,6 +601,7 @@ class CurlListView(APIView):
         reply['id2'] = serializer.data['id_list'][1]
         return Response(reply,HTTP_200_OK)
 
+
 def qrcode_info(request):
     """
     二维码验证,验证时间和管理员
@@ -609,9 +613,49 @@ def qrcode_info(request):
         ctime = request.GET.get("ctime")
         id = request.GET.get("id")
         qrtype = request.GET.get('qrtype')
-        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype
+        pay_id = request.GET.get('pay_id')
+        if not ctime:
+            ctime = ""
+        if not qrtype:
+            qrtype = ""
+        if not pay_id:
+            pay_id = ''
+        if not id:
+            id = ""
+        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+"&pay_id="+pay_id
         return HttpResponse(reply)
     else:
         return HttpResponse("您不是SkyRead的管理员,无权操作")
+
+
+class PayView(APIView):
+    permission_classes =  [IsAuthenticated]
+    def get(self,request,pay_id):
+        try:
+            pay = PayItem.objects.get(id=pay_id)
+            state = pay.state
+            reply = {
+                'pay_id':pay_id,
+                'state':state
+            }
+            return Response(reply)
+        except:
+            reply = get_reply(93,'not found')
+            return Response(reply)
+
+
+class PayItView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pay_id):
+        user = request.user
+        try:
+            pay = PayItem.objects.get(id=pay_id,user=user)
+            pay.state = True
+            pay.save()
+            reply = get_reply(0,'success')
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(94,'not found')
+            return Response(reply,HTTP_404_NOT_FOUND)
 
 

@@ -4,7 +4,7 @@ import qrcode
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
 import time
-def create_qrcode(id_list,ctime,qrtype):
+def create_qrcode(id_list,ctime,qrtype,pay_id):
     """
     :param bid:表示书籍的唯一id,用isbn号码
     :param ctime: 创建时间,一分钟后过期
@@ -18,9 +18,12 @@ def create_qrcode(id_list,ctime,qrtype):
         border=4,
     )
     id = ''
+    if not pay_id:
+        pay_id = ''
     for i in id_list:
         id += 'b'+ str(i)  # 参数最后的样子:id = b1b2b3b56
-    url = "http://115.159.185.170/library/qrcode_info/?ctime="+str(ctime)+"&id="+str(id)+"&qrtype="+qrtype
+    url = "http://115.159.185.170/library/qrcode_info/?ctime="+str(ctime)+\
+          "&id="+str(id)+"&qrtype="+qrtype+"&pay_id="+str(pay_id)
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image()

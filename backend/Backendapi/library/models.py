@@ -1,3 +1,4 @@
+# coding:utf-8
 from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
@@ -43,5 +44,8 @@ class WaitOrderItem(models.Model):
     status = models.IntegerField(default=1)
 
 class PayItem(models.Model):
+    """
+    支付
+    """
     user = models.ForeignKey(User)
     state = models.BooleanField(default=False)
