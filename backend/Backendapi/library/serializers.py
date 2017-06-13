@@ -26,24 +26,16 @@ class BorrowItemCreateSerializer(ModelSerializer):
         model=BorrowItem
         fields =[
             'isbn13',
-            'borrow_time',
-            'return_time',
             'book_id',
         ]
 
     def validate(self, data):
         isbn13 = data.get('isbn13')
-        borrow_time = data.get('borrow_time')
-        return_time = data.get('return_time')
         book_id = data.get('book_id')
         if not isbn13:
             raise ValidationError('lack isbn13')
-        if not borrow_time:
-            raise ValidationError('lack borrow_time')
-        if not return_time:
-            raise ValidationError('lack return_time')
         if not book_id:
-            raise ValidationError('book_id')
+            raise ValidationError('lack book_id')
         return data
 
 class BorrowItemDetailSerializer(ModelSerializer):

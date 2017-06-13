@@ -3,6 +3,9 @@
 import qrcode
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
+
+from bookdata.models import Book
+from models import BorrowItem
 import time
 def create_qrcode(id_list,ctime,qrtype,pay_id):
     """
@@ -37,6 +40,23 @@ def create_qrcode(id_list,ctime,qrtype,pay_id):
         url = '/media/return_qrcode/' + str(id) + ".png"
         img.save(filename)
         return url
+
+def get_price(id_list):
+    sum_price = 0.0
+    for id in id_list:
+        try:
+            borrow_item = BorrowItem.objects.get(id=id)
+            isbn13 = borrow_item.isbn13
+            try:
+                book = Book.objects.get(isbn13=isbn13)
+                book_price = float(book.price.split('元')[0])
+                sum_price += book_price
+            # 这里通过BookModel 拿到价格
+            except:
+                pass
+        except:
+            pass
+    return sum_price
 
 def create_qrcode_two(id1,id2,ctime,qrtype):
     pass

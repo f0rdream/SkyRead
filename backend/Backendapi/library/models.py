@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 class BorrowItem(models.Model):
     isbn13 = models.CharField(max_length=100,default='')
     user = models.ForeignKey(User)
-    borrow_time = models.DateTimeField(default=None,blank=True,null=False)
-    return_time = models.DateTimeField(default=None,blank=True,null=False)
+    borrow_time = models.CharField(max_length=200,default=None,blank=True,null=False)
+    return_time = models.CharField(max_length=200,default=None,blank=True,null=False)
     book_id = models.TextField(default=None,blank=False,null=False)
     find_id = models.TextField(default=None,blank=False,null=False)
     location = models.CharField(max_length=1000,blank=True,null=True)
@@ -49,3 +49,5 @@ class PayItem(models.Model):
     """
     user = models.ForeignKey(User)
     state = models.BooleanField(default=False)
+    price = models.IntegerField(default=0)
+    confirm = models.BooleanField(default=False)  # 管理员是否确认

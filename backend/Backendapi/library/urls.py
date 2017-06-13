@@ -18,7 +18,9 @@ from .views import (BorrowItemView,
                     CurlListView,
                     qrcode_info,
                     PayView,
-                    PayItView)
+                    PayItView,
+                    ConfirmIt,
+                    AdminConfirmInfo)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$',BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -39,6 +41,9 @@ urlpatterns = [
     url(r'^curl/$',CurlListView.as_view()),
     # qrcode_info
     url(r'^qrcode_info/$',qrcode_info,name='get_qrcode_info'),
+    # pay's urls
     url(r'^pay_info/(?P<pay_id>\d+)$', PayView.as_view(), name='get_pay_info'),
-    url(r'^pay/(?P<pay_id>\d+)$',PayItView.as_view(),name='pay_it')
+    url(r'^pay/(?P<pay_id>\d+)$',PayItView.as_view(),name='pay_it'),
+    url(r'^confirm_info/(?P<pay_id>\d+)$',AdminConfirmInfo.as_view(),name='confirm info'),
+    url(r'^confirm/(?P<pay_id>\d+)$',ConfirmIt.as_view(),name='confirm_it')
 ]

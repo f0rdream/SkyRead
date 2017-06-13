@@ -34,7 +34,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .utils import create_qrcode,create_qrcode_two
+from .utils import create_qrcode,create_qrcode_two, get_price
 from permissions import have_phone_register
 from bookdata.models import Holding
 
@@ -52,8 +52,8 @@ class BorrowItemView(APIView):
         serializer = BorrowItemCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         isbn13 = serializer.validated_data['isbn13']
-        borrow_time = serializer.validated_data['borrow_time']
-        return_time = serializer.validated_data['return_time']
+        borrow_time = str(time.strftime('%Y-%m-%d',time.localtime(time.time())))
+        return_time = str(time.strftime('%Y-%m-%d',time.localtime(time.time()+2419200)))
         book_id = serializer.validated_data['book_id']
         try:
             holding = Holding.objects.get(id=book_id)
@@ -188,16 +188,22 @@ class ManyBorrowQrCodeView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         id_list = serializer.validated_data['id_list']
+        price = get_price(id_list)
         ctime = time.time()
         qrtype = 'borrow'
         # 在这里创建一个pay,得到唯一的pay_id
-        pay = PayItem.objects.create(user=request.user,state=False)
+        pay = PayItem.objects.create(user=request.user,
+                                     state=False,
+                                     confirm=False,
+                                     price = price
+                                     )
         pay.save()
         pay_id = pay.id
         url = create_qrcode(id_list,ctime,qrtype,pay_id)
         reply = dict()
         reply['url'] = url
         reply['pay_id'] = pay_id
+        reply['price'] = pay.price
         return Response(reply,HTTP_200_OK)
 
 
@@ -656,6 +662,40 @@ class PayItView(APIView):
             return Response(reply,HTTP_200_OK)
         except:
             reply = get_reply(94,'not found')
+            return Response(reply,HTTP_404_NOT_FOUND)
+
+class AdminConfirmInfo(APIView):
+    """
+    查看管理员是否已经确认
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pay_id):
+        user = request.user
+        try:
+            pay = PayItem.objects.get(id=pay_id,user=user)
+            confirm = pay.confirm
+            reply = {
+                "pay_id":pay_id,
+                "confirm":confirm
+            }
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(95, 'not found')
+            return Response(reply, HTTP_404_NOT_FOUND)
+class ConfirmIt(APIView):
+    """
+    管理员确认信息接口
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pay_id):
+        try:
+            pay = PayItem.objects.get(id=pay_id)
+            pay.confirm = True
+            pay.save()
+            reply = get_reply(0,'success')
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(96,'not found')
             return Response(reply,HTTP_404_NOT_FOUND)
 
 
