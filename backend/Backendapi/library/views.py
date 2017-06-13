@@ -1,5 +1,8 @@
 # coding:utf-8
 import sys
+
+from django.http import HttpResponse
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 import time
@@ -33,7 +36,7 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from .utils import create_qrcode,create_qrcode_two
 from permissions import have_phone_register
-
+from bookdata.models import Holding
 
 class BorrowItemView(APIView):
     """
@@ -51,12 +54,21 @@ class BorrowItemView(APIView):
         isbn13 = serializer.validated_data['isbn13']
         borrow_time = serializer.validated_data['borrow_time']
         return_time = serializer.validated_data['return_time']
-        library_name = serializer.validated_data['library_name']
-        location = serializer.validated_data['location']
-        borrow_find_id = serializer.validated_data['borrow_find_id']
+        book_id = serializer.validated_data['book_id']
+        try:
+            holding = Holding.objects.get(id=book_id)
+            location = holding.location
+            l_loaction = ['总馆', '信息馆', '工学馆', '医学馆']
+            guide = ['东', '西', '南', '北']
+            location_list = location.split("->")
+            location = l_loaction[int(location_list[0])] + "借阅区" + str(location_list[1]) + \
+                            "楼" + guide[int(location_list[2])]
+            find_id = holding.find_id
+        except:
+            location = find_id = ''
         user = request.user
         try:
-            if BorrowItem.objects.get(user=user,borrow_find_id=borrow_find_id,in_return_bar=False,
+            if BorrowItem.objects.get(user=user,book_id=book_id,in_return_bar=False,
                                       finish_return=False):
                 reply = get_reply(10,'item existed')
                 return Response(reply,HTTP_200_OK)
@@ -73,9 +85,9 @@ class BorrowItemView(APIView):
                                                 isbn13=isbn13,
                                                 borrow_time=borrow_time,
                                                 return_time=return_time,
-                                                borrow_find_id=borrow_find_id,
-                                                library_name=str(library_name),
-                                                location=str(location))
+                                                find_id =find_id,
+                                                book_id= book_id,
+                                                location=location)
         borrow_item.save()
         response = Response(serializer.data,HTTP_201_CREATED)
         return response
@@ -178,6 +190,8 @@ class ManyBorrowQrCodeView(APIView):
         id_list = serializer.validated_data['id_list']
         ctime = time.time()
         qrtype = 'borrow'
+        # 在这里创建一个pay
+
         url = create_qrcode(id_list,ctime,qrtype)
         reply = dict()
         reply['url'] = url
@@ -583,5 +597,21 @@ class CurlListView(APIView):
         reply['id1'] = serializer.data['id_list'][0]
         reply['id2'] = serializer.data['id_list'][1]
         return Response(reply,HTTP_200_OK)
+
+def qrcode_info(request):
+    """
+    二维码验证,验证时间和管理员
+    :param request:
+    :return:
+    """
+    user = request.user
+    if user  and  user.has_perm('library.is_a_admin'):
+        ctime = request.GET.get("ctime")
+        id = request.GET.get("id")
+        qrtype = request.GET.get('qrtype')
+        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype
+        return HttpResponse(reply)
+    else:
+        return HttpResponse("您不是SkyRead的管理员,无权操作")
 
 

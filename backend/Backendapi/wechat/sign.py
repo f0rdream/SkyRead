@@ -57,6 +57,7 @@ class Sign:
     def sign(self):
         string = '&'.join(['%s=%s' % (key.lower(), self.ret[key]) for key in sorted(self.ret)])
         self.ret['signature'] = hashlib.sha1(string).hexdigest()
+        self.ret['appid'] = 'wx06e40e988b339f37'
         return self.ret
 
 

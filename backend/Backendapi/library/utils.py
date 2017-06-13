@@ -20,7 +20,7 @@ def create_qrcode(id_list,ctime,qrtype):
     id = ''
     for i in id_list:
         id += 'b'+ str(i)  # 参数最后的样子:id = b1b2b3b56
-    url = "http://baidu.com/?ctime="+str(ctime)+"&id="+str(id)+"&qrtype="+qrtype
+    url = "http://115.159.185.170/library/qrcode_info/?ctime="+str(ctime)+"&id="+str(id)+"&qrtype="+qrtype
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image()

@@ -15,7 +15,8 @@ from .views import (BorrowItemView,
                     SuccessOrderDetailView,
                     OrderWaitView,
                     WaitOrderDetailView,
-                    CurlListView)
+                    CurlListView,
+                    qrcode_info)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$',BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -34,4 +35,6 @@ urlpatterns = [
     url(r'^order/wait/$',OrderWaitView.as_view(),name='order_wait'),
     url(r'^order/wait/(?P<pk>\d+)$',WaitOrderDetailView.as_view(),name='wait_de'),
     url(r'^curl/$',CurlListView.as_view()),
+    # qrcode_info
+    url(r'^qrcode_info/$',qrcode_info,name='get_qrcode_info')
 ]

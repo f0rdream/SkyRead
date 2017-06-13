@@ -13,7 +13,7 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book,Refer
+from .models import Book,Refer,Holding
 class BookInfoSerializer(ModelSerializer):
     """
     基本信息序列化器
@@ -212,3 +212,36 @@ class ShortInto(ModelSerializer):
 class SearchSerializer(Serializer):
     key = CharField()
 
+
+class HoldingSerializer(ModelSerializer):
+    """
+    馆藏信息序列化器
+    """
+    state = SerializerMethodField()
+    location = SerializerMethodField()
+    class Meta:
+        model = Holding
+        fields = [
+            'id',
+            'isbn13',
+            'state',
+            'back_time',
+            'location',
+            'find_id',
+            'order_number',
+        ]
+    def get_state(self,obj):
+        state = obj.state
+        if state == 1:
+            real_state = '在架上'
+        else:
+            real_state = '已经借出'
+        return real_state
+    def get_location(self,obj):
+        location = obj.location
+        l_loaction = ['总馆', '信息馆', '工学馆', '医学馆']
+        guide = ['东', '西', '南', '北']
+        location_list = location.split("->")
+        real_location = l_loaction[int(location_list[0])]+"借阅区"+str(location_list[1])+\
+                        "楼"+guide[int(location_list[2])]
+        return real_location

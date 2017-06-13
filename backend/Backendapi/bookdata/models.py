@@ -44,3 +44,5 @@ class Holding(models.Model):
     location = models.CharField(max_length=300)
     find_id = models.CharField(max_length=300)
     order_number = models.IntegerField(default=0)
+    def __unicode__(self):
+        return self.book.title

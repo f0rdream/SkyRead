@@ -28,30 +28,22 @@ class BorrowItemCreateSerializer(ModelSerializer):
             'isbn13',
             'borrow_time',
             'return_time',
-            'borrow_find_id',
-            'library_name',
-            'location',
+            'book_id',
         ]
 
     def validate(self, data):
         isbn13 = data.get('isbn13')
         borrow_time = data.get('borrow_time')
         return_time = data.get('return_time')
-        library_name = data.get('library_name')
-        location = data.get('location')
-        find_id = data.get('borrow_find_id')
+        book_id = data.get('book_id')
         if not isbn13:
             raise ValidationError('lack isbn13')
         if not borrow_time:
             raise ValidationError('lack borrow_time')
         if not return_time:
             raise ValidationError('lack return_time')
-        if not library_name:
-            raise ValidationError('lack library_name')
-        if not location:
-            raise ValidationError('lack location')
-        if not find_id:
-            raise ValidationError('lack find_id')
+        if not book_id:
+            raise ValidationError('book_id')
         return data
 
 class BorrowItemDetailSerializer(ModelSerializer):
@@ -69,8 +61,8 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'user',
             'borrow_time',
             'return_time',
-            'borrow_find_id',
-            'library_name',
+            'book_id',
+            'find_id',
             'location',
             'nickname',
             'title',
@@ -176,8 +168,8 @@ class ReturnBookInfoToAdmin(ModelSerializer):
             'price',
             'borrow_time',
             'return_time',
-            'borrow_find_id',
-            'library_name',
+            'book_id',
+            'find_id',
             'location',
         ]
 
