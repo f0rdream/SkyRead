@@ -1,7 +1,6 @@
 
 from django.conf.urls import include, url
-from views import SearchView,BorrowHistory
+from views import SearchView
 urlpatterns = [
-    url(r'^search/$',SearchView.as_view(),name='search'),
-    url(r'^borrow/$',BorrowHistory.as_view(),name='borrow'),
+    url(r'^search/$',SearchView.as_view(),name='search')
 ]

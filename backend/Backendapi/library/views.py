@@ -74,7 +74,7 @@ class BorrowItemView(APIView):
                 return Response(reply,HTTP_200_OK)
         except:
             pass
-        # 判断借书栏中是否超过2本书籍
+        # 判断购物车中是否超过2本书籍
         borrow_item_list = BorrowItem.objects.filter(user=user,in_return_bar=False,
                                                      finish_return=False)
         if len(borrow_item_list) >= 2:
@@ -250,7 +250,7 @@ class VarifyAddToReturnBarView(APIView):
 
 class AddToReturnBarView(APIView):
     """
-    管理员核对无误后把书籍加入还书栏
+    管理员核对无误后把书籍加入还书栏,馆藏信息改变
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdListSerializer
@@ -266,6 +266,13 @@ class AddToReturnBarView(APIView):
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
                     borrow_item1.in_return_bar = True
+                    # 获取book_id
+                    book_id = borrow_item1.book_id
+                    # 修改馆藏信息
+                    holding = Holding.objects.get(id=book_id)
+                    holding.state = False
+                    holding.back_time = borrow_item1.return_time
+                    holding.save()
                     borrow_item1.save()
                 except:
                     pass
@@ -413,7 +420,7 @@ class VarifyReturnBookBarView(APIView):
 
 class FinishReturnView(APIView):
     """
-    管理员核对无误后完成还书
+    管理员核对无误后完成还书,更改馆藏信息
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdListSerializer
@@ -430,6 +437,13 @@ class FinishReturnView(APIView):
                     borrow_item1.finish_return = True
                     # 更改还书时间
                     borrow_item1.return_time = str(time.strftime('%Y-%m-%d',time.localtime(time.time())))
+                    # 获取book_id
+                    book_id = borrow_item1.book_id
+                    # 修改馆藏信息
+                    holding = Holding.objects.get(id=book_id)
+                    holding.state = True
+                    holding.back_time = "--"
+                    holding.save()
                     borrow_item1.save()
                 except:
                     pass
@@ -715,7 +729,6 @@ class ConfirmIt(APIView):
         except:
             reply = get_reply(96,'not found')
             return Response(reply,HTTP_404_NOT_FOUND)
-
 
 
 class MyReadedBook(APIView):

@@ -14,17 +14,3 @@ class SearchHistory(models.Model):
 
     def __unicode__(self):
         return str(self.user.username)+str(self.key)
-
-
-class OrderHistory(models.Model):
-    """
-    订阅历史
-    """
-    user = models.OneToOneField(User)
-    isbn13 = models.CharField(max_length=200, default=None)
-    title = models.TextField()
-    time = models.DateTimeField(auto_now_add=True)
-    status = models.TextField()
-
-    def __unicode__(self):
-        return str(self.title)
