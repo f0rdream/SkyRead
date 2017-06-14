@@ -245,3 +245,10 @@ class HoldingSerializer(ModelSerializer):
         real_location = l_loaction[int(location_list[0])]+"借阅区"+str(location_list[1])+\
                         "楼"+guide[int(location_list[2])]
         return real_location
+
+
+class StarBookSerializer(Serializer):
+    """
+    我的收藏
+    """
+    isbn13 = CharField()

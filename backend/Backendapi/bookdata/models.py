@@ -46,3 +46,11 @@ class Holding(models.Model):
     order_number = models.IntegerField(default=0)
     def __unicode__(self):
         return self.book.title
+
+
+class StarBook(models.Model):
+    """
+    我的收藏
+    """
+    user = models.ForeignKey(User)
+    book = models.ForeignKey(Book)

@@ -428,6 +428,8 @@ class FinishReturnView(APIView):
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
                     borrow_item1.finish_return = True
+                    # 更改还书时间
+                    borrow_item1.return_time = str(time.strftime('%Y-%m-%d',time.localtime(time.time())))
                     borrow_item1.save()
                 except:
                     pass
@@ -677,6 +679,7 @@ class PayItView(APIView):
             reply = get_reply(94,'not found')
             return Response(reply,HTTP_404_NOT_FOUND)
 
+
 class AdminConfirmInfo(APIView):
     """
     查看管理员是否已经确认
@@ -695,6 +698,8 @@ class AdminConfirmInfo(APIView):
         except:
             reply = get_reply(95, 'not found')
             return Response(reply, HTTP_404_NOT_FOUND)
+
+
 class ConfirmIt(APIView):
     """
     管理员确认信息接口
@@ -709,6 +714,25 @@ class ConfirmIt(APIView):
             return Response(reply,HTTP_200_OK)
         except:
             reply = get_reply(96,'not found')
+            return Response(reply,HTTP_404_NOT_FOUND)
+
+
+
+class MyReadedBook(APIView):
+    """
+    借阅历史
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        user = request.user
+        try:
+            queryset = BorrowItem.objects.filter(finish_return=True)
+            serializer = BorrowItemDetailSerializer(queryset,data=request.data,many=True)
+            serializer.is_valid(raise_exception=True)
+            reply = serializer.data
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(97,'not found')
             return Response(reply,HTTP_404_NOT_FOUND)
 
 

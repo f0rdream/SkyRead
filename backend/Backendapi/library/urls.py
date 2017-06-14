@@ -20,7 +20,8 @@ from .views import (BorrowItemView,
                     PayView,
                     PayItView,
                     ConfirmIt,
-                    AdminConfirmInfo)
+                    AdminConfirmInfo,
+                    MyReadedBook)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$',BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -45,5 +46,7 @@ urlpatterns = [
     url(r'^pay_info/(?P<pay_id>\d+)$', PayView.as_view(), name='get_pay_info'),
     url(r'^pay/(?P<pay_id>\d+)$',PayItView.as_view(),name='pay_it'),
     url(r'^confirm_info/(?P<pay_id>\d+)$',AdminConfirmInfo.as_view(),name='confirm info'),
-    url(r'^confirm/(?P<pay_id>\d+)$',ConfirmIt.as_view(),name='confirm_it')
+    url(r'^confirm/(?P<pay_id>\d+)$',ConfirmIt.as_view(),name='confirm_it'),
+    # history's urls
+    url(r'^readed/$',MyReadedBook.as_view(),name='read history')
 ]
