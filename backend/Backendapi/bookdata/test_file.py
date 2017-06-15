@@ -9,3 +9,8 @@ import  time
 # print str(time.strftime('%Y-%m-%d',time.localtime(time.time())))
 # print str(time.strftime('%Y-%m-%d',time.localtime(time.time()+2419200)))
 # print time.time()
+a =None
+if not a:
+    print "----"
+else:
+    print "～～～～"

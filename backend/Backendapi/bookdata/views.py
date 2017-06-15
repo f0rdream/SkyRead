@@ -123,7 +123,13 @@ class StarBookView(APIView):
         isbn13 = serializer.validated_data['isbn13']
         try:
             book = Book.objects.get(isbn13=isbn13)
-            user= request.user
+            user = request.user
+            # 判断这本书是否已经存在
+            try:
+                before_book = StarBook.objects.get(user=user,book=book)
+                return Response(get_reply(98, 'fail'))
+            except:
+                pass
             starbook = StarBook.objects.create(user=user,book=book)
             starbook.save()
             return Response(get_reply(0,'success'))

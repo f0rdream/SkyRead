@@ -24,6 +24,7 @@ class SearchHistorySerializer(ModelSerializer):
     """
     user = SerializerMethodField()
     class Meta:
+        model = SearchHistory
         fields = [
             'user',
             'key',
