@@ -146,3 +146,22 @@ class StarBookView(APIView):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data,HTTP_200_OK)
 
+
+class GuideBookView(APIView):
+    """
+    书籍导航
+    """
+    permission_classes =  [IsAuthenticated]
+
+    def get(self,request,guide_id,page):
+        if page < 1:
+            return Response(get_reply(81,'error page'),HTTP_404_NOT_FOUND)
+        begin_page = (int(page)-1)*20
+        end_page = begin_page+20
+        try:
+            queryset = Book.guide_objects.get_guide_book(int(guide_id))[begin_page:end_page]
+            serializer = ShortInto(queryset,many=True,data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except Exception as e:
+            return Response(get_reply(0,e),HTTP_404_NOT_FOUND)
