@@ -49,4 +49,3 @@ def verify(phone_number,code):
     else:
         return False
 
-print send_message("15071499956")
