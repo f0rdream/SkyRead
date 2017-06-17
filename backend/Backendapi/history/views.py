@@ -15,8 +15,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from serializers import (SearchHistorySerializer,
-                         BorrowHistorySerializer)
+from serializers import (SearchHistorySerializer)
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -44,16 +43,3 @@ class SearchView(APIView):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data,HTTP_200_OK)
 
-
-class BorrowHistory(APIView):
-    """
-    借阅历史
-    """
-    permission_classes = [IsAuthenticated]
-
-    def get(self,request):
-        user = request.user
-        queryset = BorrowItem.objects.filter(user=user,finish_return=True)
-        serializer = BorrowHistorySerializer(queryset,data=request.data,many=True)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data,HTTP_200_OK)

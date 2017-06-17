@@ -26,32 +26,16 @@ class BorrowItemCreateSerializer(ModelSerializer):
         model=BorrowItem
         fields =[
             'isbn13',
-            'borrow_time',
-            'return_time',
-            'borrow_find_id',
-            'library_name',
-            'location',
+            'book_id',
         ]
 
     def validate(self, data):
         isbn13 = data.get('isbn13')
-        borrow_time = data.get('borrow_time')
-        return_time = data.get('return_time')
-        library_name = data.get('library_name')
-        location = data.get('location')
-        find_id = data.get('borrow_find_id')
+        book_id = data.get('book_id')
         if not isbn13:
             raise ValidationError('lack isbn13')
-        if not borrow_time:
-            raise ValidationError('lack borrow_time')
-        if not return_time:
-            raise ValidationError('lack return_time')
-        if not library_name:
-            raise ValidationError('lack library_name')
-        if not location:
-            raise ValidationError('lack location')
-        if not find_id:
-            raise ValidationError('lack find_id')
+        if not book_id:
+            raise ValidationError('lack book_id')
         return data
 
 class BorrowItemDetailSerializer(ModelSerializer):
@@ -69,8 +53,8 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'user',
             'borrow_time',
             'return_time',
-            'borrow_find_id',
-            'library_name',
+            'book_id',
+            'find_id',
             'location',
             'nickname',
             'title',
@@ -176,8 +160,8 @@ class ReturnBookInfoToAdmin(ModelSerializer):
             'price',
             'borrow_time',
             'return_time',
-            'borrow_find_id',
-            'library_name',
+            'book_id',
+            'find_id',
             'location',
         ]
 
@@ -219,28 +203,20 @@ class SuccessOrderItemCreateSerializer(ModelSerializer):
         fields = [
             'isbn13',
             'order_time',
-            'location',
-            'find_id',
-            'if_phone',
+            'book_id'
         ]
 
     def validate(self, data):
         isbn13 = data.get('isbn13')
         order_time = data.get('order_time')
-        location = data.get('location')
-        find_id = data.get('find_id')
-        if_phone = data.get('if_phone')
+        book_id = data.get('book_id')
 
         if not isbn13:
             raise ValidationError('lack isbn13')
         if not order_time:
             raise ValidationError('lack order_time')
-        if not location:
-            raise ValidationError('lack location')
-        if not find_id:
-            raise ValidationError('lack find_id')
-        if not if_phone:
-            raise ValidationError('lack if_phone')
+        if not book_id:
+            raise ValidationError('lack book_id')
         return data
 
 
@@ -252,24 +228,16 @@ class WaitOrderItemCreateSerializer(ModelSerializer):
         model = WaitOrderItem
         fields = [
             'isbn13',
-            'location',
-            'find_id',
-            'if_phone',
+            'book_id'
         ]
     def validate(self, data):
         isbn13 = data.get('isbn13')
-        location = data.get('location')
-        find_id = data.get('find_id')
-        if_phone = data.get('if_phone')
-
+        book_id = data.get('book_id')
         if not isbn13:
             raise ValidationError('lack isbn13')
-        if not location:
-            raise ValidationError('lack location')
-        if not find_id:
-            raise ValidationError('lack find_id')
-        if not if_phone:
-            raise ValidationError('lack if_phone')
+        if not book_id:
+            raise ValidationError('lack book_id')
+
         return data
 
 
@@ -278,19 +246,20 @@ class SuccessOrderItemDetailSerializer(ModelSerializer):
     订阅栏中成功状态的详情的序列化器
     """
     id = SerializerMethodField()
-
+    order_time = SerializerMethodField()
     class Meta:
         model = SuccessOrderItem
         fields= [
             'id',
             'isbn13',
-            'location',
-            'find_id',
-            'if_phone',
-            'status',
+            'book_id',
+            'title',
             'order_time',
+            'qrcode',
         ]
 
+    def get_order_time(self,obj):
+        return obj.order_time
     def get_id(self,obj):
         return obj.pk
 
@@ -305,10 +274,9 @@ class WaitOrderItemDetailSerializer(ModelSerializer):
         fields= [
             'id',
             'isbn13',
-            'location',
-            'find_id',
-            'if_phone',
-            'status',
+            'title',
+            'book_id',
+            'may_return_time',
         ]
 
     def get_id(self,obj):

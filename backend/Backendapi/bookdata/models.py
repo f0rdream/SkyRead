@@ -1,7 +1,17 @@
 # coding:utf-8
 from django.db import models
 from django.contrib.auth.models import User
+
+
+class GuideBookManager(models.Manager):
+    def get_guide_book(self,id):
+        return super(GuideBookManager,
+                     self).get_queryset().filter(book_guide=id).order_by('-average')
+
+
 class Book(models.Model):
+    objects = models.Manager()  # 默认的管理器
+    guide_objects = GuideBookManager() # 用于图书导航的管理器
     isbn13 = models.CharField(max_length=100,primary_key=True)
     numraters = models.CharField(max_length=100,default='')
     average = models.CharField(max_length=100,default='')
@@ -20,8 +30,13 @@ class Book(models.Model):
     summary = models.TextField(default='')
     author_intro = models.TextField(default='')
     price = models.CharField(max_length=100,default='')
+    book_guide = models.IntegerField(default=0)
+
     def __unicode__(self):
         return self.title
+
+
+
 
 class Refer(models.Model):
     """
@@ -44,3 +59,13 @@ class Holding(models.Model):
     location = models.CharField(max_length=300)
     find_id = models.CharField(max_length=300)
     order_number = models.IntegerField(default=0)
+    def __unicode__(self):
+        return self.book.title
+
+
+class StarBook(models.Model):
+    """
+    我的收藏
+    """
+    user = models.ForeignKey(User)
+    book = models.ForeignKey(Book)

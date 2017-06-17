@@ -1,5 +1,8 @@
 # coding:utf-8
 import sys
+from django.http import HttpResponse
+from rest_framework.decorators import api_view
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 import time
@@ -10,7 +13,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from .models import BorrowItem,SuccessOrderItem,WaitOrderItem
+from .models import BorrowItem,SuccessOrderItem,WaitOrderItem,PayItem
 from .serializers import (
     BorrowItemCreateSerializer,
     BorrowItemDetailSerializer,
@@ -31,9 +34,9 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .utils import create_qrcode,create_qrcode_two
+from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode
 from permissions import have_phone_register
-
+from bookdata.models import Holding
 
 class BorrowItemView(APIView):
     """
@@ -49,20 +52,29 @@ class BorrowItemView(APIView):
         serializer = BorrowItemCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         isbn13 = serializer.validated_data['isbn13']
-        borrow_time = serializer.validated_data['borrow_time']
-        return_time = serializer.validated_data['return_time']
-        library_name = serializer.validated_data['library_name']
-        location = serializer.validated_data['location']
-        borrow_find_id = serializer.validated_data['borrow_find_id']
+        borrow_time = str(time.strftime('%Y-%m-%d',time.localtime(time.time())))
+        return_time = str(time.strftime('%Y-%m-%d',time.localtime(time.time()+2419200)))
+        book_id = serializer.validated_data['book_id']
+        try:
+            holding = Holding.objects.get(id=book_id)
+            location = holding.location
+            l_loaction = ['总馆', '信息馆', '工学馆', '医学馆']
+            guide = ['东', '西', '南', '北']
+            location_list = location.split("->")
+            location = l_loaction[int(location_list[0])] + "借阅区" + str(location_list[1]) + \
+                            "楼" + guide[int(location_list[2])]
+            find_id = holding.find_id
+        except:
+            location = find_id = ''
         user = request.user
         try:
-            if BorrowItem.objects.get(user=user,borrow_find_id=borrow_find_id,in_return_bar=False,
+            if BorrowItem.objects.get(user=user,book_id=book_id,in_return_bar=False,
                                       finish_return=False):
                 reply = get_reply(10,'item existed')
                 return Response(reply,HTTP_200_OK)
         except:
             pass
-        # 判断借书栏中是否超过2本书籍
+        # 判断购物车中是否超过2本书籍
         borrow_item_list = BorrowItem.objects.filter(user=user,in_return_bar=False,
                                                      finish_return=False)
         if len(borrow_item_list) >= 2:
@@ -73,9 +85,9 @@ class BorrowItemView(APIView):
                                                 isbn13=isbn13,
                                                 borrow_time=borrow_time,
                                                 return_time=return_time,
-                                                borrow_find_id=borrow_find_id,
-                                                library_name=str(library_name),
-                                                location=str(location))
+                                                find_id =find_id,
+                                                book_id= book_id,
+                                                location=location)
         borrow_item.save()
         response = Response(serializer.data,HTTP_201_CREATED)
         return response
@@ -154,7 +166,7 @@ class BorrowQrCodeView(APIView):
         borrow_item = BorrowItem.objects.get(pk=pk)
         ctime = time.time()
         qrtype = "borrow"
-        create_qrcode(pk,ctime,qrtype)
+        create_qrcode(pk,ctime,qrtype,None)
         url = '/media/borrow_qrcode/'+str(pk)+".png"
         borrow_item.qrcode = url
         borrow_item.save()
@@ -176,11 +188,22 @@ class ManyBorrowQrCodeView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         id_list = serializer.validated_data['id_list']
+        price = get_price(id_list)
         ctime = time.time()
         qrtype = 'borrow'
-        url = create_qrcode(id_list,ctime,qrtype)
+        # 在这里创建一个pay,得到唯一的pay_id
+        pay = PayItem.objects.create(user=request.user,
+                                     state=False,
+                                     confirm=False,
+                                     price = price
+                                     )
+        pay.save()
+        pay_id = pay.id
+        url = create_qrcode(id_list,ctime,qrtype,pay_id)
         reply = dict()
         reply['url'] = url
+        reply['pay_id'] = pay_id
+        reply['price'] = pay.price
         return Response(reply,HTTP_200_OK)
 
 
@@ -227,7 +250,7 @@ class VarifyAddToReturnBarView(APIView):
 
 class AddToReturnBarView(APIView):
     """
-    管理员核对无误后把书籍加入还书栏
+    管理员核对无误后把书籍加入还书栏,馆藏信息改变
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdListSerializer
@@ -243,6 +266,13 @@ class AddToReturnBarView(APIView):
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
                     borrow_item1.in_return_bar = True
+                    # 获取book_id
+                    book_id = borrow_item1.book_id
+                    # 修改馆藏信息
+                    holding = Holding.objects.get(id=book_id)
+                    holding.state = False
+                    holding.back_time = borrow_item1.return_time
+                    holding.save()
                     borrow_item1.save()
                 except:
                     pass
@@ -308,7 +338,7 @@ class ReturnQrCodeView(APIView):
         borrow_item = BorrowItem.objects.get(pk=pk)
         ctime = time.time()
         qrcode = "return"
-        create_qrcode(pk,ctime,qrcode)
+        create_qrcode(pk,ctime,qrcode,None)
         url = '/media/return_qrcode/'+str(pk)+".png"
         borrow_item.qrcode = url
         borrow_item.save()
@@ -332,7 +362,7 @@ class ManyReturnQrCodeView(APIView):
         id_list = serializer.validated_data['id_list']
         ctime = time.time()
         qrtype = 'return'
-        url = create_qrcode(id_list,ctime,qrtype)
+        url = create_qrcode(id_list,ctime,qrtype,None)
         reply = dict()
         reply['url'] = url
         return Response(reply,HTTP_200_OK)
@@ -390,7 +420,7 @@ class VarifyReturnBookBarView(APIView):
 
 class FinishReturnView(APIView):
     """
-    管理员核对无误后完成还书
+    管理员核对无误后完成还书,更改馆藏信息
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdListSerializer
@@ -405,6 +435,15 @@ class FinishReturnView(APIView):
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
                     borrow_item1.finish_return = True
+                    # 更改还书时间
+                    borrow_item1.return_time = str(time.strftime('%Y-%m-%d',time.localtime(time.time())))
+                    # 获取book_id
+                    book_id = borrow_item1.book_id
+                    # 修改馆藏信息
+                    holding = Holding.objects.get(id=book_id)
+                    holding.state = True
+                    holding.back_time = "--"
+                    holding.save()
                     borrow_item1.save()
                 except:
                     pass
@@ -440,12 +479,20 @@ class OrderSuccessView(APIView):
         serializer.is_valid(raise_exception=True)
         isbn13 = serializer.validated_data['isbn13']
         order_time = serializer.validated_data['order_time']
-        location = serializer.validated_data['location']
-        find_id  = serializer.validated_data['find_id']
-        if_phone = serializer.validated_data['if_phone']
+        book_id = serializer.validated_data['book_id']
+        try:
+            holding=Holding.objects.get(id=book_id)
+            title = holding.book.title
+        except:
+            title = ''
         # try:
-        s = SuccessOrderItem.objects.create(user=user,isbn13=isbn13,order_time=order_time,
-                                            location=location,find_id=find_id,if_phone=if_phone)
+        s = SuccessOrderItem.objects.create(user=user,
+                                            isbn13=isbn13,
+                                            order_time=order_time,
+                                            book_id=book_id,
+                                            title=title)
+        qrcode = create_order_qrcode(book_id,user.id,title,s.id)
+        s.qrcode= qrcode
         s.save()
         return Response(serializer.data,HTTP_201_CREATED)
         # except Exception as e:
@@ -510,15 +557,20 @@ class OrderWaitView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         isbn13 = serializer.validated_data['isbn13']
-        location = serializer.validated_data['location']
-        find_id = serializer.validated_data['find_id']
-        if_phone = serializer.validated_data['if_phone']
+        book_id = serializer.validated_data['book_id']
+        try:
+            holding = Holding.objects.get(id=book_id)
+            title = holding.book.title
+            may_return_time = holding.back_time
+        except:
+            title = ''
+            may_return_time = ''
         try:
             s = WaitOrderItem.objects.create(user=user,
-                                             isbn13=isbn13,
-                                            location=location,
-                                            find_id=find_id,
-                                            if_phone=if_phone)
+                                            isbn13=isbn13,
+                                            book_id=book_id,
+                                            title=title,
+                                            may_return_time=may_return_time)
             s.save()
             return Response(serializer.data, HTTP_201_CREATED)
         except:
@@ -583,5 +635,117 @@ class CurlListView(APIView):
         reply['id1'] = serializer.data['id_list'][0]
         reply['id2'] = serializer.data['id_list'][1]
         return Response(reply,HTTP_200_OK)
+
+
+def qrcode_info(request):
+    """
+    二维码验证,验证时间和管理员
+    :param request:
+    :return:
+    """
+    user = request.user
+    if user  and  user.has_perm('library.is_a_admin'):
+        ctime = request.GET.get("ctime")
+        id = request.GET.get("id")
+        qrtype = request.GET.get('qrtype')
+        pay_id = request.GET.get('pay_id')
+        if not ctime:
+            ctime = ""
+        if not qrtype:
+            qrtype = ""
+        if not pay_id:
+            pay_id = ''
+        if not id:
+            id = ""
+        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+"&pay_id="+pay_id
+        return HttpResponse(reply)
+    else:
+        return HttpResponse("您不是SkyRead的管理员,无权操作")
+
+
+class PayView(APIView):
+    permission_classes =  [IsAuthenticated]
+    def get(self,request,pay_id):
+        try:
+            pay = PayItem.objects.get(id=pay_id)
+            state = pay.state
+            reply = {
+                'pay_id':pay_id,
+                'state':state
+            }
+            return Response(reply)
+        except:
+            reply = get_reply(93,'not found')
+            return Response(reply)
+
+
+class PayItView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pay_id):
+        user = request.user
+        try:
+            pay = PayItem.objects.get(id=pay_id,user=user)
+            pay.state = True
+            pay.save()
+            reply = get_reply(0,'success')
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(94,'not found')
+            return Response(reply,HTTP_404_NOT_FOUND)
+
+
+class AdminConfirmInfo(APIView):
+    """
+    查看管理员是否已经确认
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pay_id):
+        user = request.user
+        try:
+            pay = PayItem.objects.get(id=pay_id,user=user)
+            confirm = pay.confirm
+            reply = {
+                "pay_id":pay_id,
+                "confirm":confirm
+            }
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(95, 'not found')
+            return Response(reply, HTTP_404_NOT_FOUND)
+
+
+class ConfirmIt(APIView):
+    """
+    管理员确认信息接口
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pay_id):
+        try:
+            pay = PayItem.objects.get(id=pay_id)
+            pay.confirm = True
+            pay.save()
+            reply = get_reply(0,'success')
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(96,'not found')
+            return Response(reply,HTTP_404_NOT_FOUND)
+
+
+class MyReadedBook(APIView):
+    """
+    借阅历史
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        user = request.user
+        try:
+            queryset = BorrowItem.objects.filter(finish_return=True)
+            serializer = BorrowItemDetailSerializer(queryset,data=request.data,many=True)
+            serializer.is_valid(raise_exception=True)
+            reply = serializer.data
+            return Response(reply,HTTP_200_OK)
+        except:
+            reply = get_reply(97,'not found')
+            return Response(reply,HTTP_404_NOT_FOUND)
 
 

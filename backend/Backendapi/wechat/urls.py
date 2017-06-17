@@ -3,9 +3,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 from . import views
 urlpatterns = [
-    url(r'^$',views.wexin,name='wexin'),
+    url(r'^wexin$',views.wexin,name='wexin'),
     url(r'^connect/oauth2/authorize$',views.redict,name='auth'),
-    url(r'^redict/$',views.redict,name="redict"),
+    url(r'^$',views.redict,name="redict"),
     url(r'^test_page/$',views.test_page,name="test"),
     url(r'^signature/$',views.Sign.as_view())
 ]

@@ -3,8 +3,11 @@
 import qrcode
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
+
+from bookdata.models import Book
+from models import BorrowItem
 import time
-def create_qrcode(id_list,ctime,qrtype):
+def create_qrcode(id_list,ctime,qrtype,pay_id):
     """
     :param bid:表示书籍的唯一id,用isbn号码
     :param ctime: 创建时间,一分钟后过期
@@ -18,9 +21,12 @@ def create_qrcode(id_list,ctime,qrtype):
         border=4,
     )
     id = ''
+    if not pay_id:
+        pay_id = ''
     for i in id_list:
         id += 'b'+ str(i)  # 参数最后的样子:id = b1b2b3b56
-    url = "http://baidu.com/?ctime="+str(ctime)+"&id="+str(id)+"&qrtype="+qrtype
+    url = "http://115.159.185.170/library/qrcode_info/?ctime="+str(ctime)+\
+          "&id="+str(id)+"&qrtype="+qrtype+"&pay_id="+str(pay_id)
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image()
@@ -34,6 +40,42 @@ def create_qrcode(id_list,ctime,qrtype):
         url = '/media/return_qrcode/' + str(id) + ".png"
         img.save(filename)
         return url
+
+def get_price(id_list):
+    sum_price = 0.0
+    for id in id_list:
+        try:
+            borrow_item = BorrowItem.objects.get(id=id)
+            isbn13 = borrow_item.isbn13
+            try:
+                book = Book.objects.get(isbn13=isbn13)
+                book_price = float(book.price.split('元')[0])
+                sum_price += book_price
+            # 这里通过BookModel 拿到价格
+            except:
+                pass
+        except:
+            pass
+    return sum_price
+
+
+def create_order_qrcode(book_id,user_id,title,order_id):
+    qr = qrcode.QRCode(
+        version =1,
+        error_correction = qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    data ="http://115.159.185.170/library/order_info/?" \
+          "book_id=%s&id=%s&title=%s" % (book_id,user_id,title)
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image()
+    filename = 'media_root/order_qrcode/' + str(order_id)+ ".png"
+    url = '/media/order_qrcode/' + str(order_id) + ".png"
+    img.save(filename)
+    return url
+
 
 def create_qrcode_two(id1,id2,ctime,qrtype):
     pass
