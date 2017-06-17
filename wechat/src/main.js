@@ -7,10 +7,11 @@ import App from './App'
 import router from './router'
 import store from './store/index'
 import './config/ajax'
-import { WechatPlugin } from 'vux'
+import { WechatPlugin, AlertPlugin } from 'vux'
 
 Vue.use(VueRouter)
 Vue.use(WechatPlugin)
+Vue.use(AlertPlugin)
 
 FastClick.attach(document.body)
 
