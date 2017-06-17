@@ -18,7 +18,7 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import WeChatUser,PhoneUser
-from a_lib.phone_verify import send_message,verify
+from accounts_lib.phone_verify import send_message,verify
 
 
 class UserProfileDetailAPIView(APIView):
@@ -86,32 +86,26 @@ class PhoneUserCreateAPIView(APIView):
     手机绑定
     """
     serializer_class = PhoneUserCreateSerializer
+
     def post(self,request):
         reply = {}
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         phone_number = serializer.validated_data['phone_number']
         captcha = serializer.validated_data['captcha']
-        email = serializer.validated_data.get('email')
-        real_name = serializer.validated_data.get('real_name')
         # 先检验验证码
         if not verify(phone_number,captcha):
             reply['error_code'] = 1
             reply['data'] = {
                 "phone_number":phone_number,
-                "email":email,
-                "real_name":real_name
             }
             return Response(reply,HTTP_400_BAD_REQUEST)
         else:
             try:
-                p = PhoneUser.objects.create(user=request.user,phone_number=phone_number,
-                                         email=email,real_name=real_name)
+                p = PhoneUser.objects.create(user=request.user,phone_number=phone_number)
                 p.save()
                 reply['data'] = {
                     "phone_number": phone_number,
-                    "email": email,
-                    "real_name": real_name
                 }
                 return Response(reply,HTTP_201_CREATED)
             except:

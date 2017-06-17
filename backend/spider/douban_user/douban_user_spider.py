@@ -100,8 +100,7 @@ def get_user_href(book_id,begin,end):
 
 a = time.time()
 dict = [
-        "1002299","3813669","1775691",
-        "3369793","2143732","1064275","2340100","1082387","1040211"]
+        "1082387","1040211"]
 # fu er mo si tan an quan ji
 for i  in dict:
     get_user_href(i,0,15)  # 500-560页码

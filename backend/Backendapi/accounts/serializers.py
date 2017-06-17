@@ -11,7 +11,7 @@ from rest_framework.serializers import (
     IntegerField,
     )
 
-from .a_lib.vlidators import CheckString,PhoneValid
+from .accounts_lib.vlidators import CheckString,PhoneValid
 from rest_framework import serializers
 
 
@@ -84,8 +84,6 @@ class PhoneUserCreateSerializer(ModelSerializer):
         model = PhoneUser
         fields = [
             'phone_number',
-            'email',
-            'real_name',
             'captcha'
         ]
     def validate(self, data):
