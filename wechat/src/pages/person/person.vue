@@ -16,6 +16,9 @@
       <x-switch v-model="backRemind" title="还书提醒"></x-switch>
     </group>
     <group class="about-part">
+      <cell title="手机信息" :is-link="true" :link="'/person/phone'">
+        <span>13016464640</span>
+      </cell>
       <cell title="绑定信息"></cell>
       <cell title="提醒设置"></cell>
     </group>
@@ -23,7 +26,7 @@
       <cell title="关于我们"></cell>
       <cell title="意见反馈"></cell>
     </group>
-    <bottom-bar activeTab="我的"></bottom-bar>
+    <bottom-bar :activeTab="3"></bottom-bar>
   </view-box>
 </template>
 <script>
@@ -62,7 +65,7 @@ export default {
   },
   methods: {
     getAccount () {
-      this.$http.get('accounts').then((res) => {
+      this.$http.get('accounts/').then((res) => {
         this.userInfo = res.data
       })
     }

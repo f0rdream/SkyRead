@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import person from '../pages/person/person'
+import phonepage from '../pages/person/children/phone'
 import notfound from '../pages/404/404'
 
 import home from '../pages/home/home'
@@ -12,6 +13,7 @@ import category from '../pages/home/children/category'
 import bookshelf from '../pages/cart/bookshelf'
 import lending from '../pages/cart/children/lending'
 import scaned from '../pages/cart/children/scaned'
+import paying from '../pages/cart/children/paying'
 
 import SearchPart from '../components/SearchPart'
 
@@ -56,12 +58,20 @@ export default new Router({
         {
           path: 'lending',
           component: lending
+        },
+        {
+          path: 'paying',
+          component: paying
         }
       ]
     },
     {
       path: '/person',
       component: person
+    },
+    {
+      path: '/person/phone',
+      component: phonepage
     },
     {
       path: '/bookdetail',

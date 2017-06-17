@@ -138,6 +138,9 @@ export default {
     }
   },
   methods: {
+    getRecommend () {
+      // TODO get recommendBoks
+    },
     toggleMore () {
       this.isMore = !this.isMore
     }

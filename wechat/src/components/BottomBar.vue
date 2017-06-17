@@ -1,20 +1,24 @@
 <template>
   <div class="bar-wrapper vux-1px-t">
-    <div :class="activeTab === currentTabs[0] ? 'active' : ''" @click="$router.push(currentTabs[0].url)">{{currentTabs[0].name}}</div>
-    <div class="bar-left" :class="activeTab === currentTabs[1] ? 'active' : ''" @click="$router.push(currentTabs[1].url)">{{currentTabs[1].name}}</div>
-    <div class="bar-right" :class="activeTab === currentTabs[2] ? 'active' : ''" @click="$router.push(currentTabs[2].url)">{{currentTabs[2].name}}</div>
-    <div :class="activeTab === currentTabs[3] ? 'active' : ''" @click="$router.push(currentTabs[3].url)">{{currentTabs[3].name}}</div>
-    <div class="bar-center">扫码借书</div>
+    <div :class="getBarStyle(index)" @click="tabBarLink(index)" v-for="(item, index) in currentTabs">{{currentTabs[index].name}}</div>
+    <!-- <div :class="activeTab === currentTabs[0].name ? 'active' : ''" @click="$router.replace(currentTabs[0].url)">{{currentTabs[0].name}}</div>
+    <div class="bar-left" :class="activeTab === currentTabs[1].name ? 'active' : ''" @click="$router.replace(currentTabs[1].url)">{{currentTabs[1].name}}</div>
+    <div class="bar-right" :class="activeTab === currentTabs[2].name ? 'active' : ''" @click="$router.replace(currentTabs[2].url)">{{currentTabs[2].name}}</div>
+    <div :class="activeTab === currentTabs[3].name ? 'active' : ''" @click="$router.replace(currentTabs[3].url)">{{currentTabs[3].name}}</div> -->
+    <div class="bar-center" @click="scanQR">扫码借书</div>
   </div>
 </template>
 <script>
+import { querystring } from 'vux'
 export default {
   props: {
-    activeTab: String,
+    activeTab: Number,
     tabs: Array
   },
   data () {
-    return {}
+    return {
+      qrResult: {}
+    }
   },
   computed: {
     currentTabs () {
@@ -29,7 +33,7 @@ export default {
         },
         {
           name: '书架',
-          url: '/bookshelf'
+          url: '/bookshelf/scaned'
         },
         {
           name: '个人',
@@ -39,8 +43,56 @@ export default {
       return this.tabs || defaultTabs
     }
   },
-  mounted () {},
-  methods: {}
+  mounted () {
+    this.test()
+  },
+  methods: {
+    test () {
+      let qrResult
+      let qrQuery = querystring.parse('isbn13=9787111251217&id=399126&title=编译原理')
+      qrResult = {book_id: qrQuery.id, isbn13: qrQuery.isbn13}
+      this.$http.post('/library/borrow/', qrResult).then(res => {
+        alert(res)
+      }).catch(err => {
+        alert('err ' + err)
+      })
+    },
+    scanQR () {
+      // TODO 提交mutation的方式提交请求
+      let vueThis = this
+      this.$wechat.scanQRCode({
+        needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+        scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
+        success: function (res) {
+          alert('scan succeed')
+          let qrQuery = querystring.parse(res.resultStr)
+          vueThis.qrResult = {book_id: qrQuery.id, isbn13: qrQuery.isbn13} // 当needResult 为 1 时，扫码返回的结果
+          vueThis.$http.post('/library/borrow/', this.qrResult).then(res => {
+            alert(res)
+          }).catch(err => {
+            alert('err ' + err)
+          })
+        }
+      })
+    },
+    getBarStyle (index) {
+      let returnClass = ''
+      if (index === this.activeTab) {
+        returnClass = 'active'
+      }
+      if (index === 1) {
+        returnClass += ' bar-left'
+      } else if (index === 2) {
+        returnClass += ' bar-right'
+      }
+      return returnClass
+    },
+    tabBarLink (index) {
+      if (index !== this.activeTab) {
+        this.$router.replace(this.currentTabs[index].url)
+      }
+    }
+  }
 }
 </script>
 <style>

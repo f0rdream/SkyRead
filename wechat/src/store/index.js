@@ -12,7 +12,8 @@ const state = {
   favoraite: [],
   scanedCart: [],
   rentingCart: [],
-  rentedHistory: []
+  rentedHistory: [],
+  borrowQRInfo: {}
 }
 export default new Vuex.Store({
   state,

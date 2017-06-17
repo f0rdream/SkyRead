@@ -4,7 +4,7 @@
     <transition name="router-fade" mode="out-in">
       <router-view></router-view>
     </transition>
-    <bottom-bar slot="bottom" activeTab="首页"></bottom-bar>
+    <bottom-bar slot="bottom" :activeTab="0"></bottom-bar>
   </view-box>
 </template>
 

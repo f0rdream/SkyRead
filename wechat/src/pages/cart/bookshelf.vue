@@ -1,14 +1,14 @@
 <template lang="html">
   <view-box class="app">
     <!-- <x-header :right-options="{showMore: true}" slot="header">个人信息</x-header> -->
-    <tab>
-      <tab-item @on-item-click="router.push('scaned')">扫码的书</tab-item>
-      <tab-item @on-item-click="router.push('lending')">正在借阅</tab-item>
+    <tab v-model="selectedIndex">
+      <tab-item @on-item-click="$router.replace('/bookshelf/scaned')">扫码的书</tab-item>
+      <tab-item @on-item-click="$router.replace('/bookshelf/lending')">正在借阅</tab-item>
     </tab>
     <transition name="router-fade" mode="out-in">
       <router-view></router-view>
     </transition>
-    <bottom-bar slot="bottom"></bottom-bar>
+    <bottom-bar slot="bottom" :activeTab="2"></bottom-bar>
   </view-box>
 </template>
 
@@ -23,7 +23,15 @@ export default {
     TabItem,
     BottomBar
   },
-  methods: {}
+  data () {
+    return {
+      selectedIndex: 0
+    }
+  },
+  watch: {
+  },
+  methods: {
+  }
 }
 </script>
 

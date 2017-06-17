@@ -11,7 +11,7 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
-    "upload": "node upload/upload.js"
+    "upload": "npm run build && node upload/upload.js"
   },
   "dependencies": {
     "axios": "^0.16.1",

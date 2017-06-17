@@ -21,12 +21,13 @@ export default {
   },
   methods: {
     testLocal () {
-      this.$http.get('test_page/').then(res => {
-        console.log('test_page')
-      })
+      if (process.env.NODE_ENV === 'development') {
+        this.$http.get('test_page/').then(res => {
+          console.log('test_page')
+        })
+      }
     },
     getSign () {
-      // let url = encodeURIComponent('http://skyread.fordream001.cn')
       let url = encodeURIComponent(location.href.split('#')[0])
       this.$http.get(`signature?url=${url}`).then(res => {
         this.wxSign = res.data
