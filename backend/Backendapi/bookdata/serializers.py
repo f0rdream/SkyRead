@@ -13,7 +13,9 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book,Refer,Holding
+from .models import Book,Refer,Holding, StarBook
+
+
 class BookInfoSerializer(ModelSerializer):
     """
     基本信息序列化器
@@ -249,6 +251,31 @@ class HoldingSerializer(ModelSerializer):
 
 class StarBookSerializer(Serializer):
     """
-    我的收藏
+    创建我的收藏
     """
     isbn13 = CharField()
+
+
+class StarBookDetailSerializer(ModelSerializer):
+    """
+    我的收藏序列化
+    """
+    id = SerializerMethodField()
+    short_info = SerializerMethodField()
+
+    class Meta:
+        model = StarBook
+        fields = [
+            'id',
+            'short_info',
+        ]
+
+    def get_id(self,obj):
+        id = obj.id
+        return id
+
+    def get_short_info(self,obj):
+        book = obj.book
+        short_info = ShortInto(book,data={})
+        short_info.is_valid(raise_exception=True)
+        return short_info.data

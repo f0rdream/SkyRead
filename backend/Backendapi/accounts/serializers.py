@@ -19,10 +19,12 @@ class UserProfileDetailSerializer(ModelSerializer):
     """
     用户基本信息序列化器
     """
-    have_phone =  SerializerMethodField()
+    have_phone = SerializerMethodField()
     phone_number = SerializerMethodField()
     email = SerializerMethodField()
     real_name = SerializerMethodField()
+    message_info = SerializerMethodField()
+    money = SerializerMethodField()
     class Meta:
         model = WeChatUser
         fields = [
@@ -34,7 +36,24 @@ class UserProfileDetailSerializer(ModelSerializer):
             'email',
             'real_name',
             'have_phone',
+            'money',
+            'message_info',
         ]
+
+    def get_message_info(self,obj):
+        username = obj.openid
+        try:
+            user =User.objects.get(username=username)
+            phone_user = PhoneUser.objects.get(user=user)
+            reply = dict()
+            order_message = phone_user.order_message
+            return_message = phone_user.return_message
+            reply['order_msg'] = order_message
+            reply['return_msg'] = return_message
+            return reply
+        except:
+            return None
+
 
     def get_phone_number(self,obj):
         username = obj.openid
@@ -71,8 +90,15 @@ class UserProfileDetailSerializer(ModelSerializer):
             return 1
         except:
             return 0
-
-
+    def get_money(self,obj):
+        openid = obj.openid
+        try:
+            user =User.objects.get(username=openid)
+            phone_user = PhoneUser.objects.get(user=user)
+            money = phone_user.money
+            return money
+        except:
+            return -1
 
 class PhoneUserCreateSerializer(ModelSerializer):
     """

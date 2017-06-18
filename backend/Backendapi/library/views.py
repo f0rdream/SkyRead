@@ -1,5 +1,7 @@
 # coding:utf-8
 import sys
+
+import datetime
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 
@@ -23,7 +25,10 @@ from .serializers import (
     SuccessOrderItemCreateSerializer,
     SuccessOrderItemDetailSerializer,
     WaitOrderItemCreateSerializer,
-    WaitOrderItemDetailSerializer,IdListSerializer)
+    WaitOrderItemDetailSerializer,
+    IdListSerializer,
+    ISBN13Serializer,
+IdSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -37,7 +42,7 @@ from rest_framework.response import Response
 from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode
 from permissions import have_phone_register
 from bookdata.models import Holding
-
+from accounts.models import PhoneUser
 class BorrowItemView(APIView):
     """
     借书item的list和post
@@ -299,6 +304,24 @@ class ReturnItemView(APIView):
         queryset = BorrowItem.objects.filter(user=user,in_return_bar=True,finish_return=False)
         serializer = BorrowItemDetailSerializer(queryset,data=request.data,many=True)
         serializer.is_valid(raise_exception=True)
+        for i in serializer.data:
+            # 在返回数据中,增加到期时间
+            return_time = i['return_time']
+            date_list = return_time.split("-")
+            year = int(date_list[0])
+            month = int(date_list[1])
+            day = int(date_list[2])
+            return_date = datetime.datetime(year, month, day)
+            now_date = datetime.datetime.now()
+            due =  (return_date - now_date).days
+            i['due'] = due
+            if i < 7:
+                i['due_in_7'] = True
+                if i < 3:
+                    i['due_in_3'] = True
+            else:
+                i['due_in_7'] = False
+                i['due_in_3'] = False
         response = Response(serializer.data,HTTP_200_OK)
         return response
 
@@ -318,6 +341,24 @@ class ReturnItemDetailDeleteView(APIView):
             borrow_item = BorrowItem.objects.get(user=user,pk=pk)
             serializer = BorrowItemDetailSerializer(borrow_item,data=request.data)
             serializer.is_valid(raise_exception=True)
+            for i in serializer.data:
+                # 在返回数据中,增加到期时间
+                return_time = i['return_time']
+                date_list = return_time.split("-")
+                year = int(date_list[0])
+                month = int(date_list[1])
+                day = int(date_list[2])
+                return_date = datetime.datetime(year, month, day)
+                now_date = datetime.datetime.now()
+                due = (return_date - now_date).days
+                i['due'] = due
+                if i < 7:
+                    i['due_in_7'] = True
+                    if i < 3:
+                        i['due_in_3'] = True
+                else:
+                    i['due_in_7'] = False
+                    i['due_in_3'] = False
             response = Response(serializer.data,HTTP_200_OK)
             return response
         except BorrowItem.DoesNotExist:
@@ -366,7 +407,6 @@ class ManyReturnQrCodeView(APIView):
         reply = dict()
         reply['url'] = url
         return Response(reply,HTTP_200_OK)
-
 
 
 class VarifyReturnBookBarView(APIView):
@@ -596,6 +636,7 @@ class WaitOrderDetailView(APIView):
     返回或删除单个订阅等待的详情
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pk):
         try:
             w = WaitOrderItem.objects.get(pk=pk)
@@ -681,10 +722,21 @@ class PayView(APIView):
 
 class PayItView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pay_id):
         user = request.user
         try:
             pay = PayItem.objects.get(id=pay_id,user=user)
+            price = pay.price
+            try:
+                phone_user = PhoneUser.objects.get(user=user)
+                phone_user.money -= price
+                if phone_user.money < 0:
+                    return Response(get_reply(111,'money not enough'))
+                phone_user.save()
+            except:
+                reply = get_reply(94, 'not found')
+                return Response(reply, HTTP_404_NOT_FOUND)
             pay.state = True
             pay.save()
             reply = get_reply(0,'success')
@@ -747,5 +799,71 @@ class MyReadedBook(APIView):
         except:
             reply = get_reply(97,'not found')
             return Response(reply,HTTP_404_NOT_FOUND)
+
+
+class ChangeWaitToSuccess(APIView):
+    """
+    將等待狀態的书籍约定时间去取
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = ISBN13Serializer
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        wait_id = serializer.validated_data['wait_id']
+        order_time = serializer.validated_data['order_time']
+        # 删除原来的wait item
+        try:
+            wait_item = WaitOrderItem.objects.get(id=wait_id)
+            wait_item.delete()
+            book_id = wait_item.book_id
+            isbn13 = " "
+            try:
+                holding = Holding.objects.get(id=book_id)
+                title = holding.book.title
+                isbn13 = holding.isbn13
+            except:
+                title = ''
+            # try:
+            s = SuccessOrderItem.objects.create(user=request.user,
+                                                isbn13=isbn13,
+                                                order_time=order_time,
+                                                book_id=book_id,
+                                                title=title)
+            s.save()
+            return Response(get_reply(0,'success'),HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(get_reply(110,'fail'))
+
+
+class ContinueReturnBook(APIView):
+    """
+    正在借阅的书籍自动续借30天,没有到期限内的7天不让借阅
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = IdSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id = serializer.validated_data['id']
+        try:
+            return_book = BorrowItem.objects.get(id=id)
+            return_time = return_book.return_time
+            date_list = return_time.split("-")
+            year = int(date_list[0])
+            month = int(date_list[1])
+            day = int(date_list[2])
+            return_date = datetime.datetime(year, month, day)
+            new_return_date = return_date + datetime.timedelta(days=28)
+            return_book.return_time = str(new_return_date.date())
+            return_book.save()
+            return Response(get_reply(0,'success'),HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(get_reply(112,'fail'))
+
+
 
 

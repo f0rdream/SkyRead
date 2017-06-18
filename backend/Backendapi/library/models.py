@@ -33,12 +33,14 @@ class SuccessOrderItem(models.Model):
     book_id = models.IntegerField(default=0)
     qrcode = models.CharField(max_length=1000, blank=True, null=True)
 
+
 class WaitOrderItem(models.Model):
     isbn13 = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User)
     title = models.TextField(default=None)
     book_id = models.IntegerField(default=0)
     may_return_time = models.CharField(max_length=200,default=None)
+    return_state = models.BooleanField(default=False)
 
 class PayItem(models.Model):
     """
@@ -48,3 +50,5 @@ class PayItem(models.Model):
     state = models.BooleanField(default=False)
     price = models.IntegerField(default=0)
     confirm = models.BooleanField(default=False)  # 管理员是否确认
+    def __unicode__(self):
+        return str(self.id)

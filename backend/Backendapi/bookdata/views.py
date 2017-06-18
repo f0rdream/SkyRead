@@ -2,16 +2,20 @@
 import time
 
 from django.db.models import Q
-from django.http import HttpResponse
 from rest_framework.permissions import (
-    IsAdminUser,
     IsAuthenticated,
     AllowAny,
-    IsAuthenticatedOrReadOnly
 )
+
+from library.permissions import have_phone_register
 from .models import Book,Refer,Holding,StarBook
 from .serializers import (BookInfoSerializer,
-                          ShortInto, SearchSerializer, HoldingSerializer, StarBookSerializer)
+                          ShortInto,
+                          SearchSerializer,
+                          HoldingSerializer,
+                          StarBookSerializer,
+                          StarBookDetailSerializer
+                          )
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -117,6 +121,7 @@ class StarBookView(APIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = StarBookSerializer
+
     def post(self,request):
         serializer = StarBookSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -135,14 +140,15 @@ class StarBookView(APIView):
             return Response(get_reply(0,'success'))
         except:
             return Response(get_reply(98,'fail'))
+
     def get(self,request):
         user = request.user
         queryset = StarBook.objects.filter(user=user)
-        book_list = list()
-        for starbook in queryset:
-            book = starbook.book
-            book_list.append(book)
-        serializer = ShortInto(book_list,data=request.data,many=True)
+        # book_list = list()
+        # for starbook in queryset:
+        #     book = starbook.book
+        #     book_list.append(book)
+        serializer = StarBookDetailSerializer(queryset,data=request.data,many=True)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data,HTTP_200_OK)
 
@@ -165,3 +171,50 @@ class GuideBookView(APIView):
             return Response(serializer.data,HTTP_200_OK)
         except Exception as e:
             return Response(get_reply(0,e),HTTP_404_NOT_FOUND)
+
+
+class StarBookDetailView(APIView):
+    """
+    收藏书籍详情
+
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
+        user = request.user
+        try:
+            star_item = StarBook.objects.get(user=user,pk=pk)
+
+            serializer = StarBookDetailSerializer(star_item,data=request.data)
+            serializer.is_valid(raise_exception=True)
+            response = Response(serializer.data,HTTP_200_OK)
+            return response
+        except StarBook.DoesNotExist:
+            reply = get_reply(82,'item not found')
+            response = Response(reply,HTTP_404_NOT_FOUND)
+            return response
+
+    def delete(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
+        user = request.user
+        try:
+            star_item = StarBook.objects.get(user=user, pk=pk)
+            serializer = StarBookDetailSerializer(star_item, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            try:
+                star_item.delete()
+                reply = get_reply(0,'success')
+                response = Response(reply,HTTP_200_OK)
+                return response
+            except:
+                content = get_reply(83,'delete fail')
+                response = Response(content, HTTP_400_BAD_REQUEST)
+                return response
+        except StarBook.DoesNotExist:
+            content = get_reply(82,'item not found')
+            response = Response(content, HTTP_404_NOT_FOUND)
+            return response
