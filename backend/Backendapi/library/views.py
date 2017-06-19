@@ -897,6 +897,7 @@ def order_info(request):
     """
     user = request.user
     if user  and  user.has_perm('library.is_a_admin'):
+        qrtype = request.GET.get("qrtype")
         book_id = request.GET.get("book_id")
         user_id = request.GET.get("id")
         title = request.GET.get('title')
@@ -906,6 +907,8 @@ def order_info(request):
             user_id = ""
         if not title:
             title = ''
+        if not qrtype:
+            qrtype = ''
         nickname=  '获取昵称失败'
         if user_id:
             user = User.objects.get(id=user_id)
@@ -914,7 +917,7 @@ def order_info(request):
                 nickname = wechat_user.nickname
             except:
                 nickname = '获取昵称失败'
-        reply = "title="+title+"&nickname="+nickname+"&book_id="+book_id
+        reply = "title="+title+"&nickname="+nickname+"&book_id="+book_id+"&qrtype="+qrtype
         return HttpResponse(reply)
     else:
         return HttpResponse("您不是SkyRead的管理员,无权操作")
