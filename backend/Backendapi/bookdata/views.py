@@ -53,10 +53,14 @@ class Serach(APIView):
         key = self.request.GET.get("key")
         # 存入搜索历史
         try:
-            s = SearchHistory.objects.create(user=request.user,key=key)
-            s.save()
-        except:
-            pass
+            queryset = SearchHistory.objects.filter(user=request.user,key=key)
+            if len(queryset) >= 1:
+                pass
+            else:
+                s = SearchHistory.objects.create(user=request.user,key=key)
+                s.save()
+        except Exception as e:
+            print e
         if key:
             title_queryset = Book.objects.filter(Q(title__icontains=key) |
                                                  Q(subtitle__icontains=key))
@@ -72,6 +76,7 @@ class Serach(APIView):
         else:
             reply = {'msg':'None'}
             return Response(reply,HTTP_200_OK)
+
 
 class ReferBookView(APIView):
     """
@@ -99,12 +104,12 @@ class ReferBookView(APIView):
             return Response(reply,HTTP_404_NOT_FOUND)
 
 
-
 class HoldingView(APIView):
     """
     馆藏信息VIEW
     """
     permission_classes = [AllowAny]
+
     def get(self,request,isbn13):
         try:
            queryset = Holding.objects.filter(isbn13=isbn13)

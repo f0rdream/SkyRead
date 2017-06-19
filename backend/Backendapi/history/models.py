@@ -8,7 +8,7 @@ class SearchHistory(models.Model):
     """
     搜索历史
     """
-    user = models.OneToOneField(User)
+    user = models.ForeignKey(User)
     key = models.TextField()
     time = models.DateTimeField(auto_now_add=True)
 
