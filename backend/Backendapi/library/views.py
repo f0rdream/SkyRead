@@ -686,6 +686,7 @@ def qrcode_info(request):
         id = request.GET.get("id")
         qrtype = request.GET.get('qrtype')
         pay_id = request.GET.get('pay_id')
+        return_id = request.GET.get('return_id')
         if not ctime:
             ctime = ""
         if not qrtype:
@@ -694,7 +695,10 @@ def qrcode_info(request):
             pay_id = ''
         if not id:
             id = ""
-        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+"&pay_id="+pay_id
+        if not return_id:
+            return_id = ''
+        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+\
+                "&pay_id="+pay_id+"&return_id="+return_id
         return HttpResponse(reply)
     else:
         return HttpResponse("您不是SkyRead的管理员,无权操作")
