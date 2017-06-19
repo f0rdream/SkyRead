@@ -15,7 +15,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from .models import BorrowItem,SuccessOrderItem,WaitOrderItem,PayItem
+from .models import BorrowItem,SuccessOrderItem,WaitOrderItem,PayItem,ReturnItem
 from .serializers import (
     BorrowItemCreateSerializer,
     BorrowItemDetailSerializer,
@@ -39,7 +39,8 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode
+from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode,\
+    create_return_qrcode
 from permissions import have_phone_register
 from bookdata.models import Holding
 from accounts.models import PhoneUser
@@ -367,26 +368,6 @@ class ReturnItemDetailDeleteView(APIView):
             return response
 
 
-class ReturnQrCodeView(APIView):
-    """
-    生成还书时给管理员扫的二维码,单本还书
-    """
-    permission_classes = [IsAuthenticated]
-    def get(self,request,pk):
-        if not have_phone_register(user=request.user):
-            reply = get_reply(17,'not register with phone')
-            return Response(reply,HTTP_403_FORBIDDEN)
-        borrow_item = BorrowItem.objects.get(pk=pk)
-        ctime = time.time()
-        qrcode = "return"
-        create_qrcode(pk,ctime,qrcode,None)
-        url = '/media/return_qrcode/'+str(pk)+".png"
-        borrow_item.qrcode = url
-        borrow_item.save()
-        content = {'url':url}
-        return Response(content,HTTP_200_OK)
-
-
 class ManyReturnQrCodeView(APIView):
     """
     难写的生成还书时给管理员扫的二维码,批量还书
@@ -403,9 +384,15 @@ class ManyReturnQrCodeView(APIView):
         id_list = serializer.validated_data['id_list']
         ctime = time.time()
         qrtype = 'return'
-        url = create_qrcode(id_list,ctime,qrtype,None)
+        # 创建一个还书item,得到return_id
+        return_item = ReturnItem.objects.create(user=request.user,
+                                             confirm=False)
+        return_item.save()
+        return_id = return_item.id
+        url = create_return_qrcode(id_list,ctime,qrtype,return_id)
         reply = dict()
         reply['url'] = url
+        reply['return_id'] = return_id
         return Response(reply,HTTP_200_OK)
 
 
@@ -471,6 +458,7 @@ class FinishReturnView(APIView):
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
+
             for id in id_list:
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
@@ -487,6 +475,14 @@ class FinishReturnView(APIView):
                     borrow_item1.save()
                 except:
                     pass
+            # 将还书项的状态变为完成
+            return_id = serializer.validated_data['return_id']
+            try:
+                return_item = ReturnItem.objects.get(id=return_id)
+                return_item.confirm = True
+                return_item.save()
+            except:
+                pass
             reply = get_reply(0, 'success')
             return Response(reply,HTTP_200_OK)
         else:
@@ -863,6 +859,27 @@ class ContinueReturnBook(APIView):
         except Exception as e:
             print e
             return Response(get_reply(112,'fail'))
+
+
+class ReturnItemConfirmInfo(APIView):
+    """
+    获取还书项的信息
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, return_id):
+        user = request.user
+        try:
+            return_item = ReturnItem.objects.get(id=return_id, user=user)
+            confirm = return_item.confirm
+            reply = {
+                "return_id": return_id,
+                "confirm": confirm
+            }
+            return Response(reply, HTTP_200_OK)
+        except:
+            reply = get_reply(114, 'not found')
+            return Response(reply, HTTP_404_NOT_FOUND)
 
 
 

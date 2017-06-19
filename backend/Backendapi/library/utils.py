@@ -7,6 +7,8 @@ from binascii import b2a_hex, a2b_hex
 from bookdata.models import Book
 from models import BorrowItem
 import time
+
+
 def create_qrcode(id_list,ctime,qrtype,pay_id):
     """
     :param bid:表示书籍的唯一id,用isbn号码
@@ -76,6 +78,38 @@ def create_order_qrcode(book_id,user_id,title,order_id):
     img.save(filename)
     return url
 
+
+def create_return_qrcode(id_list,ctime,qrtype,return_id):
+    """
+    :param bid:表示书籍的唯一id,用isbn号码
+    :param ctime: 创建时间,一分钟后过期
+    :param type: 二维码类型
+    :return:
+    """
+    qr = qrcode.QRCode(
+        version =1,
+        error_correction = qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    id = ''
+    for i in id_list:
+        id += 'b'+ str(i)  # 参数最后的样子:id = b1b2b3b56
+    url = "http://115.159.185.170/library/qrcode_info/?ctime="+str(ctime)+\
+          "&id="+str(id)+"&qrtype="+qrtype+"&return_id="+str(return_id)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image()
+    if qrtype == 'borrow':
+        filename = 'media_root/borrow_qrcode/'+str(id) + ".png"
+        url = '/media/borrow_qrcode/'+str(id) + ".png"
+        img.save(filename)
+        return url
+    elif qrtype == 'return':
+        filename = 'media_root/return_qrcode/'+str(id) + ".png"
+        url = '/media/return_qrcode/' + str(id) + ".png"
+        img.save(filename)
+        return url
 
 def create_qrcode_two(id1,id2,ctime,qrtype):
     pass

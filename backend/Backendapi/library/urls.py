@@ -6,7 +6,6 @@ from .views import (BorrowItemView,
                     VarifyAddToReturnBarView,
                     AddToReturnBarView,
                     ReturnItemView,
-                    ReturnQrCodeView,
                     ManyReturnQrCodeView,
                     ReturnItemDetailDeleteView,
                     VarifyReturnBookBarView,
@@ -23,7 +22,8 @@ from .views import (BorrowItemView,
                     AdminConfirmInfo,
                     MyReadedBook,
                     ChangeWaitToSuccess,
-                    ContinueReturnBook)
+                    ContinueReturnBook,
+                    ReturnItemConfirmInfo)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$',BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^return/verify',VarifyReturnBookBarView.as_view(),name='add'),
     url(r'^return/change_bar',FinishReturnView.as_view(),name='finish_return'),
     url(r'^return/continue', ContinueReturnBook.as_view(), name='continue_return'),
+    url(r'^return/confirm/(?P<return_id>\d+)$',ReturnItemConfirmInfo.as_view(),name='confirm_info'),
     # order's urls
     url(r'^order/success/$',OrderSuccessView.as_view(),name='order_create_list'),
     url(r'^order/success/(?P<pk>\d+)$',SuccessOrderDetailView.as_view(),name='order_de'),

@@ -42,6 +42,7 @@ class WaitOrderItem(models.Model):
     may_return_time = models.CharField(max_length=200,default=None)
     return_state = models.BooleanField(default=False)
 
+
 class PayItem(models.Model):
     """
     支付
@@ -50,5 +51,19 @@ class PayItem(models.Model):
     state = models.BooleanField(default=False)
     price = models.IntegerField(default=0)
     confirm = models.BooleanField(default=False)  # 管理员是否确认
+
     def __unicode__(self):
         return str(self.id)
+
+
+class ReturnItem(models.Model):
+    """
+    用于还书确认
+    """
+    user = models.ForeignKey(User)
+    confirm = models.BooleanField(default=False)  # 管理员是否确认
+
+    def __unicode__(self):
+        return str(self.id)
+
+
