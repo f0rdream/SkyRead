@@ -69,7 +69,7 @@ def create_order_qrcode(book_id,user_id,title,order_id):
         border=4,
     )
     data ="http://115.159.185.170/library/order_info/?" \
-          "book_id=%s&id=%s&title=%s" % (book_id,user_id,title)
+          "book_id=%s&id=%s&title=%s&qrtype=%s" % (book_id,user_id,title,'order')
     qr.add_data(data)
     qr.make(fit=True)
     img = qr.make_image()

@@ -10,7 +10,6 @@ class SearchHistory(models.Model):
     """
     user = models.ForeignKey(User)
     key = models.TextField()
-    time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return str(self.user.username)+str(self.key)
