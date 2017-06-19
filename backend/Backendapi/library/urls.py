@@ -23,7 +23,8 @@ from .views import (BorrowItemView,
                     MyReadedBook,
                     ChangeWaitToSuccess,
                     ContinueReturnBook,
-                    ReturnItemConfirmInfo)
+                    ReturnItemConfirmInfo,
+                    order_info)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$',BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -44,10 +45,11 @@ urlpatterns = [
     url(r'^order/wait/$',OrderWaitView.as_view(),name='order_wait'),
     url(r'^order/wait/(?P<pk>\d+)$',WaitOrderDetailView.as_view(),name='wait_de'),
     url(r'^order/wait/change_bar/$',ChangeWaitToSuccess.as_view(),name='change_wait_bar'),
-
+    # url(r'^order/wait/change_bar/$',ChangeWaitToSuccess.as_view(),name='change_wait_bar'),
     url(r'^curl/$',CurlListView.as_view()),
     # qrcode_info
     url(r'^qrcode_info/$',qrcode_info,name='get_qrcode_info'),
+    url(r'^order_info/$',order_info,name='get_order_info'),
     # pay's urls
     url(r'^pay_info/(?P<pay_id>\d+)$', PayView.as_view(), name='get_pay_info'),
     url(r'^pay/(?P<pay_id>\d+)$',PayItView.as_view(),name='pay_it'),

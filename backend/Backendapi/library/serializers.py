@@ -305,3 +305,13 @@ class ISBN13Serializer(serializers.Serializer):
 
 class IdSerializer(serializers.Serializer):
     id = serializers.IntegerField()
+
+
+class ReturnItemSerializer(serializers.Serializer):
+    """
+    批量生成的id的list
+    """
+    id_list = ListField(
+        child = IntegerField()
+    )
+    return_id = IntegerField()

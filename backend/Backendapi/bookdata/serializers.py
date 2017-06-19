@@ -3,7 +3,7 @@ import time
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
+from accounts.models import WeChatUser
 from rest_framework.serializers import (
     SerializerMethodField,
     ModelSerializer,
@@ -13,7 +13,7 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book,Refer,Holding, StarBook
+from .models import Book,Refer,Holding, StarBook, Comment
 
 
 class BookInfoSerializer(ModelSerializer):
@@ -279,3 +279,23 @@ class StarBookDetailSerializer(ModelSerializer):
         short_info = ShortInto(book,data={})
         short_info.is_valid(raise_exception=True)
         return short_info.data
+
+class PostCommentSerializer(ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['content']
+
+
+class CommentDetailSerializer(ModelSerializer):
+    nickname = SerializerMethodField()
+    class Meta:
+        model = Comment
+        fields = ['content','nickname']
+    def get_nickname(self,obj):
+        username = obj.user.username
+        try:
+            wechat_user = WeChatUser.objects.get(openid=username)
+            nickname = wechat_user.nickname
+            return nickname
+        except:
+            return '--'

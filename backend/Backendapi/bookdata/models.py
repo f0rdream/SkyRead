@@ -69,3 +69,12 @@ class StarBook(models.Model):
     """
     user = models.ForeignKey(User)
     book = models.ForeignKey(Book)
+
+
+class Comment(models.Model):
+    """
+    书籍评论
+    """
+    user = models.ForeignKey(User)
+    isbn13 = models.CharField(max_length=100)
+    content = models.TextField(default=None)

@@ -2,8 +2,11 @@
 import sys
 
 import datetime
+
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
+
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -28,7 +31,7 @@ from .serializers import (
     WaitOrderItemDetailSerializer,
     IdListSerializer,
     ISBN13Serializer,
-IdSerializer)
+    IdSerializer, ReturnItemSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -43,7 +46,7 @@ from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrco
     create_return_qrcode
 from permissions import have_phone_register
 from bookdata.models import Holding
-from accounts.models import PhoneUser
+from accounts.models import PhoneUser,WeChatUser
 class BorrowItemView(APIView):
     """
     借书item的list和post
@@ -450,7 +453,7 @@ class FinishReturnView(APIView):
     管理员核对无误后完成还书,更改馆藏信息
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = IdListSerializer
+    serializer_class = ReturnItemSerializer
 
     def post(self,request):
         user = request.user
@@ -839,7 +842,7 @@ class ChangeWaitToSuccess(APIView):
 
 class ContinueReturnBook(APIView):
     """
-    正在借阅的书籍自动续借30天,没有到期限内的7天不让借阅
+    正在借阅的书籍自动续借28天,没有到期限内的7天不让借阅
     """
     permission_classes = [IsAuthenticated]
     serializer_class = IdSerializer
@@ -884,6 +887,38 @@ class ReturnItemConfirmInfo(APIView):
         except:
             reply = get_reply(114, 'not found')
             return Response(reply, HTTP_404_NOT_FOUND)
+
+
+def order_info(request):
+    """
+    二维码验证,验证时间和管理员
+    :param request:
+    :return:
+    """
+    user = request.user
+    if user  and  user.has_perm('library.is_a_admin'):
+        book_id = request.GET.get("book_id")
+        user_id = request.GET.get("user_id")
+        title = request.GET.get('title')
+        if not book_id:
+            book_id = ""
+        if not user_id:
+            user_id = ""
+        if not title:
+            title = ''
+        nickname=  '获取昵称失败'
+        if user_id:
+            user = User.objects.get(user=user)
+            try:
+                wechat_user = WeChatUser.objects.get(openid=user.username)
+                nickname = wechat_user.nickname
+            except:
+                nickname = '获取昵称失败'
+        reply = "title="+title+"&nickname="+nickname+"&book_id="+book_id
+        return HttpResponse(reply)
+    else:
+        return HttpResponse("您不是SkyRead的管理员,无权操作")
+
 
 
 

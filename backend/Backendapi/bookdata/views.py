@@ -14,7 +14,8 @@ from .serializers import (BookInfoSerializer,
                           SearchSerializer,
                           HoldingSerializer,
                           StarBookSerializer,
-                          StarBookDetailSerializer
+                          StarBookDetailSerializer,PostCommentSerializer,
+CommentDetailSerializer
                           )
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -26,6 +27,7 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from history.models import SearchHistory
 from l_lib.function import get_reply
+from models import Comment
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]
@@ -218,3 +220,30 @@ class StarBookDetailView(APIView):
             content = get_reply(82,'item not found')
             response = Response(content, HTTP_404_NOT_FOUND)
             return response
+
+
+class CommentView(APIView):
+    """
+    查看或者发表评论
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostCommentSerializer
+
+    def post(self,request,isbn13):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        content = serializer.validated_data['content']
+        comment = Comment.objects.create(isbn13=isbn13,
+                                         content=content,
+                                         user=user)
+        comment.save()
+        return Response(serializer.data,HTTP_200_OK)
+    def get(self,request,isbn13):
+        queryset = Comment.objects.filter(isbn13=isbn13)
+        serializer = CommentDetailSerializer(queryset,many=True,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data,HTTP_200_OK)
+
+
+
