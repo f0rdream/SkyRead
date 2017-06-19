@@ -36,8 +36,6 @@ class Book(models.Model):
         return self.title
 
 
-
-
 class Refer(models.Model):
     """
     相关书籍
@@ -78,3 +76,13 @@ class Comment(models.Model):
     user = models.ForeignKey(User)
     isbn13 = models.CharField(max_length=100)
     content = models.TextField(default=None)
+
+
+class ReadPlan(models.Model):
+    """
+    读书计划
+    """
+    user = models.ForeignKey(User)
+    isbn13 = models.CharField(max_length=100)
+    begin_time = models.DateTimeField(max_length=100,default=None)
+    end_time = models.DateTimeField(max_length=100,default=None)

@@ -8,15 +8,17 @@ from rest_framework.permissions import (
 )
 
 from library.permissions import have_phone_register
-from .models import Book,Refer,Holding,StarBook
+from .models import Book,Refer,Holding,StarBook, ReadPlan
 from .serializers import (BookInfoSerializer,
                           ShortInto,
                           SearchSerializer,
                           HoldingSerializer,
                           StarBookSerializer,
-                          StarBookDetailSerializer,PostCommentSerializer,
-CommentDetailSerializer
-                          )
+                          StarBookDetailSerializer,
+                          PostCommentSerializer,
+                          PostReadPlanSerializer,
+                          CommentDetailSerializer,
+                          ReadPlanDetailSerializer)
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -246,4 +248,59 @@ class CommentView(APIView):
         return Response(serializer.data,HTTP_200_OK)
 
 
+class ReadPlanView(APIView):
+    """
+    阅读计划详情
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostReadPlanSerializer
 
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        isbn13 = serializer.validated_data['isbn13']
+        begin_time = serializer.validated_data['begin_time']
+        end_time = serializer.validated_data['end_time']
+        readplan = ReadPlan.objects.create(
+            user=user,
+            isbn13=isbn13,
+            begin_time=begin_time,
+            end_time=end_time
+        )
+        readplan.save()
+        return Response(get_reply(0,'success'),HTTP_201_CREATED)
+
+    def get(self,request):
+        queryset = ReadPlan.objects.filter(user=request.user)
+        serializer = ReadPlanDetailSerializer(queryset,data=request.data,many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data,HTTP_200_OK)
+
+
+class ReadPlanDetailView(APIView):
+    """
+    删除阅读计划
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
+        user = request.user
+        try:
+            plan_item = ReadPlan.objects.get(user=user, pk=pk)
+            try:
+                plan_item.delete()
+                reply = get_reply(0,'success')
+                response = Response(reply,HTTP_200_OK)
+                return response
+            except:
+                content = get_reply(115,'delete fail')
+                response = Response(content, HTTP_400_BAD_REQUEST)
+                return response
+        except StarBook.DoesNotExist:
+            content = get_reply(116,'item not found')
+            response = Response(content, HTTP_404_NOT_FOUND)
+            return response

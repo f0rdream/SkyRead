@@ -99,7 +99,7 @@ def get_user_href(book_id,begin,end):
         log(book_id+"----"+str(i))
 
 a = time.time()
-dict = ["2256438","1080370","1024217","1255624","1453210"]
+dict = ["1024217","1255624","1453210"]
 # 一座城池  用爬虫把id爬下来
 for i  in dict:
     get_user_href(i,0,15)  # 500-560页码

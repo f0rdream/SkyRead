@@ -7,6 +7,7 @@ headers = {
     "X-LC-Key": "P7WiKSkgDxnbaDW0MulQ3WxI",
     "Content-Type": "application/json",
 }
+
 # 请求发送验证码 API
 REQUEST_SMS_CODE_URL = 'https://api.leancloud.cn/1.1/requestSmsCode'
 # 请求校验验证码 API
@@ -48,4 +49,3 @@ def verify(phone_number,code):
         return True
     else:
         return False
-

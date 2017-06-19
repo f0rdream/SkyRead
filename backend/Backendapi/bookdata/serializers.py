@@ -13,7 +13,7 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book,Refer,Holding, StarBook, Comment
+from .models import Book,Refer,Holding, StarBook, Comment,ReadPlan
 
 
 class BookInfoSerializer(ModelSerializer):
@@ -299,3 +299,51 @@ class CommentDetailSerializer(ModelSerializer):
             return nickname
         except:
             return '--'
+
+
+class PostReadPlanSerializer(ModelSerializer):
+    class Meta:
+        model= ReadPlan
+        fields = [
+            'isbn13',
+            'begin_time',
+            'end_time',
+        ]
+
+    def validate(self, data):
+        isbn13 = data.get('isbn13')
+        begin_time = data.get('begin_time')
+        end_time = data.get('end_time')
+
+        if not isbn13:
+            raise ValidationError('lack isbn13')
+        if not begin_time:
+            raise ValidationError('lack begin_time')
+        if not end_time:
+            raise ValidationError('lack end_time')
+        return data
+
+
+class ReadPlanDetailSerializer(ModelSerializer):
+    title = SerializerMethodField()
+
+    class Meta:
+        model = ReadPlan
+        fields = [
+            'id',
+            'title',
+            'isbn13',
+            'begin_time',
+            'end_time',
+        ]
+
+    def get_isbn13(self,obj):
+        return obj.isbn13
+    def get_title(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+            return title
+        except:
+            return "--"
