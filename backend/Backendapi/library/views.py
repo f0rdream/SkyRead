@@ -908,7 +908,7 @@ def order_info(request):
             title = ''
         nickname=  '获取昵称失败'
         if user_id:
-            user = User.objects.get(user=user)
+            user = User.objects.get(id=user_id)
             try:
                 wechat_user = WeChatUser.objects.get(openid=user.username)
                 nickname = wechat_user.nickname
