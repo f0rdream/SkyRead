@@ -898,7 +898,7 @@ def order_info(request):
     user = request.user
     if user  and  user.has_perm('library.is_a_admin'):
         book_id = request.GET.get("book_id")
-        user_id = request.GET.get("user_id")
+        user_id = request.GET.get("id")
         title = request.GET.get('title')
         if not book_id:
             book_id = ""
