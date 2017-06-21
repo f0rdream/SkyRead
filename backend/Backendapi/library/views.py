@@ -969,7 +969,7 @@ class FinishGiveOrderItemView(APIView):
         serializer = GetOrderRecordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         order_id = serializer.validated_data['order_id']
-        order_item = OrderSuccessItem.objects.get(id=order_id)
+        order_item = SuccessOrderItem.objects.get(id=order_id)
         user = request.user
         record = AdminBorrowItemRecord.objects.create(user=user,
                                                       record_type=3,
