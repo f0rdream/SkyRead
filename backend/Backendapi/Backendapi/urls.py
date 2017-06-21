@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^douban/',include('douban.urls')),
     url(r'^amazon/', include('douban.urls')),
     url(r'^history/',include('history.urls')),
-    # url(r'^web/',include('newadmin.urls')),
+    url(r'^web/',include('newadmin.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
