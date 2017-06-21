@@ -35,6 +35,7 @@ class SuccessOrderItem(models.Model):
     order_time = models.DateTimeField(blank=False,null=False,default=None)
     book_id = models.IntegerField(default=0)
     qrcode = models.CharField(max_length=1000, blank=True, null=True)
+    be_out = models.BooleanField(default=False)
 
 
 class WaitOrderItem(models.Model):

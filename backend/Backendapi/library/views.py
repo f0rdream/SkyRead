@@ -581,7 +581,7 @@ class OrderSuccessView(APIView):
         :return:
         """
         user = request.user
-        queryset = SuccessOrderItem.objects.filter(user=user)
+        queryset = SuccessOrderItem.objects.filter(user=user,be_out=False)
         serializer = SuccessOrderItemDetailSerializer(queryset,data=request.data,many=True)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data,HTTP_200_OK)
@@ -963,6 +963,7 @@ class FinishGiveOrderItemView(APIView):
     完成订阅,返回,记录订阅操作
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = GetOrderRecordSerializer
 
     def post(self,request):
         serializer = GetOrderRecordSerializer(data=request.data)
@@ -974,6 +975,8 @@ class FinishGiveOrderItemView(APIView):
                                                       record_type=3,
                                                     order_item=order_item)
         record.save()
+        order_item.be_out = True
+        order_item.save()
         return Response(get_reply(0,'success'))
 
 
