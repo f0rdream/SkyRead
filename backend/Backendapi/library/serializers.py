@@ -325,3 +325,10 @@ class ReturnItemSerializer(serializers.Serializer):
         child = IntegerField()
     )
     return_id = IntegerField()
+
+
+class GetOrderRecordSerializer(serializers.Serializer):
+    """
+    生成取书籍记录
+    """
+    order_id = IntegerField()

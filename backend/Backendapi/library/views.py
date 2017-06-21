@@ -31,7 +31,10 @@ from .serializers import (
     WaitOrderItemDetailSerializer,
     IdListSerializer,
     ISBN13Serializer,
-    IdSerializer, ReturnItemSerializer,BorrowIdListSerializer)
+    IdSerializer,
+    ReturnItemSerializer,
+    BorrowIdListSerializer,
+    GetOrderRecordSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -468,7 +471,7 @@ class VarifyReturnBookBarView(APIView):
 
 class FinishReturnView(APIView):
     """
-    管理员核对无误后完成还书,更改馆藏信息,退还押金
+    管理员核对无误后完成还书,更改馆藏信息,退还押金,记录操作
     """
     permission_classes = [IsAuthenticated]
     serializer_class = ReturnItemSerializer
@@ -494,11 +497,14 @@ class FinishReturnView(APIView):
                     holding.back_time = "--"
                     holding.save()
                     borrow_item1.save()
-                    # 返还金额
+                    # 记录归还操作
+                    record = AdminBorrowItemRecord.objects.create(user=user,
+                                                                  record_type=2,
+                                                                  borrow_item=borrow_item1,
+                                                                  )
+                    record.save()
                 except:
                     pass
-
-
             # 将还书项的状态变为完成
             return_id = serializer.validated_data['return_id']
             try:
@@ -928,6 +934,7 @@ def order_info(request):
         book_id = request.GET.get("book_id")
         user_id = request.GET.get("id")
         title = request.GET.get('title')
+        order_id = request.GET.get('order_id')
         if not book_id:
             book_id = ""
         if not user_id:
@@ -944,10 +951,31 @@ def order_info(request):
                 nickname = wechat_user.nickname
             except:
                 nickname = '获取昵称失败'
-        reply = "title="+title+"&nickname="+nickname+"&book_id="+book_id+"&qrtype="+qrtype
+        reply = "title="+title+"&nickname="+nickname+\
+                "&book_id="+book_id+"&qrtype="+qrtype+"&order_id="+order_id
         return HttpResponse(reply)
     else:
         return HttpResponse("您不是SkyRead的管理员,无权操作")
+
+
+class FinishGiveOrderItemView(APIView):
+    """
+    完成订阅,返回,记录订阅操作
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        serializer = GetOrderRecordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order_id = serializer.validated_data['order_id']
+        order_item = OrderSuccessItem.objects.get(id=order_id)
+        user = request.user
+        record = AdminBorrowItemRecord.objects.create(user=user,
+                                                      record_type=3,
+                                                    order_item=order_item)
+        record.save()
+        return Response(get_reply(0,'success'))
+
 
 
 
