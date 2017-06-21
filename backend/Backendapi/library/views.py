@@ -45,7 +45,7 @@ from rest_framework.response import Response
 from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode,\
     create_return_qrcode
 from permissions import have_phone_register
-from bookdata.models import Holding
+from bookdata.models import Holding,Book
 from accounts.models import PhoneUser,WeChatUser
 class BorrowItemView(APIView):
     """
@@ -440,7 +440,7 @@ class VarifyReturnBookBarView(APIView):
             # # 返回书籍信息
             # id = serializer.validated_data['id']
             # borrow_item = BorrowItem.objects.get(pk=id)
-            # serializer = ReturnBookInfoToAdmin(borrow_item,data=request.data)
+             # serializer = ReturnBookInfoToAdmin(borrow_item,data=request.data)
             # serializer.is_valid(raise_exception=True)
             # return Response(serializer.data,HTTP_200_OK)
         else:
@@ -450,7 +450,7 @@ class VarifyReturnBookBarView(APIView):
 
 class FinishReturnView(APIView):
     """
-    管理员核对无误后完成还书,更改馆藏信息
+    管理员核对无误后完成还书,更改馆藏信息,退还押金
     """
     permission_classes = [IsAuthenticated]
     serializer_class = ReturnItemSerializer
@@ -476,13 +476,22 @@ class FinishReturnView(APIView):
                     holding.back_time = "--"
                     holding.save()
                     borrow_item1.save()
+                    # 返还金额
                 except:
                     pass
+
+
             # 将还书项的状态变为完成
             return_id = serializer.validated_data['return_id']
             try:
                 return_item = ReturnItem.objects.get(id=return_id)
                 return_item.confirm = True
+                return_user = return_item.user
+                # 返还金额
+                price = get_price(id_list)
+                phone_user = PhoneUser.objects.get(user=return_user)
+                phone_user.money += price
+                phone_user.save()
                 return_item.save()
             except:
                 pass

@@ -46,7 +46,8 @@ INSTALLED_APPS = (
     'douban',
     'amazon',
     'message',
-    'history'
+    'history',
+    'newadmin',
 )
 
 MIDDLEWARE_CLASSES = (
