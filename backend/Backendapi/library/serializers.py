@@ -295,6 +295,16 @@ class IdListSerializer(serializers.Serializer):
     )
 
 
+class BorrowIdListSerializer(serializers.Serializer):
+    """
+    批量生成的id的list
+    """
+    id_list = ListField(
+        child = IntegerField()
+    )
+    pay_id = IntegerField()
+
+
 class ISBN13Serializer(serializers.Serializer):
     """
     ISBN13

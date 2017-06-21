@@ -31,7 +31,7 @@ from .serializers import (
     WaitOrderItemDetailSerializer,
     IdListSerializer,
     ISBN13Serializer,
-    IdSerializer, ReturnItemSerializer)
+    IdSerializer, ReturnItemSerializer,BorrowIdListSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -47,6 +47,8 @@ from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrco
 from permissions import have_phone_register
 from bookdata.models import Holding,Book
 from accounts.models import PhoneUser,WeChatUser
+from newadmin.models import AdminBorrowItemRecord
+
 class BorrowItemView(APIView):
     """
     借书item的list和post
@@ -200,11 +202,15 @@ class ManyBorrowQrCodeView(APIView):
         price = get_price(id_list)
         ctime = time.time()
         qrtype = 'borrow'
+        borrow_id = ""
+        for i in id_list:
+            borrow_id += 'b' + str(i)  # 参数最后的样子:id = b1b2b3b56
         # 在这里创建一个pay,得到唯一的pay_id
         pay = PayItem.objects.create(user=request.user,
                                      state=False,
                                      confirm=False,
-                                     price = price
+                                     price = price,
+                                     borrow_id=borrow_id,
                                      )
         pay.save()
         pay_id = pay.id
@@ -225,7 +231,7 @@ class VarifyAddToReturnBarView(APIView):
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_admin'):
+        if user.has_perm('library.is_a_book_admin'):
             print request.data
             serializer = AddToReturnBarSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -262,15 +268,16 @@ class AddToReturnBarView(APIView):
     管理员核对无误后把书籍加入还书栏,馆藏信息改变
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = IdListSerializer
+    serializer_class = BorrowIdListSerializer
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_admin'):
+        if user.has_perm('library.is_a_book_admin'):
             print request.data
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
+            pay_id = serializer.validated_data['pay_id']
             for id in id_list:
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
@@ -283,9 +290,20 @@ class AddToReturnBarView(APIView):
                     holding.back_time = borrow_item1.return_time
                     holding.save()
                     borrow_item1.save()
+                    # 记录管理员这次借出操作
+                    try:
+                        record = AdminBorrowItemRecord.objects.create(user=user,
+                                                                      record_type=1,
+                                                                      borrow_item=borrow_item1,
+                                                                      pay_id=pay_id)
+                        record.save()
+                    except:
+                        # TODO 异常处理
+                        pass
                 except:
                     pass
             reply =  get_reply(0,'success')
+
             return Response(reply,HTTP_200_OK)
         else:
             reply = get_reply(16,'not a admin')
@@ -408,7 +426,7 @@ class VarifyReturnBookBarView(APIView):
     def post(self,request):
         user = request.user
         # 此处判断是否是管理员
-        if user.has_perm('library.is_a_admin'):
+        if user.has_perm('library.is_a_book_admin'):
             serializer = ReturnBookSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
@@ -457,7 +475,7 @@ class FinishReturnView(APIView):
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_admin'):
+        if user.has_perm('library.is_a_book_admin'):
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
@@ -501,7 +519,7 @@ class FinishReturnView(APIView):
             reply = get_reply(23, 'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)
         # user = request.user
-        # if user.has_perm('library.is_a_admin'):
+        # if user.has_perm('library.is_a_book_admin'):
         #     try:
         #         borrow_item = BorrowItem.objects.get(pk=pk)
         #         borrow_item.finish_return = True
@@ -693,7 +711,7 @@ def qrcode_info(request):
     :return:
     """
     user = request.user
-    if user  and  user.has_perm('library.is_a_admin'):
+    if user  and  user.has_perm('library.is_a_book_admin'):
         ctime = request.GET.get("ctime")
         id = request.GET.get("id")
         qrtype = request.GET.get('qrtype')
@@ -905,7 +923,7 @@ def order_info(request):
     :return:
     """
     user = request.user
-    if user  and  user.has_perm('library.is_a_admin'):
+    if user  and  user.has_perm('library.is_a_book_admin'):
         qrtype = request.GET.get("qrtype")
         book_id = request.GET.get("book_id")
         user_id = request.GET.get("id")

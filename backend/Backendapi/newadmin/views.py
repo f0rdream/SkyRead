@@ -1,5 +1,6 @@
 # coding:utf-8
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST,HTTP_403_FORBIDDEN
@@ -9,6 +10,7 @@ from rest_framework.permissions import (IsAuthenticated,
 from rest_framework.authentication import SessionAuthentication,BasicAuthentication
 from serializers import UserLoginSerializer
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import permission_required
 
 
 def get_reply(code,msg):
@@ -42,6 +44,14 @@ class AndroidUserLoginAPIView(APIView):
                 return Response(get_reply(120,'fail'),HTTP_403_FORBIDDEN)
         else:
             return Response(get_reply(120, 'fail'), HTTP_403_FORBIDDEN)
+
+
+def test_perm(request):
+    user = request.user
+    if user.has_perm('library.is_a_book_admin'):
+        return HttpResponse('ok')
+    else:
+        return HttpResponse('你不是管理员')
 
 
 
