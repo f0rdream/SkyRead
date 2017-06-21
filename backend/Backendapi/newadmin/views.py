@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST,HTTP_403_FORBIDDEN
 from rest_framework.views import APIView
@@ -52,6 +53,19 @@ def test_perm(request):
         return HttpResponse('ok')
     else:
         return HttpResponse('你不是管理员')
+
+
+@api_view(['GET'])
+def is_login_view(request):
+    """
+    check if the user is login
+    :param request:
+    :return:
+    """
+    if request.COOKIES['sessionid']== request.session.session_key:
+        return Response({'message':"the user has logged in"}, status=HTTP_200_OK)
+    else:
+        return Response({'message':"the user is not found"}, status=HTTP_400_BAD_REQUEST)
 
 
 
