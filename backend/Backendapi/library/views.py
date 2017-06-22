@@ -234,7 +234,7 @@ class VarifyAddToReturnBarView(APIView):
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_book_admin'):
+        if user.admin_permission.andriod_permisson:
             print request.data
             serializer = AddToReturnBarSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -275,7 +275,7 @@ class AddToReturnBarView(APIView):
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_book_admin'):
+        if user.admin_permission.andriod_permisson:
             print request.data
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -429,7 +429,7 @@ class VarifyReturnBookBarView(APIView):
     def post(self,request):
         user = request.user
         # 此处判断是否是管理员
-        if user.has_perm('library.is_a_book_admin'):
+        if user.admin_permission.andriod_permisson:
             serializer = ReturnBookSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
@@ -478,7 +478,7 @@ class FinishReturnView(APIView):
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_book_admin'):
+        if user.admin_permission.andriod_permisson:
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
@@ -525,7 +525,7 @@ class FinishReturnView(APIView):
             reply = get_reply(23, 'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)
         # user = request.user
-        # if user.has_perm('library.is_a_book_admin'):
+        # if user.admin_permission.andriod_permisson:
         #     try:
         #         borrow_item = BorrowItem.objects.get(pk=pk)
         #         borrow_item.finish_return = True
@@ -717,7 +717,7 @@ def qrcode_info(request):
     :return:
     """
     user = request.user
-    if user  and  user.has_perm('library.is_a_book_admin'):
+    if user  and  user.admin_permission.andriod_permisson:
         ctime = request.GET.get("ctime")
         id = request.GET.get("id")
         qrtype = request.GET.get('qrtype')
@@ -929,7 +929,7 @@ def order_info(request):
     :return:
     """
     user = request.user
-    if user  and  user.has_perm('library.is_a_book_admin'):
+    if user  and  user.admin_permission.andriod_permisson:
         qrtype = request.GET.get("qrtype")
         book_id = request.GET.get("book_id")
         user_id = request.GET.get("id")

@@ -17,3 +17,15 @@ class AdminBorrowItemRecord(models.Model):
     borrow_item = models.ForeignKey(BorrowItem,blank=True,null=True)
     pay_id = models.IntegerField(default=0)
     order_item = models.ForeignKey(to=SuccessOrderItem,blank=True,null=True)
+
+
+class Admin_Permission(models.Model):
+    """
+    自己写的用户权限限制
+    """
+    user = models.OneToOneField(User)
+    andriod_permisson = models.BooleanField(default=False)
+    admin_permisson = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.user.username

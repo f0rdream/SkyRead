@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+# 创建管理员
+<form role="form" action="{% url 'create_admin_user' %}" method="POST" class="login-form">
+                  {% csrf_token %}
+                <input name="username" type="text" placeholder="用户名"><br>
+                <input name="password" type="password" placeholder="密码"><br>
+                <button type="submit" class="btn btn-primary">注册</button>
+</form>
+</body>
+</html>
