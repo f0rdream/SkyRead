@@ -7,10 +7,9 @@ from rest_framework.permissions import (IsAuthenticated,
                                         AllowAny)
 from rest_framework.authentication import SessionAuthentication,BasicAuthentication
 from serializers import UserLoginSerializer,BorrowRecordSerializer,OrderRecordSerializer
-from models import AdminBorrowItemRecord
+from models import AdminBorrowItemRecord,Sign,SignRecord
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User, Permission
-
 
 def get_reply(code,msg):
     reply = dict()
@@ -125,6 +124,67 @@ class RecordSumView(APIView):
             'order': len(AdminBorrowItemRecord.objects.filter(user=user,record_type=3)),
         }
         return Response(reply,HTTP_200_OK)
+
+
+class SignItView(APIView):
+    """
+    员工签到
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        user = request.user
+        if not user.admin_permission.andriod_permisson:
+            return Response(get_reply(130,'not a admin'),HTTP_403_FORBIDDEN)
+        else:
+            try:
+                sign = Sign.objects.get(user=user)
+                before_times = sign.times
+                before_date = sign.date
+                import datetime
+                now_date =  datetime.datetime.now().date()
+                date_list = str(before_date.date()).split("-")
+                year = int(date_list[0])
+                month = int(date_list[1])
+                day = int(date_list[2])
+                before_date = datetime.datetime(year, month, day).date()
+                if now_date==before_date:
+                    # 今天已经签过
+                    return Response(get_reply(131,'have signed'),HTTP_400_BAD_REQUEST)
+                else:
+                    times = before_times +1
+                    sign.delete()
+                    new_sign = Sign.objects.create(user=user,times=times)
+                    new_sign.save()
+                    # 创建当天的签到记录
+                    sign_record = SignRecord.objects.create(user=user)
+                    sign_record.save()
+                    return Response(get_reply(0, 'success'),HTTP_200_OK)
+            except Exception as e:
+                print e,e.message
+                first_sign = Sign.objects.create(user=user,times=1)
+                first_sign.save()
+                # 创建当天的签到记录
+                sign_record = SignRecord.objects.create(user=user)
+                sign_record.save()
+                return Response(get_reply(0,'success'),HTTP_200_OK)
+
+
+class SignSumView(APIView):
+    """
+    签到统计
+    """
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        user = request.user
+        try:
+            sign = Sign.objects.get(user=user)
+            times = sign.times
+            reply={"times":times}
+        except:
+            reply = {"times":0}
+        return Response(reply,HTTP_200_OK)
+
 
 
 

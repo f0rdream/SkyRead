@@ -746,9 +746,11 @@ class PayView(APIView):
         try:
             pay = PayItem.objects.get(id=pay_id)
             state = pay.state
+            price = pay.price
             reply = {
                 'pay_id':pay_id,
-                'state':state
+                'state':state,
+                'price':price,
             }
             return Response(reply)
         except:

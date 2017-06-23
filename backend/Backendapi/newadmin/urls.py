@@ -4,7 +4,7 @@ from .views import (test_perm,index,
 from android_views import (AndroidUserLoginAPIView,
                            is_login_view,
                            BorrowRecordView,ReturnRecordView,OrderRecordView,
-                           AccountsInfoView,RecordSumView)
+                           AccountsInfoView,RecordSumView,SignItView,SignSumView)
 urlpatterns = [
     # urls for android admin
     url(r'^android_login/$',AndroidUserLoginAPIView.as_view()),
@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^record/order/$',OrderRecordView.as_view()),
     url(r'^record/sum/$',RecordSumView.as_view()),
     url(r'^accounts/$',AccountsInfoView.as_view()),
+    url(r'^sign/$',SignItView.as_view()),
+    url(r'^sign_sum/$',SignSumView.as_view()),
     # urls for web admin
     url(r'^test/$',test_perm),
     url(r'^index/$',index),

@@ -309,3 +309,11 @@ class ReadPlanDetailView(APIView):
             content = get_reply(116,'item not found')
             response = Response(content, HTTP_404_NOT_FOUND)
             return response
+
+
+class RecommandView(APIView):
+    """
+    得到推荐列表
+    """
+    permission_classes = [IsAuthenticated]
+    # 得到搜索历史,借书栏所有,订阅栏所有,收藏,读书计划,
