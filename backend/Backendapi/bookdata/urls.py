@@ -12,4 +12,6 @@ urlpatterns = [
     url(r'^starbook/(?P<pk>\d+)$',StarBookDetailView.as_view(),name='star_detail'),
     url(r'^readplan/$',ReadPlanView.as_view(),name='read_plan'),
     url(r'^readplan/(?P<pk>\d+)$',ReadPlanDetailView.as_view(),name='read_plan_detail'),
+    # database
+    # url(r'^')
 ]

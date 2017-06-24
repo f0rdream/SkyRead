@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'message',
     'history',
     'newadmin',
+    'booklist',
 )
 
 MIDDLEWARE_CLASSES = (

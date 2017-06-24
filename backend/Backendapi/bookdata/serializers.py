@@ -339,6 +339,7 @@ class ReadPlanDetailSerializer(ModelSerializer):
 
     def get_isbn13(self,obj):
         return obj.isbn13
+
     def get_title(self,obj):
         isbn13 = obj.isbn13
         try:

@@ -175,12 +175,15 @@ class SignSumView(APIView):
     签到统计
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request):
         user = request.user
         try:
             sign = Sign.objects.get(user=user)
+            username = user.username
             times = sign.times
-            reply={"times":times}
+            reply={"times":times,
+                   "username":username}
         except:
             reply = {"times":0}
         return Response(reply,HTTP_200_OK)

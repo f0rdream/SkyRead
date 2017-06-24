@@ -31,6 +31,8 @@ class Book(models.Model):
     author_intro = models.TextField(default='')
     price = models.CharField(max_length=100,default='')
     book_guide = models.IntegerField(default=0)
+    title_for_index = models.TextField(default=None,null=False)
+    author_for_index = models.TextField(default=None, null=False)
 
     def __unicode__(self):
         return self.title
@@ -86,3 +88,11 @@ class ReadPlan(models.Model):
     isbn13 = models.CharField(max_length=100)
     begin_time = models.DateTimeField(max_length=100,default=None)
     end_time = models.DateTimeField(max_length=100,default=None)
+
+
+class BrowsedBook(models.Model):
+    """
+    用户浏览过的书籍
+    """
+    user = models.ForeignKey(User)
+    isbn13 = models.CharField(max_length=200)

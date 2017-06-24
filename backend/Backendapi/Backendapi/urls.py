@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^amazon/', include('douban.urls')),
     url(r'^history/',include('history.urls')),
     url(r'^web/',include('newadmin.urls')),
+    url(r'^list/',include('booklist.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

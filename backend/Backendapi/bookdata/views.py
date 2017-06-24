@@ -1,12 +1,10 @@
 # coding:utf-8
 import time
-
 from django.db.models import Q
 from rest_framework.permissions import (
     IsAuthenticated,
     AllowAny,
 )
-
 from library.permissions import have_phone_register
 from .models import Book,Refer,Holding,StarBook, ReadPlan
 from .serializers import (BookInfoSerializer,
@@ -29,12 +27,13 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from history.models import SearchHistory
 from l_lib.function import get_reply
-from models import Comment
+from models import Comment,BrowsedBook
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]
     # authentication_classes = [SessionAuthentication]
     def get(self,request,isbn13):
+        user=request.user
         isbn13 = str(isbn13)
         try:
             book = Book.objects.get(isbn13=isbn13)
@@ -42,6 +41,18 @@ class BookInfoView(APIView):
             return Response({'error': 'can not find this book'}, HTTP_404_NOT_FOUND)
         serializer = BookInfoSerializer(book,data=request.data)
         serializer.is_valid(raise_exception=True)
+        # 存入用户兴趣的isbn13
+        try:
+            queryset = BrowsedBook.objects.filter(user=user,isbn13=isbn13)
+            if len(queryset) >= 1:
+                pass
+            else:
+                b = BrowsedBook.objects.create(user=request.user,isbn13=isbn13)
+                b.save()
+        except Exception as e:
+            print e
+            pass
+
         response = Response(serializer.data, HTTP_200_OK)
         return response
 
@@ -61,17 +72,47 @@ class Serach(APIView):
                 s.save()
         except Exception as e:
             print e
+        # 6.24日暂时只是返回标题模糊搜索结果
         if key:
-            title_queryset = Book.objects.filter(Q(title__icontains=key) |
-                                                 Q(subtitle__icontains=key))
-            author_queryset = Book.objects.filter(Q(author__icontains=key))
+            begin = time.time()
+            from django.db import connection
+            cursor = connection.cursor()
+            title_for_index = ''
+            for i in key:
+                sql = "select number from bookinfo.char_number where title='%s'" % i
+                cursor.execute(sql)
+                rs = cursor.fetchall()
+                for row in rs:
+                    number = row[0]
+                    title_for_index += '&'
+                    title_for_index += number
+            select_sql = "select isbn13 from bookdata_book where match (title_for_index)\
+              against ('+%s' in boolean mode) order by average desc limit 50;" % title_for_index
+            cursor.execute(select_sql)
+            title_rs = cursor.fetchall()
+            isbn13_list = []
+            for row in title_rs:
+                isbn13 = row[0]
+                isbn13_list.append(isbn13)
+            title_queryset = list()
+            for isbn13 in isbn13_list:
+                book = Book.objects.get(isbn13=isbn13)
+                title_queryset.append(book)
             title_serializer = ShortInto(title_queryset,data=request.data,many=True)
             title_serializer.is_valid(raise_exception=True)
-            author_serializer = ShortInto(author_queryset,data=request.data,many=True)
-            author_serializer.is_valid(raise_exception=True)
             reply = dict()
             reply['title_result'] = title_serializer.data
-            reply['author_result'] = author_serializer.data
+            # title_queryset = Book.objects.filter(Q(title__icontains=key) |
+            #                                      Q(subtitle__icontains=key))
+            # author_queryset = Book.objects.filter(Q(author__icontains=key))
+            # title_serializer = ShortInto(title_queryset,data=request.data,many=True)
+            # title_serializer.is_valid(raise_exception=True)
+            # author_serializer = ShortInto(author_queryset,data=request.data,many=True)
+            # author_serializer.is_valid(raise_exception=True)
+            # reply = dict()
+            # reply['title_result'] = title_serializer.data
+            # reply['author_result'] = author_serializer.data
+            print time.time()-begin
             return Response(reply,HTTP_200_OK)
         else:
             reply = {'msg':'None'}
@@ -166,7 +207,7 @@ class GuideBookView(APIView):
     """
     书籍导航
     """
-    permission_classes =  [IsAuthenticated]
+    permission_classes =  [AllowAny]
 
     def get(self,request,guide_id,page):
         if page < 1:
@@ -311,9 +352,3 @@ class ReadPlanDetailView(APIView):
             return response
 
 
-class RecommandView(APIView):
-    """
-    得到推荐列表
-    """
-    permission_classes = [IsAuthenticated]
-    # 得到搜索历史,借书栏所有,订阅栏所有,收藏,读书计划,

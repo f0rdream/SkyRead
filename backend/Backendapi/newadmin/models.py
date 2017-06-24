@@ -17,6 +17,9 @@ class AdminBorrowItemRecord(models.Model):
     borrow_item = models.ForeignKey(BorrowItem,blank=True,null=True)
     pay_id = models.IntegerField(default=0)
     order_item = models.ForeignKey(to=SuccessOrderItem,blank=True,null=True)
+    about_user =models.IntegerField(default=0)
+    def __unicode__(self):
+        return str(self.user.username)
 
 
 class Admin_Permission(models.Model):
@@ -46,4 +49,12 @@ class SignRecord(models.Model):
     """
     user= models.ForeignKey(User)
     date  =models.DateTimeField(auto_now_add=True)
+
+
+class ExcelFile(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+    excel = models.FileField(upload_to='./newadmin/upload/')
+    def __unicode__(self):
+        return self.excel.url
+
 

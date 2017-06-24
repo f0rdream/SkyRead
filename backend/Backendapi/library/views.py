@@ -298,7 +298,8 @@ class AddToReturnBarView(APIView):
                         record = AdminBorrowItemRecord.objects.create(user=user,
                                                                       record_type=1,
                                                                       borrow_item=borrow_item1,
-                                                                      pay_id=pay_id)
+                                                                      pay_id=pay_id,
+                                                                      about_user=borrow_item1.user.id)
                         record.save()
                     except:
                         # TODO 异常处理
@@ -501,6 +502,7 @@ class FinishReturnView(APIView):
                     record = AdminBorrowItemRecord.objects.create(user=user,
                                                                   record_type=2,
                                                                   borrow_item=borrow_item1,
+                                                                  about_user=borrow_item1.user.id
                                                                   )
                     record.save()
                 except:
@@ -975,7 +977,8 @@ class FinishGiveOrderItemView(APIView):
         user = request.user
         record = AdminBorrowItemRecord.objects.create(user=user,
                                                       record_type=3,
-                                                    order_item=order_item)
+                                                    order_item=order_item,
+                                                      about_user=order_item.user.id)
         record.save()
         order_item.be_out = True
         order_item.save()
