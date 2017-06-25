@@ -21,4 +21,4 @@ def create_qrcode(isbn13,id,title):
     filename = 'add_to_borrow_qrcode/%s--%s.png' % (isbn13,title)
     img.save(filename)
 
-create_qrcode('9787111251217','399126','编译原理')
+create_qrcode('9787111187776','554939','算法导论（原书第2版）')

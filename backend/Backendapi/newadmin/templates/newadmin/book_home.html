@@ -7,6 +7,7 @@
     <title>SkyRead后台管理</title>
 
     <!-- BOOTSTRAP STYLES-->
+
     <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
     <!-- FONTAWESOME STYLES-->
     <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet" />
@@ -18,6 +19,7 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
 <body>
+  <script src="{% static 'js/jquery-3.2.1.min.js'%}"></script>
     <div id="wrapper">
         <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
@@ -53,7 +55,7 @@
 
                     </li>
                     <li>
-                        <a class="active-menu"><i class="fa fa-dashboard "></i>数据总览</a>
+                        <a  href="{%url 'adminer_home'%}"><i class="fa fa-dashboard "></i>数据总览</a>
                     </li>
                     <li>
                         <a href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
@@ -62,7 +64,7 @@
                         <a href="#"><i class="fa fa-yelp "></i>用户管理</a>
                     </li>
                     <li>
-                        <a href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
+                        <a class="active-menu"><i class="fa fa-flash "></i>书籍管理</a>
                     </li>
                      <li>
                         <a href="#"><i class="fa fa-coffee"></i>平台管理</a>
@@ -79,7 +81,46 @@
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
             <div id="page-inner">
-
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					请输入商品详情
+				</h4>
+			</div>
+			<div class="modal-body">
+				<form  action="" method="POST" enctype="multipart/form-data">
+					<!--提交新的商品表单-->
+					 {% csrf_token %}
+  				<input type="text" name="name" class="form-control" placeholder="商品名称"><br/>
+					<textarea name="desc" class="form-control"   placeholder="商品简介..." rows="3"></textarea><br/>
+  					<input type="text" name="price"  class="form-control"  placeholder="价格"><br/>
+					<select class="form-control" name= "college">
+										<option>筛选学院</option>
+										<option>国际软件学院</option>
+										<option>计算机学院</option>
+										<option>测绘学院</option>
+									</select>
+  	 				<input type="file" name="picture" class="form-control" /><br/>
+			</div>
+			<div  class="modal-footer">
+				<button type="submit" class="btn btn-primary" >
+					发布商品
+				</button>
+			</div>
+			 </form>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+                </div>
+<div align="center">
+  	 <button  class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal">
+				发布新的商品
+	</button>
+</div>
 
             </div>
             <!-- /. PAGE INNER  -->

@@ -17,7 +17,7 @@ class AdminBorrowItemRecord(models.Model):
     borrow_item = models.ForeignKey(BorrowItem,blank=True,null=True)
     pay_id = models.IntegerField(default=0)
     order_item = models.ForeignKey(to=SuccessOrderItem,blank=True,null=True)
-    about_user =models.IntegerField(default=0)
+    about_user = models.IntegerField(default=0)
     def __unicode__(self):
         return str(self.user.username)
 

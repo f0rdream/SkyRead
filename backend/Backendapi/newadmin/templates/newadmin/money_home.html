@@ -4,8 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SkyRead后台管理</title>
-
+    <title>财务管理</title>
     <!-- BOOTSTRAP STYLES-->
     <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
     <!-- FONTAWESOME STYLES-->
@@ -53,7 +52,7 @@
 
                     </li>
                     <li>
-                        <a class="active-menu"><i class="fa fa-dashboard "></i>数据总览</a>
+                        <a href="{%url 'newadmin_index'%}"><i class="fa fa-dashboard "></i>数据总览</a>
                     </li>
                     <li>
                         <a href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
@@ -62,14 +61,14 @@
                         <a href="#"><i class="fa fa-yelp "></i>用户管理</a>
                     </li>
                     <li>
-                        <a href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
+                        <a href="table.html"><i class="fa fa-flash "></i>书籍管理</a>
                     </li>
                      <li>
                         <a href="#"><i class="fa fa-coffee"></i>平台管理</a>
                     </li>
 
                     <li>
-                        <a href="{%url 'money_home'%}"><i class="fa fa-square-o "></i>财务管理</a>
+                        <a class="active-menu"><i class="fa fa-square-o "></i>财务管理</a>
                     </li>
                 </ul>
 
@@ -79,8 +78,11 @@
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
             <div id="page-inner">
+                # 充值
 
+                # 查询
 
+                # 退款
             </div>
             <!-- /. PAGE INNER  -->
         </div>
@@ -101,8 +103,5 @@
     <script src="assets/js/jquery.metisMenu.js"></script>
        <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
-
-
-
 </body>
 </html>

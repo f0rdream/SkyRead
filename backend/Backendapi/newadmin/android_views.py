@@ -170,7 +170,7 @@ class SignItView(APIView):
                 return Response(get_reply(0,'success'),HTTP_200_OK)
 
 
-class SignSumView(APIView):
+class InfoView(APIView):
     """
     签到统计
     """
@@ -178,14 +178,19 @@ class SignSumView(APIView):
 
     def get(self,request):
         user = request.user
+        username = user.username
+        reply = {
+            "username": username,
+            'borrow': len(AdminBorrowItemRecord.objects.filter(user=user, record_type=1)),
+            'return': len(AdminBorrowItemRecord.objects.filter(user=user, record_type=2)),
+            'order': len(AdminBorrowItemRecord.objects.filter(user=user, record_type=3)),
+        }
         try:
             sign = Sign.objects.get(user=user)
-            username = user.username
             times = sign.times
-            reply={"times":times,
-                   "username":username}
+            reply['times'] = times
         except:
-            reply = {"times":0}
+            reply['times'] = 0
         return Response(reply,HTTP_200_OK)
 
 
