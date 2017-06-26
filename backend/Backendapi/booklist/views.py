@@ -18,28 +18,37 @@ from l_lib.function import get_reply
 from django.db import connection
 # Create your views here.
 from bookdata.models import BrowsedBook,ReadPlan,StarBook
+from bookdata.models import Book
+from bookdata.serializers import ShortInto
 from library.models import BorrowItem,SuccessOrderItem,WaitOrderItem
+
 
 class TagBookListView(APIView):
     """
     根据tag检索书籍
     """
     permission_classes = [AllowAny]
-    def get(self,request):
+
+    def get(self,request,page):
         import time
         begin =time.time()
         key = self.request.GET.get("key")
         cursor = connection.cursor()
-        select_sql ="select isbn13 from bookinfo.isbn13_tag where tag='%s' limit 20" % key
+        select_sql ="select isbn13 from bookinfo.isbn13_tag \
+        where tag='%s' limit  %d,20" % (key,int(page))
         cursor.execute(select_sql)
         tag_rs = cursor.fetchall()
-        isbn_list = list()
+        queryset = list()
         for row in tag_rs:
             isbn13 = row[0]
-            isbn_list.append(isbn13)
-        reply={'list':isbn_list}
-        print time.time()-begin
-        return Response(reply,HTTP_200_OK)
+            try:
+                book = Book.objects.get(isbn13=isbn13)
+                queryset.append(book)
+            except:
+                pass
+        serializer = ShortInto(queryset, many=True, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, HTTP_200_OK)
 
 
 class AuthorBookListView(APIView):
@@ -47,22 +56,28 @@ class AuthorBookListView(APIView):
     根据author检索书籍
     """
     permission_classes = [IsAuthenticated]
-    def get(self,request):
+
+    def get(self,request,page):
         import time
         begin =time.time()
         key = self.request.GET.get("key")
         cursor = connection.cursor()
-        select_sql ="select isbn13 from bookinfo.isbn13_author where author='%s' limit 20" % key
+        select_sql ="select isbn13 from bookinfo.isbn13_author where author='%s' \
+         order by average desc limit %d,20 " % (key,int(page))
         cursor.execute(select_sql)
-        tag_rs = cursor.fetchall()
-        isbn_list = list()
-        for row in tag_rs:
+        author_rs = cursor.fetchall()
+        queryset = list()
+        for row in author_rs:
             isbn13 = row[0]
-            isbn_list.append(isbn13)
-        reply={'list':isbn_list}
+            try:
+                book = Book.objects.get(isbn13=isbn13)
+                queryset.append(book)
+            except:
+                pass
+        serializer = ShortInto(queryset, many=True, data=request.data)
+        serializer.is_valid(raise_exception=True)
         print time.time()-begin
-        return Response(reply,HTTP_200_OK)
-
+        return Response(serializer.data, HTTP_200_OK)
 
 
 class RecommandView(APIView):

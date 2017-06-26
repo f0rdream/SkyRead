@@ -6,10 +6,10 @@ from django.test import TestCase
 # dict['c'].pop('d')
 # print dict
 import datetime
-a = str(datetime.datetime.now().date())
-b =  str(datetime.datetime(2017,6,23).date())
-print b
-if a==b:
-    print '=='
-else:
-    print "no"
+# a = str(datetime.datetime.now().date())
+# b =  str(datetime.datetime(2017,6,23).date())
+# print b
+# if a==b:
+#     print '=='
+# else:
+#     print "no"
