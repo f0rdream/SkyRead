@@ -13,12 +13,20 @@ class WeChatUser(models.Model):
     country = models.CharField(max_length=1000,default='')
     headimgurl = models.CharField(max_length=1000,default='')
 
+    def __unicode__(self):
+        return self.nickname
+
 
 class PhoneUser(models.Model):
     user = models.OneToOneField(User)
     phone_number = models.CharField(max_length=200,primary_key=True)
-    email = models.CharField(max_length=200,blank=True,null=True)
-    real_name = models.CharField(max_length=200,blank=True,null=True)
+    email = models.CharField(max_length=200,default=None,blank=True,null=True)
+    real_name = models.CharField(max_length=200,default=None,blank=True,null=True)
+    money = models.IntegerField(default=0)
+    return_message = models.BooleanField(default=True)
+    order_message = models.BooleanField(default=True)
 
+    def __unicode__(self):
+            return self.phone_number
 
 

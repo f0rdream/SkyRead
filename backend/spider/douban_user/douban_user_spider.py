@@ -70,7 +70,7 @@ def get_book_item(href):
         print e
 
 def log(i):
-    with open('newlog.txt','a') as l:
+    with open('newlog2.txt','a') as l:
         l.write(i+"success"+"\n")
         l.close()
 def get_user_href(book_id,begin,end):
@@ -99,10 +99,8 @@ def get_user_href(book_id,begin,end):
         log(book_id+"----"+str(i))
 
 a = time.time()
-dict = [
-        "1002299","3813669","1775691",
-        "3369793","2143732","1064275","2340100","1082387","1040211"]
-# fu er mo si tan an quan ji
+dict = ["1827374","1029159","6388661","2159042","1030052","3369600","1949338"]
+# 蔡康永的说话之道  用爬虫把id爬下来
 for i  in dict:
     get_user_href(i,0,15)  # 500-560页码
     print time.time() - a

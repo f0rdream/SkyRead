@@ -6,7 +6,6 @@ from .views import (BorrowItemView,
                     VarifyAddToReturnBarView,
                     AddToReturnBarView,
                     ReturnItemView,
-                    ReturnQrCodeView,
                     ManyReturnQrCodeView,
                     ReturnItemDetailDeleteView,
                     VarifyReturnBookBarView,
@@ -21,7 +20,12 @@ from .views import (BorrowItemView,
                     PayItView,
                     ConfirmIt,
                     AdminConfirmInfo,
-                    MyReadedBook)
+                    MyReadedBook,
+                    ChangeWaitToSuccess,
+                    ContinueReturnBook,
+                    ReturnItemConfirmInfo,
+                    order_info,
+                    FinishGiveOrderItemView)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$',BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -34,19 +38,25 @@ urlpatterns = [
     url(r'^return/qrcode/$', ManyReturnQrCodeView.as_view(), name='get_return_qrcode'),
     url(r'^return/verify',VarifyReturnBookBarView.as_view(),name='add'),
     url(r'^return/change_bar',FinishReturnView.as_view(),name='finish_return'),
+    url(r'^return/continue', ContinueReturnBook.as_view(), name='continue_return'),
+    url(r'^return/confirm/(?P<return_id>\d+)$',ReturnItemConfirmInfo.as_view(),name='confirm_info'),
     # order's urls
     url(r'^order/success/$',OrderSuccessView.as_view(),name='order_create_list'),
     url(r'^order/success/(?P<pk>\d+)$',SuccessOrderDetailView.as_view(),name='order_de'),
     url(r'^order/wait/$',OrderWaitView.as_view(),name='order_wait'),
     url(r'^order/wait/(?P<pk>\d+)$',WaitOrderDetailView.as_view(),name='wait_de'),
+    url(r'^order/wait/change_bar/$',ChangeWaitToSuccess.as_view(),name='change_wait_bar'),
+    url(r'order/finish/$',FinishGiveOrderItemView.as_view()),
+    # url(r'^order/wait/change_bar/$',ChangeWaitToSuccess.as_view(),name='change_wait_bar'),
     url(r'^curl/$',CurlListView.as_view()),
     # qrcode_info
     url(r'^qrcode_info/$',qrcode_info,name='get_qrcode_info'),
+    url(r'^order_info/$',order_info,name='get_order_info'),
     # pay's urls
     url(r'^pay_info/(?P<pay_id>\d+)$', PayView.as_view(), name='get_pay_info'),
     url(r'^pay/(?P<pay_id>\d+)$',PayItView.as_view(),name='pay_it'),
     url(r'^confirm_info/(?P<pay_id>\d+)$',AdminConfirmInfo.as_view(),name='confirm info'),
     url(r'^confirm/(?P<pay_id>\d+)$',ConfirmIt.as_view(),name='confirm_it'),
     # history's urls
-    url(r'^readed/$',MyReadedBook.as_view(),name='read history')
+    url(r'^readed/$',MyReadedBook.as_view(),name='read history'),
 ]

@@ -1,7 +1,12 @@
 # coding:utf-8
 import sys
+
+import datetime
+
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
+
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -13,7 +18,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly
 )
-from .models import BorrowItem,SuccessOrderItem,WaitOrderItem,PayItem
+from .models import BorrowItem,SuccessOrderItem,WaitOrderItem,PayItem,ReturnItem
 from .serializers import (
     BorrowItemCreateSerializer,
     BorrowItemDetailSerializer,
@@ -23,7 +28,13 @@ from .serializers import (
     SuccessOrderItemCreateSerializer,
     SuccessOrderItemDetailSerializer,
     WaitOrderItemCreateSerializer,
-    WaitOrderItemDetailSerializer,IdListSerializer)
+    WaitOrderItemDetailSerializer,
+    IdListSerializer,
+    ISBN13Serializer,
+    IdSerializer,
+    ReturnItemSerializer,
+    BorrowIdListSerializer,
+    GetOrderRecordSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -34,9 +45,12 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode
+from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode,\
+    create_return_qrcode
 from permissions import have_phone_register
-from bookdata.models import Holding
+from bookdata.models import Holding,Book
+from accounts.models import PhoneUser,WeChatUser
+from newadmin.models import AdminBorrowItemRecord
 
 class BorrowItemView(APIView):
     """
@@ -191,11 +205,15 @@ class ManyBorrowQrCodeView(APIView):
         price = get_price(id_list)
         ctime = time.time()
         qrtype = 'borrow'
+        borrow_id = ""
+        for i in id_list:
+            borrow_id += 'b' + str(i)  # 参数最后的样子:id = b1b2b3b56
         # 在这里创建一个pay,得到唯一的pay_id
         pay = PayItem.objects.create(user=request.user,
                                      state=False,
                                      confirm=False,
-                                     price = price
+                                     price = price,
+                                     borrow_id=borrow_id,
                                      )
         pay.save()
         pay_id = pay.id
@@ -216,7 +234,7 @@ class VarifyAddToReturnBarView(APIView):
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_admin'):
+        if user.admin_permission.andriod_permisson:
             print request.data
             serializer = AddToReturnBarSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -253,15 +271,16 @@ class AddToReturnBarView(APIView):
     管理员核对无误后把书籍加入还书栏,馆藏信息改变
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = IdListSerializer
+    serializer_class = BorrowIdListSerializer
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_admin'):
+        if user.admin_permission.andriod_permisson:
             print request.data
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
+            pay_id = serializer.validated_data['pay_id']
             for id in id_list:
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
@@ -274,9 +293,21 @@ class AddToReturnBarView(APIView):
                     holding.back_time = borrow_item1.return_time
                     holding.save()
                     borrow_item1.save()
+                    # 记录管理员这次借出操作
+                    try:
+                        record = AdminBorrowItemRecord.objects.create(user=user,
+                                                                      record_type=1,
+                                                                      borrow_item=borrow_item1,
+                                                                      pay_id=pay_id,
+                                                                      about_user=borrow_item1.user.id)
+                        record.save()
+                    except:
+                        # TODO 异常处理
+                        pass
                 except:
                     pass
             reply =  get_reply(0,'success')
+
             return Response(reply,HTTP_200_OK)
         else:
             reply = get_reply(16,'not a admin')
@@ -299,6 +330,24 @@ class ReturnItemView(APIView):
         queryset = BorrowItem.objects.filter(user=user,in_return_bar=True,finish_return=False)
         serializer = BorrowItemDetailSerializer(queryset,data=request.data,many=True)
         serializer.is_valid(raise_exception=True)
+        for i in serializer.data:
+            # 在返回数据中,增加到期时间
+            return_time = i['return_time']
+            date_list = return_time.split("-")
+            year = int(date_list[0])
+            month = int(date_list[1])
+            day = int(date_list[2])
+            return_date = datetime.datetime(year, month, day)
+            now_date = datetime.datetime.now()
+            due =  (return_date - now_date).days
+            i['due'] = due
+            if i < 7:
+                i['due_in_7'] = True
+                if i < 3:
+                    i['due_in_3'] = True
+            else:
+                i['due_in_7'] = False
+                i['due_in_3'] = False
         response = Response(serializer.data,HTTP_200_OK)
         return response
 
@@ -318,32 +367,30 @@ class ReturnItemDetailDeleteView(APIView):
             borrow_item = BorrowItem.objects.get(user=user,pk=pk)
             serializer = BorrowItemDetailSerializer(borrow_item,data=request.data)
             serializer.is_valid(raise_exception=True)
+            for i in serializer.data:
+                # 在返回数据中,增加到期时间
+                return_time = i['return_time']
+                date_list = return_time.split("-")
+                year = int(date_list[0])
+                month = int(date_list[1])
+                day = int(date_list[2])
+                return_date = datetime.datetime(year, month, day)
+                now_date = datetime.datetime.now()
+                due = (return_date - now_date).days
+                i['due'] = due
+                if i < 7:
+                    i['due_in_7'] = True
+                    if i < 3:
+                        i['due_in_3'] = True
+                else:
+                    i['due_in_7'] = False
+                    i['due_in_3'] = False
             response = Response(serializer.data,HTTP_200_OK)
             return response
         except BorrowItem.DoesNotExist:
             reply = get_reply(20,'item not found')
             response = Response(reply,HTTP_404_NOT_FOUND)
             return response
-
-
-class ReturnQrCodeView(APIView):
-    """
-    生成还书时给管理员扫的二维码,单本还书
-    """
-    permission_classes = [IsAuthenticated]
-    def get(self,request,pk):
-        if not have_phone_register(user=request.user):
-            reply = get_reply(17,'not register with phone')
-            return Response(reply,HTTP_403_FORBIDDEN)
-        borrow_item = BorrowItem.objects.get(pk=pk)
-        ctime = time.time()
-        qrcode = "return"
-        create_qrcode(pk,ctime,qrcode,None)
-        url = '/media/return_qrcode/'+str(pk)+".png"
-        borrow_item.qrcode = url
-        borrow_item.save()
-        content = {'url':url}
-        return Response(content,HTTP_200_OK)
 
 
 class ManyReturnQrCodeView(APIView):
@@ -362,11 +409,16 @@ class ManyReturnQrCodeView(APIView):
         id_list = serializer.validated_data['id_list']
         ctime = time.time()
         qrtype = 'return'
-        url = create_qrcode(id_list,ctime,qrtype,None)
+        # 创建一个还书item,得到return_id
+        return_item = ReturnItem.objects.create(user=request.user,
+                                             confirm=False)
+        return_item.save()
+        return_id = return_item.id
+        url = create_return_qrcode(id_list,ctime,qrtype,return_id)
         reply = dict()
         reply['url'] = url
+        reply['return_id'] = return_id
         return Response(reply,HTTP_200_OK)
-
 
 
 class VarifyReturnBookBarView(APIView):
@@ -378,7 +430,7 @@ class VarifyReturnBookBarView(APIView):
     def post(self,request):
         user = request.user
         # 此处判断是否是管理员
-        if user.has_perm('library.is_a_admin'):
+        if user.admin_permission.andriod_permisson:
             serializer = ReturnBookSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
@@ -410,7 +462,7 @@ class VarifyReturnBookBarView(APIView):
             # # 返回书籍信息
             # id = serializer.validated_data['id']
             # borrow_item = BorrowItem.objects.get(pk=id)
-            # serializer = ReturnBookInfoToAdmin(borrow_item,data=request.data)
+             # serializer = ReturnBookInfoToAdmin(borrow_item,data=request.data)
             # serializer.is_valid(raise_exception=True)
             # return Response(serializer.data,HTTP_200_OK)
         else:
@@ -420,17 +472,18 @@ class VarifyReturnBookBarView(APIView):
 
 class FinishReturnView(APIView):
     """
-    管理员核对无误后完成还书,更改馆藏信息
+    管理员核对无误后完成还书,更改馆藏信息,退还押金,记录操作
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = IdListSerializer
+    serializer_class = ReturnItemSerializer
 
     def post(self,request):
         user = request.user
-        if user.has_perm('library.is_a_admin'):
+        if user.admin_permission.andriod_permisson:
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
+
             for id in id_list:
                 try:
                     borrow_item1 = BorrowItem.objects.get(pk=id)
@@ -445,15 +498,36 @@ class FinishReturnView(APIView):
                     holding.back_time = "--"
                     holding.save()
                     borrow_item1.save()
+                    # 记录归还操作
+                    record = AdminBorrowItemRecord.objects.create(user=user,
+                                                                  record_type=2,
+                                                                  borrow_item=borrow_item1,
+                                                                  about_user=borrow_item1.user.id
+                                                                  )
+                    record.save()
                 except:
                     pass
+            # 将还书项的状态变为完成
+            return_id = serializer.validated_data['return_id']
+            try:
+                return_item = ReturnItem.objects.get(id=return_id)
+                return_item.confirm = True
+                return_user = return_item.user
+                # 返还金额
+                price = get_price(id_list)
+                phone_user = PhoneUser.objects.get(user=return_user)
+                phone_user.money += price
+                phone_user.save()
+                return_item.save()
+            except:
+                pass
             reply = get_reply(0, 'success')
             return Response(reply,HTTP_200_OK)
         else:
             reply = get_reply(23, 'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)
         # user = request.user
-        # if user.has_perm('library.is_a_admin'):
+        # if user.admin_permission.andriod_permisson:
         #     try:
         #         borrow_item = BorrowItem.objects.get(pk=pk)
         #         borrow_item.finish_return = True
@@ -509,7 +583,7 @@ class OrderSuccessView(APIView):
         :return:
         """
         user = request.user
-        queryset = SuccessOrderItem.objects.filter(user=user)
+        queryset = SuccessOrderItem.objects.filter(user=user,be_out=False)
         serializer = SuccessOrderItemDetailSerializer(queryset,data=request.data,many=True)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data,HTTP_200_OK)
@@ -596,6 +670,7 @@ class WaitOrderDetailView(APIView):
     返回或删除单个订阅等待的详情
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pk):
         try:
             w = WaitOrderItem.objects.get(pk=pk)
@@ -644,11 +719,12 @@ def qrcode_info(request):
     :return:
     """
     user = request.user
-    if user  and  user.has_perm('library.is_a_admin'):
+    if user  and  user.admin_permission.andriod_permisson:
         ctime = request.GET.get("ctime")
         id = request.GET.get("id")
         qrtype = request.GET.get('qrtype')
         pay_id = request.GET.get('pay_id')
+        return_id = request.GET.get('return_id')
         if not ctime:
             ctime = ""
         if not qrtype:
@@ -657,7 +733,10 @@ def qrcode_info(request):
             pay_id = ''
         if not id:
             id = ""
-        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+"&pay_id="+pay_id
+        if not return_id:
+            return_id = ''
+        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+\
+                "&pay_id="+pay_id+"&return_id="+return_id
         return HttpResponse(reply)
     else:
         return HttpResponse("您不是SkyRead的管理员,无权操作")
@@ -669,9 +748,11 @@ class PayView(APIView):
         try:
             pay = PayItem.objects.get(id=pay_id)
             state = pay.state
+            price = pay.price
             reply = {
                 'pay_id':pay_id,
-                'state':state
+                'state':state,
+                'price':price,
             }
             return Response(reply)
         except:
@@ -681,10 +762,21 @@ class PayView(APIView):
 
 class PayItView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pay_id):
         user = request.user
         try:
             pay = PayItem.objects.get(id=pay_id,user=user)
+            price = pay.price
+            try:
+                phone_user = PhoneUser.objects.get(user=user)
+                phone_user.money -= price
+                if phone_user.money < 0:
+                    return Response(get_reply(111,'money not enough'))
+                phone_user.save()
+            except:
+                reply = get_reply(94, 'not found')
+                return Response(reply, HTTP_404_NOT_FOUND)
             pay.state = True
             pay.save()
             reply = get_reply(0,'success')
@@ -747,5 +839,153 @@ class MyReadedBook(APIView):
         except:
             reply = get_reply(97,'not found')
             return Response(reply,HTTP_404_NOT_FOUND)
+
+
+class ChangeWaitToSuccess(APIView):
+    """
+    將等待狀態的书籍约定时间去取
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = ISBN13Serializer
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        wait_id = serializer.validated_data['wait_id']
+        order_time = serializer.validated_data['order_time']
+        # 删除原来的wait item
+        try:
+            wait_item = WaitOrderItem.objects.get(id=wait_id)
+            wait_item.delete()
+            book_id = wait_item.book_id
+            isbn13 = " "
+            try:
+                holding = Holding.objects.get(id=book_id)
+                title = holding.book.title
+                isbn13 = holding.isbn13
+            except:
+                title = ''
+            # try:
+            s = SuccessOrderItem.objects.create(user=request.user,
+                                                isbn13=isbn13,
+                                                order_time=order_time,
+                                                book_id=book_id,
+                                                title=title)
+            s.save()
+            return Response(get_reply(0,'success'),HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(get_reply(110,'fail'))
+
+
+class ContinueReturnBook(APIView):
+    """
+    正在借阅的书籍自动续借28天,没有到期限内的7天不让借阅
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = IdSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id = serializer.validated_data['id']
+        try:
+            return_book = BorrowItem.objects.get(id=id)
+            return_time = return_book.return_time
+            date_list = return_time.split("-")
+            year = int(date_list[0])
+            month = int(date_list[1])
+            day = int(date_list[2])
+            return_date = datetime.datetime(year, month, day)
+            new_return_date = return_date + datetime.timedelta(days=28)
+            return_book.return_time = str(new_return_date.date())
+            return_book.save()
+            return Response(get_reply(0,'success'),HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(get_reply(112,'fail'))
+
+
+class ReturnItemConfirmInfo(APIView):
+    """
+    获取还书项的信息
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, return_id):
+        user = request.user
+        try:
+            return_item = ReturnItem.objects.get(id=return_id, user=user)
+            confirm = return_item.confirm
+            reply = {
+                "return_id": return_id,
+                "confirm": confirm
+            }
+            return Response(reply, HTTP_200_OK)
+        except:
+            reply = get_reply(114, 'not found')
+            return Response(reply, HTTP_404_NOT_FOUND)
+
+
+def order_info(request):
+    """
+    二维码验证,验证时间和管理员
+    :param request:
+    :return:
+    """
+    user = request.user
+    if user  and  user.admin_permission.andriod_permisson:
+        qrtype = request.GET.get("qrtype")
+        book_id = request.GET.get("book_id")
+        user_id = request.GET.get("id")
+        title = request.GET.get('title')
+        order_id = request.GET.get('order_id')
+        if not book_id:
+            book_id = ""
+        if not user_id:
+            user_id = ""
+        if not title:
+            title = ''
+        if not qrtype:
+            qrtype = ''
+        nickname=  '获取昵称失败'
+        if user_id:
+            user = User.objects.get(id=user_id)
+            try:
+                wechat_user = WeChatUser.objects.get(openid=user.username)
+                nickname = wechat_user.nickname
+            except:
+                nickname = '获取昵称失败'
+        reply = "title="+title+"&nickname="+nickname+\
+                "&book_id="+book_id+"&qrtype="+qrtype+"&order_id="+order_id
+        return HttpResponse(reply)
+    else:
+        return HttpResponse("您不是SkyRead的管理员,无权操作")
+
+
+class FinishGiveOrderItemView(APIView):
+    """
+    完成订阅,返回,记录订阅操作
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetOrderRecordSerializer
+
+    def post(self,request):
+        serializer = GetOrderRecordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order_id = serializer.validated_data['order_id']
+        order_item = SuccessOrderItem.objects.get(id=order_id)
+        user = request.user
+        record = AdminBorrowItemRecord.objects.create(user=user,
+                                                      record_type=3,
+                                                    order_item=order_item,
+                                                      about_user=order_item.user.id)
+        record.save()
+        order_item.be_out = True
+        order_item.save()
+        return Response(get_reply(0,'success'))
+
+
+
+
 
 

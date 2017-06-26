@@ -3,7 +3,7 @@ import time
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
+from accounts.models import WeChatUser
 from rest_framework.serializers import (
     SerializerMethodField,
     ModelSerializer,
@@ -13,7 +13,9 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book,Refer,Holding
+from .models import Book,Refer,Holding, StarBook, Comment,ReadPlan
+
+
 class BookInfoSerializer(ModelSerializer):
     """
     基本信息序列化器
@@ -249,6 +251,100 @@ class HoldingSerializer(ModelSerializer):
 
 class StarBookSerializer(Serializer):
     """
-    我的收藏
+    创建我的收藏
     """
     isbn13 = CharField()
+
+
+class StarBookDetailSerializer(ModelSerializer):
+    """
+    我的收藏序列化
+    """
+    id = SerializerMethodField()
+    short_info = SerializerMethodField()
+
+    class Meta:
+        model = StarBook
+        fields = [
+            'id',
+            'short_info',
+        ]
+
+    def get_id(self,obj):
+        id = obj.id
+        return id
+
+    def get_short_info(self,obj):
+        book = obj.book
+        short_info = ShortInto(book,data={})
+        short_info.is_valid(raise_exception=True)
+        return short_info.data
+
+class PostCommentSerializer(ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['content']
+
+
+class CommentDetailSerializer(ModelSerializer):
+    nickname = SerializerMethodField()
+    class Meta:
+        model = Comment
+        fields = ['content','nickname']
+    def get_nickname(self,obj):
+        username = obj.user.username
+        try:
+            wechat_user = WeChatUser.objects.get(openid=username)
+            nickname = wechat_user.nickname
+            return nickname
+        except:
+            return '--'
+
+
+class PostReadPlanSerializer(ModelSerializer):
+    class Meta:
+        model= ReadPlan
+        fields = [
+            'isbn13',
+            'begin_time',
+            'end_time',
+        ]
+
+    def validate(self, data):
+        isbn13 = data.get('isbn13')
+        begin_time = data.get('begin_time')
+        end_time = data.get('end_time')
+
+        if not isbn13:
+            raise ValidationError('lack isbn13')
+        if not begin_time:
+            raise ValidationError('lack begin_time')
+        if not end_time:
+            raise ValidationError('lack end_time')
+        return data
+
+
+class ReadPlanDetailSerializer(ModelSerializer):
+    title = SerializerMethodField()
+
+    class Meta:
+        model = ReadPlan
+        fields = [
+            'id',
+            'title',
+            'isbn13',
+            'begin_time',
+            'end_time',
+        ]
+
+    def get_isbn13(self,obj):
+        return obj.isbn13
+
+    def get_title(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+            return title
+        except:
+            return "--"

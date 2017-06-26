@@ -38,6 +38,7 @@ class BorrowItemCreateSerializer(ModelSerializer):
             raise ValidationError('lack book_id')
         return data
 
+
 class BorrowItemDetailSerializer(ModelSerializer):
     user = SerializerMethodField()
     nickname = SerializerMethodField()
@@ -263,6 +264,7 @@ class SuccessOrderItemDetailSerializer(ModelSerializer):
     def get_id(self,obj):
         return obj.pk
 
+
 class WaitOrderItemDetailSerializer(ModelSerializer):
     """
     订阅栏中等待状态的详情的序列化器
@@ -277,6 +279,7 @@ class WaitOrderItemDetailSerializer(ModelSerializer):
             'title',
             'book_id',
             'may_return_time',
+            'return_state',
         ]
 
     def get_id(self,obj):
@@ -290,3 +293,42 @@ class IdListSerializer(serializers.Serializer):
     id_list = ListField(
         child = IntegerField()
     )
+
+
+class BorrowIdListSerializer(serializers.Serializer):
+    """
+    批量生成的id的list
+    """
+    id_list = ListField(
+        child = IntegerField()
+    )
+    pay_id = IntegerField()
+
+
+class ISBN13Serializer(serializers.Serializer):
+    """
+    ISBN13
+    """
+    wait_id = serializers.IntegerField()
+    order_time = serializers.DateTimeField()
+
+
+class IdSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
+class ReturnItemSerializer(serializers.Serializer):
+    """
+    批量生成的id的list
+    """
+    id_list = ListField(
+        child = IntegerField()
+    )
+    return_id = IntegerField()
+
+
+class GetOrderRecordSerializer(serializers.Serializer):
+    """
+    生成取书籍记录
+    """
+    order_id = IntegerField()

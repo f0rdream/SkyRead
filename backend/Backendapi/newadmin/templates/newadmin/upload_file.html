@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传文件</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<form  action="{% url 'upload_excel' %}" method="POST" enctype="multipart/form-data">
+					<!--提交新的商品表单-->
+					 {% csrf_token %}
+	<div class="form-group">
+		<label for="inputfile">文件输入</label>
+		<input type="file" id="inputfile" name="excel">
+	</div>
+	<button type="submit" class="btn btn-primary" >
+					提交
+	</button>
+</form>
+</body>
+</html>
