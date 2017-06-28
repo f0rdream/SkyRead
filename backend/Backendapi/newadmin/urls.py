@@ -39,4 +39,5 @@ urlpatterns = [
     url(r'^add_book/$',add_book,name='add_book'),
     url(r'^user_home/$',user_home,name='user_home'),
     url(r'^download/$',file_download,name='download'),
+    url(r'^user_detail/(?P<id>\d+)$',user_detail,name='user_detail'),
 ]

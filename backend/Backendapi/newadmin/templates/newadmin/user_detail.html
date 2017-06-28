@@ -1,105 +1,333 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <title>用户表格</title>
-     <meta charset="utf-8">
-    <!-- 引入 ECharts 文件 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.2/echarts.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyRead后台管理</title>
+
+    <!-- BOOTSTRAP STYLES-->
+    <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet" />
+       <!--CUSTOM BASIC STYLES-->
+    <link href="{% static 'assets/css/basic.css'%}" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="{% static 'assets/css/custom.css'%}" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
 <body>
-# 所有用户<br>
-<!--{% for i in username_list %}-->
-<!--{{i.username}}<br>-->
-<!--{% endfor %}-->
-<!--调用数据典范-->
-<!--{%for key,value in reply.items%}-->
-<!--{{key}}<br>-->
-<!--{%for key2,value2 in value.items%}<br>-->
-<!--{{key2}}-->
-<!--{{value2}}-->
-<!--{%endfor%}-->
-<!--{%endfor%}-->
-echarts 试用
- <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-    <div id="main" style="width: 600px;height:400px;"></div>
-    <div id="bing" style="width: 600px;height:400px;"></div>
-<script type="text/javascript">
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">SkyRead 微读伴侣</a>
+            </div>
+
+            <div class="header-right">
+
+                <a href="message-task.html" class="btn btn-info" title="New Message"><b>30 </b><i class="fa fa-envelope-o fa-2x"></i></a>
+                <a href="message-task.html" class="btn btn-primary" title="New Task"><b>40 </b><i class="fa fa-bars fa-2x"></i></a>
+                <a href="login.html" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a>
+
+            </div>
+        </nav>
+        <!-- /. NAV TOP  -->
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+                    <li>
+                        <div class="user-img-div">
+                            <img src="{% static 'assets/img/user.png'%}" class="img-thumbnail" />
+
+                            <div class="inner-text">
+                                唐宗钰
+                            </div>
+                        </div>
+
+                    </li>
+                    <li>
+                        <a href="{%url 'newadmin_index'%}"><i class="fa fa-dashboard "></i>数据总览</a>
+                    </li>
+                    <li>
+                        <a href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
+                    </li>
+                     <li>
+                        <a class="active-menu" href="{%url 'user_home'%}"><i class="fa fa-yelp "></i>用户管理</a>
+                    </li>
+                    <li>
+                        <a href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
+                    </li>
+                     <li>
+                        <a href="#"><i class="fa fa-coffee"></i>平台管理</a>
+                    </li>
+
+                    <li>
+                        <a href="{%url 'money_home'%}"><i class="fa fa-square-o "></i>财务管理</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </nav>
+        <!-- /. NAV SIDE  -->
+        <div id="page-wrapper">
+            <div id="page-inner">
+                <div class="row">
+                    <div class="col-md-6">
+                <div id="main" style="width: 600px;height:400px;"></div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            用户基本信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>昵称</th>
+                                            <th>{{wechat_user.nickname}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr>
+                                        <td>性别</td>
+                                          {% if wechat_user.sex == 1%}
+                                            <td>男</td>
+                                            {%else%}
+                                            <td>女</td>
+                                            {%endif%}
+                                    </tr>
+                                    <tr>
+                                        <td>省份</td>
+                                        <td>{{wechat_user.province}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>城市</td>
+                                        <td>{{wechat_user.city}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>正在订阅</td>
+                                        <td>{{borrow_sum}} 本</td>
+                                    </tr>
+                                    <tr>
+                                        <td>已经归还</td>
+                                        <td>{{return_sum}} 本</td>
+                                    </tr>
+                                    <tr>
+                                        <td>成功归还</td>
+                                        <td>{{order_success_sum}} 本</td>
+                                    </tr>
+                                    <tr>
+                                        <td>等待归还的订阅</td>
+                                        <td>{{order_wait_sum}} 本</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            正在借阅书目
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>索书号</th>
+                                            <th>馆藏位置</th>
+                                            <th>借书时间</th>
+                                            <th>约定归还时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in borrow_record %}
+                                    <tr>
+                                        <td>{{item.isbn13}}</td>
+                                        <td>{{item.book_id}}</td>
+                                        <td>{{item.find_id}}</td>
+                                        <td>{{item.location}}</td>
+                                        <td>{{item.borrow_time}}</td>
+                                        <td>{{item.return_time}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+                <div class="panel panel-danger">
+                        <div class="panel-heading">
+                            借阅历史
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>索书号</th>
+                                            <th>馆藏位置</th>
+                                            <th>借书时间</th>
+                                            <th>约定归还时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in return_record %}
+                                    <tr>
+                                        <td>{{item.isbn13}}</td>
+                                        <td>{{item.book_id}}</td>
+                                        <td>{{item.find_id}}</td>
+                                        <td>{{item.location}}</td>
+                                        <td>{{item.borrow_time}}</td>
+                                        <td>{{item.return_time}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+                <div class="panel panel-success">
+                        <div class="panel-heading">
+                            成功预订
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>书籍标题</th>
+                                            <th>约定取书时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in order_success_record %}
+                                    <tr>
+                                        <td>{{item.isbn13}}</td>
+                                        <td>{{item.book_id}}</td>
+                                        <td>{{item.title}}</td>
+                                        <td>{{item.order_time|date:"Y-m-d H:i:s"}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+                <div class="panel panel-info">
+                        <div class="panel-heading">
+                            等待还书
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>书籍标题</th>
+                                            <th>可能归还时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in order_wait_record %}
+                                    <tr>
+                                        <td>{{item.isbn13}}</td>
+                                        <td>{{item.book_id}}</td>
+                                        <td>{{item.title}}</td>
+                                        <td>{{item.may_return_time}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <!-- /. PAGE INNER  -->
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+    </div>
+    <!-- /. WRAPPER  -->
+
+    <div id="footer-sec">
+        &copy; Skyread- Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">出品</a>
+    </div>
+    <!-- /. FOOTER  -->
+    <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+    <!-- 引入 ECharts 文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.2/echarts.min.js"></script>
+    <!-- JQUERY SCRIPTS -->
+    <script src="assets/js/jquery-1.10.2.js"></script>
+    <!-- BOOTSTRAP SCRIPTS -->
+    <script src="assets/js/bootstrap.js"></script>
+    <!-- METISMENU SCRIPTS -->
+    <script src="assets/js/jquery.metisMenu.js"></script>
+       <!-- CUSTOM SCRIPTS -->
+    <script src="assets/js/custom.js"></script>
+    <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('main'));
 
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: '用户借阅'
+                text: '操作总览'
             },
             tooltip: {},
             legend: {
-                data:['借阅','归还','订阅取书']
+                data:['正在借阅','已经归还','成功订阅','等待归还的订阅']
             },
             xAxis: {
-                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+                data: ["所有操作"]
             },
             yAxis: {},
             series: [
             {
-                name: '借阅',
+                name: '正在借阅',
                 type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
+                data: [{{borrow_sum}}]
             },
             {
-                name: '归还',
+                name: '已经归还',
                 type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
+                data: [{{return_sum}}]
             },
             {
-                name: '订阅取书',
+                name: '成功订阅',
                 type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
+                data:  [{{order_success_sum}}]
+            },
+            {
+                name: '等待归还的订阅',
+                type: 'bar',
+                data:  [{{order_wait_sum}}]
             }]
         };
 
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
-        var bingchat  = echarts.init(document.getElementById('bing'));
-        var bing = {
-           backgroundColor: '#2c343c',
-    series : [
-        {
-            name: '访问来源',
-            type: 'pie',
-            radius: '55%',
-            data:[
-                {value:235, name:'视频广告'},
-                {value:274, name:'联盟广告'},
-                {value:310, name:'邮件营销'},
-                {value:335, name:'直接访问'},
-                {value:400, name:'搜索引擎'}
-            ],
-            label: {
-                normal: {
-                    textStyle: {
-                        color: 'rgba(255, 255, 255, 0.3)'
-                    }
-                }
-            },
-            labelLine: {
-                normal: {
-                    lineStyle: {
-                        color: 'rgba(255, 255, 255, 0.3)'
-                    }
-                }
-            },
-            itemStyle: {
-                normal: {
-                    shadowBlur: 200,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-            }
-        }
-    ]
-    };
-        bingchat.setOption(bing);
     </script>
+
+
 </body>
 </html>

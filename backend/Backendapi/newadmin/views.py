@@ -1,6 +1,5 @@
 # coding:utf-8
 import time
-
 import xlwt
 from django.contrib.auth.models import User, Permission
 from django.http import HttpResponse
@@ -17,7 +16,7 @@ import xlrd
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
+from library.models import BorrowItem,SuccessOrderItem,WaitOrderItem
 
 def test_perm(request):
     user = request.user
@@ -97,7 +96,7 @@ def delete_admin_user(request):
     user.delete()
 
 
-def user_record(request,user_id):
+def user_detail(request,id):
     """
     得到某个用户的三项记录
     :param request:
@@ -105,26 +104,29 @@ def user_record(request,user_id):
     :return:
     """
     # TODO 把记录的模型加一个相关用户的字段,并在library中加入这个字段
-    user = User.objects.get(id=user_id)
-    about_user =user.id
-    borrow_queryset = AdminBorrowItemRecord.objects.filter(record_type=1,
-                                                            about_user=about_user)
-    return_queryset = AdminBorrowItemRecord.objects.filter(record_type=2,
-                                                           about_user=about_user)
-    order_queryset = AdminBorrowItemRecord.objects.filter(record_type=3,
-                                                           about_user=about_user)
-    order_queryset = AdminBorrowItemRecord.objects.filter(user=admin_user, record_type=3)
-    borrow_record = BorrowRecordSerializer(borrow_queryset, many=True, data={})
-    return_record = BorrowRecordSerializer(return_queryset, many=True, data={})
-    order_record = OrderRecordSerializer(order_queryset, many=True, data={})
+    wechat_user = WeChatUser.objects.get(id=id)
+    open_id = wechat_user.openid
+    user = User.objects.get(username=open_id)
+    borrow_record = BorrowItem.objects.filter(user=user,in_return_bar=True,finish_return=False)
+    return_record = BorrowItem.objects.filter(user=user,finish_return=True)
+    order_success_record = SuccessOrderItem.objects.filter(user=user)
+    order_wait_record = WaitOrderItem.objects.filter(user=user)
+    borrow_sum = len(borrow_record)
+    return_sum = len(return_record)
+    success_sum = len(order_success_record)
+    wait_sum = len(order_wait_record)
     reply = {
+        "wechat_user":wechat_user,
         "borrow_record": borrow_record,
         "return_record": return_record,
-        "order_record": order_record,
-        "borrow_sum": len(borrow_queryset),
-        "return_sum": len(return_queryset),
-        "order_sum": len(order_queryset),
+        "order_success_record": order_success_record,
+        "order_wait_record":order_wait_record,
+        "borrow_sum": borrow_sum,
+        "return_sum": return_sum,
+        "order_success_sum":success_sum,
+        "order_wait_sum": wait_sum,
     }
+    return render(request,"newadmin/user_detail.html",reply)
 
 
 def day_record(request):
@@ -147,16 +149,17 @@ def get_user_money(request,user_id):
     money = phone_user.money
 
 
-def add_user_money(request,user_id,sum):
+def add_user_money(request):
     """
     增加金额,发送短信
     :param request:
     :param user_id:
     :return:
     """
+
     user = User.objects.get(id=user_id)
     phone_user = PhoneUser.objects.get(user=user)
-    phone_user.money+=sum
+    phone_user.money += sum
     phone_user.save()
 
 
@@ -197,40 +200,6 @@ def add_book(request):
         except Exception as e:
             print e
     return render(request, 'newadmin/add_book.html')
-
-
-def user_detail(request):
-    all_user = User.objects.all()
-    wechat_list = list()
-    reply_json = dict()
-    count = 0
-    for user in all_user:
-        if not user.admin_permission.andriod_permisson:
-            count += 1
-            wechat_list.append(user)
-            about_user = user.id
-            borrow_queryset = AdminBorrowItemRecord.objects.filter(record_type=1,
-                                                                   about_user=about_user)
-            return_queryset = AdminBorrowItemRecord.objects.filter(record_type=2,
-                                                                   about_user=about_user)
-            order_queryset = AdminBorrowItemRecord.objects.filter(record_type=3,
-                                                                  about_user=about_user)
-            borrow_record = BorrowRecordSerializer(borrow_queryset, many=True, data={})
-            return_record = BorrowRecordSerializer(return_queryset, many=True, data={})
-            order_record = OrderRecordSerializer(order_queryset, many=True, data={})
-            # TODO 添加用户微信信息
-            username = user.username
-            reply = {
-                "borrow_record": borrow_record,
-                "return_record": return_record,
-                "order_record": order_record,
-                "borrow_sum": len(borrow_queryset),
-                "return_sum": len(return_queryset),
-                "order_sum": len(order_queryset),
-            }
-            reply_json[str(count)] = reply
-    print type(wechat_list)
-    return render(request, 'newadmin/user_detail.html',{'reply':reply_json})
 
 
 def adminer_home(request):
@@ -276,7 +245,11 @@ def adminer_detail(request,user_id):
 
 
 def money_home(request):
-    return render(request,"newadmin/money_home.html")
+    phone_user_list = PhoneUser.objects.all()
+    reply = {
+        'phone_users':phone_user_list
+    }
+    return render(request,"newadmin/money_home.html",reply)
 
 
 def book_home(request):
@@ -325,7 +298,7 @@ def book_home_change_page(request, back_page):
     else:
         cursor = connection.cursor()
         sql = "select isbn13 from bookdata_book where average > 9.0  " \
-              "and numraters >200 limit %s,%s" %((back_page-1)*20,back_page*20)
+              "and numraters >200 limit %s,%s" %((back_page-1)*20,20)
         cursor.execute(sql)
         rs = cursor.fetchall()
         all_book_list = list()
@@ -427,24 +400,53 @@ def user_home(request):
     :return:
     """
     all_wechat_user = WeChatUser.objects.all()
-    wechat_user_number = len(all_wechat_user)
-
     reply = {
-        "all_wechat_user":all_wechat_user,
-        "user_number":wechat_user_number
+        "wechat_users":all_wechat_user,
     }
     return render(request,"newadmin/user_home.html",reply)
 
 
+def user_record(request,id):
+    all_user = User.objects.all()
+    wechat_list = list()
+    reply_json = dict()
+    count = 0
+    for user in all_user:
+        if not user.admin_permission.andriod_permisson:
+            count += 1
+            wechat_list.append(user)
+            about_user = user.id
+            borrow_queryset = AdminBorrowItemRecord.objects.filter(record_type=1,
+                                                                   about_user=about_user)
+            return_queryset = AdminBorrowItemRecord.objects.filter(record_type=2,
+                                                                   about_user=about_user)
+            order_queryset = AdminBorrowItemRecord.objects.filter(record_type=3,
+                                                                  about_user=about_user)
+            borrow_record = BorrowRecordSerializer(borrow_queryset, many=True, data={})
+            return_record = BorrowRecordSerializer(return_queryset, many=True, data={})
+            order_record = OrderRecordSerializer(order_queryset, many=True, data={})
+            # TODO 添加用户微信信息
+            username = user.username
+            reply = {
+                "borrow_record": borrow_record,
+                "return_record": return_record,
+                "order_record": order_record,
+                "borrow_sum": len(borrow_queryset),
+                "return_sum": len(return_queryset),
+                "order_sum": len(order_queryset),
+            }
+            reply_json[str(count)] = reply
+    print type(wechat_list)
+    return render(request, 'newadmin/user_detail.html',{'reply':reply_json})
+
+
 def file_download(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=DEMO.xls'
+    response['Content-Disposition'] = 'attachment; filename=model.xls'
     workbook = xlwt.Workbook(encoding='utf-8')  # 创建工作簿
     sheet = workbook.add_sheet("sheet1")  # 创建工作页
-    row0 = [u'isbn13',u'find_id',u'location'
-            ]
+    row0 = [u'isbn13', u'索书号', u'馆藏信息']
     for i in range(0, len(row0)):
         sheet.write(0, i, row0[i])
     workbook.save(response)
     return response
-
