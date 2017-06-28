@@ -170,16 +170,8 @@ class SameUserBookDetail(APIView):
         if user_like:
             user_list = user_like.split("&")
             db_username = user_list[order]
-            conn = MySQLdb.Connect(
-                host='127.0.0.1',
-                port=3306,
-                user='root',
-                passwd='123456',
-                db='douban_user',
-                charset='utf8'
-            )
-            cursor = conn.cursor()
-            sql = "select * from user_item where user='%s'" % db_username
+            cursor = connection.cursor()
+            sql = "select * from user_record.user_item where user='%s'" % db_username
             cursor.execute(sql)
             rs = cursor.fetchall()
             items_list = list()

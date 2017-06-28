@@ -6,7 +6,7 @@ import time
 from django.core.cache import cache
 import MySQLdb
 begin = time.time()
-
+from django.db import connection
 
 def get_default_train_dict():
     """
@@ -14,16 +14,8 @@ def get_default_train_dict():
     :return:
     """
     train_dict = dict()
-    conn = MySQLdb.Connect(
-            host = '127.0.0.1',
-            port = 3306,
-            user = 'root',
-            passwd = '123456',
-            db = 'douban_user',
-            charset = 'utf8'
-        )
-    cursor = conn.cursor()
-    sql = "select distinct * from user_item"
+    cursor = connection.cursor()
+    sql = "select distinct * from user_record.user_item"
     cursor.execute(sql)
     rs = cursor.fetchall()
     for row in rs:
@@ -40,18 +32,11 @@ def get_default_train_dict():
 
 def single_user_similarity(train_dict,sys_user,sys_user_items):
     # 建立物品-用户倒排表
-    new_conn = MySQLdb.Connect(
-        host='127.0.0.1',
-        port=3306,
-        user='root',
-        passwd='123456',
-        db='douban_user',
-        charset='utf8'
-    )
+
     C =dict()
     for i in sys_user_items:
-        sql1 = "select users from item_users where item='%s'" % i
-        new_cursor = new_conn.cursor()
+        sql1 = "select users from user_record.item_users where item='%s'" % i
+        new_cursor = connection.cursor()
         new_cursor.execute(sql1)
         new_rs  = new_cursor.fetchall()
         users = list()
