@@ -52,7 +52,7 @@ def wexin(request):
             print msg.type
             key = '8b005db5f57556fb96dfd98fbccfab84'
             api = 'http://www.tuling123.com/openapi/api?key=' + key + '&info='
-            request = api + msg.text
+            request = api + msg
             response = getHtml(request)
             dic_json = json.loads(response)
             content = dic_json['text']
