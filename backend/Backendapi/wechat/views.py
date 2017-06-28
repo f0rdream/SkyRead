@@ -64,7 +64,12 @@ def wexin(request):
                     f.write(openid)
                 return HttpResponse(r_xml)
             except Exception as e:
-                print e
+                reply = TextReply(content=str(e), message=msg)
+                r_xml = reply.render()
+                openid = msg.source
+                with open('openid.txt', "w") as f:
+                    f.write(openid)
+                return HttpResponse(r_xml)
         elif msg.type == 'event':
             try:
                 push = ScanCodeWaitMsgEvent(msg)
