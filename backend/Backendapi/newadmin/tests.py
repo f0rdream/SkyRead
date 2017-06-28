@@ -13,3 +13,6 @@ import datetime
 #     print '=='
 # else:
 #     print "no"
+a = ['b']
+b= ['c']
+print a+b

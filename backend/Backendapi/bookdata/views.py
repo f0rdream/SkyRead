@@ -58,6 +58,9 @@ class BookInfoView(APIView):
 
 
 class Serach(APIView):
+    """
+    图书搜索
+    """
     permission_classes = [AllowAny]
 
     def get(self,request):
@@ -115,9 +118,12 @@ class Serach(APIView):
             for isbn13 in author_isbn13_list:
                 book = Book.objects.get(isbn13=isbn13)
                 author_queryset.append(book)
+            # 6.28加入查询补全
+            # if not title_queryset:
+            #     # 若是在数据库中找不到结果
+
             author_serializer = ShortInto(author_queryset, data=request.data, many=True)
             author_serializer.is_valid(raise_exception=True)
-
             reply = dict()
             reply['title_result'] = title_serializer.data
             reply['author_result'] = author_serializer.data

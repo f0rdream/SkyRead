@@ -5,9 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkyRead后台管理</title>
-
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+ <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
     <!-- BOOTSTRAP STYLES-->
-
     <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
     <!-- FONTAWESOME STYLES-->
     <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet" />
@@ -30,14 +32,6 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="index.html">SkyRead 微读伴侣</a>
-            </div>
-
-            <div class="header-right">
-
-                <a href="message-task.html" class="btn btn-info" title="New Message"><b>30 </b><i class="fa fa-envelope-o fa-2x"></i></a>
-                <a href="message-task.html" class="btn btn-primary" title="New Task"><b>40 </b><i class="fa fa-bars fa-2x"></i></a>
-                <a href="login.html" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a>
-
             </div>
         </nav>
         <!-- /. NAV TOP  -->
@@ -80,50 +74,113 @@
         </nav>
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
-            <div id="page-inner">
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-					&times
-				</button>
-				<h4 class="modal-title" id="myModalLabel">
-					请输入商品详情
-				</h4>
-			</div>
-			<div class="modal-body">
-				<form  action="" method="POST" enctype="multipart/form-data">
-					<!--提交新的商品表单-->
-					 {% csrf_token %}
-  				<input type="text" name="name" class="form-control" placeholder="商品名称"><br/>
-					<textarea name="desc" class="form-control"   placeholder="商品简介..." rows="3"></textarea><br/>
-  					<input type="text" name="price"  class="form-control"  placeholder="价格"><br/>
-					<select class="form-control" name= "college">
-										<option>筛选学院</option>
-										<option>国际软件学院</option>
-										<option>计算机学院</option>
-										<option>测绘学院</option>
-									</select>
-  	 				<input type="file" name="picture" class="form-control" /><br/>
-			</div>
-			<div  class="modal-footer">
-				<button type="submit" class="btn btn-primary" >
-					发布商品
-				</button>
-			</div>
-			 </form>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal -->
-                </div>
-<div align="center">
-  	 <button  class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal">
-				发布新的商品
-	</button>
-</div>
+                 <div id="page-inner">
+                <!--增加藏书-->
 
-            </div>
-            <!-- /. PAGE INNER  -->
+                <!--书籍搜索-->
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                            <div class="row clearfix">
+                                <!--筛选与搜索的表单-->
+                                <form action="{% url 'book_search' %}" method="POST">
+                                {% csrf_token %}
+                                <div class="col-md-4 " >
+                                        <div style="width: 300px; white-space:nowrap;">
+                                            <input type="text" name="isbn13" class="form-control"  placeholder="13位isbn编号..." style="width: 300px;"/>
+                                        </div>
+                                </div>
+                                <div class="col-md-4 ">
+                                    <div style="width: 300px; white-space:nowrap;">
+                                        <input type="text" name="book_name" class="form-control"   placeholder="标题..." style="width: 300px;"/>
+                                    </div>
+                                </div>
+								<button type="submit" class="btn btn-default" \
+                                        style="position: relative;left: 0px">搜索书籍</button>
+                                    &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+                                <button type="button" class="btn btn-success" \
+                                        data-toggle="modal" data-target="#myModal" >上架书籍</button>
+                                    <a href="{%url 'add_book'%}">
+                                    <button type="button" class="btn btn-primary" >
+                                        批量上架书籍
+                                    </button>
+                                        </a>
+                                </form>
+                                <!--增加书籍-->
+                            </div>
+
+                        </div>
+                </div><br>
+                   <!--增加书籍模态框-->
+                     <!-- 模态框（Modal） -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">×
+                                    </button>
+                                    <h4 class="modal-title" id="myModalLabel">
+                                        增加书籍
+                                    </h4>
+                                </div>
+                                <!--提交表单-->
+                                	<div class="modal-body">
+                                        按下 ESC 按钮退出。
+                                    </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+<script>
+$(function () { $('#myModal').modal({
+	keyboard: true
+})});
+</script>
+                 <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            书籍列表
+                        </div>
+                        <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>书籍isbn编号</th>
+                                                <th>书籍名称</th>
+                                                <th>书籍作者</th>
+                                                <th>出版社</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {%for book in book_items%}
+                                            <tr>
+                                                <td><a href="{%url 'book_detail' book.isbn13%}">{{book.isbn13}}</a></td>
+                                                <td>{{book.title}}</td>
+                                                <td>{{book.author}}</td>
+                                                <td>{{book.publisher}}</td>
+                                            </tr>
+                                            {%endfor%}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row clearfix">
+                                        <div align="center" class="col-md-12 column " >
+                                            <ul class="pagination">
+
+                                                <li><a href="{% url 'change_page' page|add:-1  %}">&laquo;</a></li>
+                                                <li><a href="#">{{page}}</a></li>
+                                                <li><a href="{% url 'change_page' page|add:1 %}">&raquo;</a></li>
+                                            </ul>
+                                        </div><!-- end col-md-12 column 分页 -->
+                                </div>
+                            </div>
+                            <div align="center" class="panel-footer">
+                                                    @SkyRead出品
+                            </div>
+                 </div>
+
+
+                 </div>
         </div>
         <!-- /. PAGE WRAPPER  -->
     </div>

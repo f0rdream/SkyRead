@@ -1,13 +1,24 @@
 # coding:utf-8
+import time
+
+import xlwt
 from django.contrib.auth.models import User, Permission
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import StreamingHttpResponse
 from django.shortcuts import render
 from django.contrib.auth import login, authenticate
 from .models import Admin_Permission,AdminBorrowItemRecord,ExcelFile,Sign
 from serializers import UserLoginSerializer,BorrowRecordSerializer,OrderRecordSerializer
-from accounts.models import PhoneUser
+from accounts.models import PhoneUser,WeChatUser
+from bookdata.models import Book,Holding
+from django.db import connection
 import xlrd
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+
 def test_perm(request):
     user = request.user
     if user.admin_permission.andriod_permisson:
@@ -86,8 +97,6 @@ def delete_admin_user(request):
     user.delete()
 
 
-
-
 def user_record(request,user_id):
     """
     得到某个用户的三项记录
@@ -136,6 +145,8 @@ def get_user_money(request,user_id):
     user = User.objects.get(id=user_id)
     phone_user = PhoneUser.objects.get(user=user)
     money = phone_user.money
+
+
 def add_user_money(request,user_id,sum):
     """
     增加金额,发送短信
@@ -147,6 +158,8 @@ def add_user_money(request,user_id,sum):
     phone_user = PhoneUser.objects.get(user=user)
     phone_user.money+=sum
     phone_user.save()
+
+
 def parse_the_excel(request):
     """
     :param request:
@@ -172,7 +185,9 @@ def parse_the_excel(request):
         print find_id
         print location
     return HttpResponse("get")
-def upload_excel(request):
+
+
+def add_book(request):
     if request.method == 'POST':
         excel = request.FILES['excel']
         try:
@@ -181,7 +196,9 @@ def upload_excel(request):
             # 开始读取excel
         except Exception as e:
             print e
-    return render(request, 'newadmin/upload_file.html')
+    return render(request, 'newadmin/add_book.html')
+
+
 def user_detail(request):
     all_user = User.objects.all()
     wechat_list = list()
@@ -214,6 +231,8 @@ def user_detail(request):
             reply_json[str(count)] = reply
     print type(wechat_list)
     return render(request, 'newadmin/user_detail.html',{'reply':reply_json})
+
+
 def adminer_home(request):
     user_list = User.objects.all()
     admin_user_list = list()
@@ -230,6 +249,7 @@ def adminer_home(request):
             reply[user.id] = admin_detail
     return render(request,'newadmin/adminer.html',{'reply':reply})
 # 用户 管理员 数据总览 平台设置 书籍管理 账务管理
+
 
 def adminer_detail(request,user_id):
     """
@@ -258,14 +278,173 @@ def adminer_detail(request,user_id):
 def money_home(request):
     return render(request,"newadmin/money_home.html")
 
+
 def book_home(request):
-    return render(request,"newadmin/book_home.html")
+    import time
+    begin = time.time()
+    # 取前20本书籍
+    cursor = connection.cursor()
+    sql = "select isbn13 from bookdata_book where average > 9.0 and numraters >200 limit 0,20"
+    cursor.execute(sql)
+    rs = cursor.fetchall()
+    all_book_list = list()
+    for row in rs:
+        isbn13 = row[0]
+        all_book_list.append(isbn13)
+    book_items = Book.objects.filter(isbn13__in=all_book_list)
+    reply  = {
+        "book_items":book_items,
+        "page":1,
+    }
+    print time.time() - begin
+    return render(request,"newadmin/book_home.html",reply)
 
 
+def book_home_change_page(request, back_page):
+    """
+    图书主页分页功能
+    :param request:
+    :return:
+    """
+    back_page = int(back_page)
+    if back_page <= 1:
+        cursor = connection.cursor()
+        sql = "select isbn13 from bookdata_book where average > 9.0 and numraters >200 limit 0,20"
+        cursor.execute(sql)
+        rs = cursor.fetchall()
+        all_book_list = list()
+        for row in rs:
+            isbn13 = row[0]
+            all_book_list.append(isbn13)
+        book_items = Book.objects.filter(isbn13__in=all_book_list)
+        reply = {
+            "book_items":book_items,
+            "page": 1,
+        }
+        return render(request,'newadmin/book_home.html',reply)
+    else:
+        cursor = connection.cursor()
+        sql = "select isbn13 from bookdata_book where average > 9.0  " \
+              "and numraters >200 limit %s,%s" %((back_page-1)*20,back_page*20)
+        cursor.execute(sql)
+        rs = cursor.fetchall()
+        all_book_list = list()
+        for row in rs:
+            isbn13 = row[0]
+            all_book_list.append(isbn13)
+        book_items = Book.objects.filter(isbn13__in=all_book_list)
+        reply = {
+            "book_items": book_items,
+            "page": back_page,
+        }
+        return render(request, 'newadmin/book_home.html', reply)
 
 
+def book_search(request):
+    """
+    书籍搜索
+    :param request:
+    :return:
+    """
+    try:
+        isbn13 = request.POST['isbn13']
+        book_name = request.POST['book_name']
+        queryset = Book.objects.all()
+        isbn13_queryset = list()
+        title_queryset = list()
+        begin = time.time()
+        if isbn13:
+            queryset = queryset.filter(isbn13=isbn13)
+            for book in queryset:
+                isbn13_queryset.append(book)
+        if book_name:
+            from django.db import connection
+            cursor = connection.cursor()
+            text_index = ''
+            for i in book_name:
+                sql = "select number from bookinfo.char_number where title='%s'" % i
+                cursor.execute(sql)
+                rs = cursor.fetchall()
+                for row in rs:
+                    number = row[0]
+                    text_index += '&'
+                    text_index += number
+            select_sql = "select isbn13 from bookdata_book where match (title_for_index)\
+              against ('+%s' in boolean mode) order by average desc limit 15;" % text_index
+            cursor.execute(select_sql)
+            title_rs = cursor.fetchall()
+            isbn13_list = []
+            for row in title_rs:
+                isbn13 = row[0]
+                isbn13_list.append(isbn13)
+            for isbn13 in isbn13_list:
+                book = Book.objects.get(isbn13=isbn13)
+                title_queryset.append(book)
+        book_items = isbn13_queryset+title_queryset
+        reply = {
+            "book_items": book_items,
+            "page": 1,
+        }
+        print time.time()-begin
+        return render(request, 'newadmin/book_home.html', reply)
+    except:
+        book_items = Book.objects.all()[20:40]
+        reply = {
+            "book_items": book_items,
+            "page": 1,
+        }
+        return render(request, "newadmin/book_home.html", reply)
 
 
+def book_detail(request,isbn13):
+    """
+    书籍详情
+    :param request:
+    :param isbn13:
+    :return:
+    """
+    book = Book.objects.get(isbn13=isbn13)
+    holding_queryset = Holding.objects.filter(book=book)
+    for holding in holding_queryset:
+        location = holding.location
+        l_loaction = ['总馆', '信息馆', '工学馆', '医学馆']
+        guide = ['东', '西', '南', '北']
+        location_list = location.split("->")
+        real_location = l_loaction[int(location_list[0])] + "借阅区" + str(location_list[1]) + \
+                        "楼" + guide[int(location_list[2])]
+        holding.location = real_location
+    reply = {
+        'book':book,
+        'holdings':holding_queryset
+    }
+    return render(request,"newadmin/book_detail.html",reply)
 
 
+def user_home(request):
+    """
+    用户主页
+    :param request:
+    :return:
+    """
+    all_wechat_user = WeChatUser.objects.all()
+    wechat_user_number = len(all_wechat_user)
+
+    reply = {
+        "all_wechat_user":all_wechat_user,
+        "user_number":wechat_user_number
+    }
+    return render(request,"newadmin/user_home.html",reply)
+
+
+def file_download(request):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=DEMO.xls'
+    workbook = xlwt.Workbook(encoding='utf-8')  # 创建工作簿
+    sheet = workbook.add_sheet("sheet1")  # 创建工作页
+    row0 = [u'isbn13',u'find_id',u'location'
+            ]
+    for i in range(0, len(row0)):
+        sheet.write(0, i, row0[i])
+    workbook.save(response)
+    return response
 
