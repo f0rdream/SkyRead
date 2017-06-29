@@ -6,8 +6,8 @@ from .views import (test_perm,index,
                     money_home,book_home,
                     book_home_change_page,
                     book_search,book_detail,
-                    add_book,user_home,
-                    file_download)
+                    add_single_book,user_home,
+                    file_download,add_book_excel)
 from android_views import (AndroidUserLoginAPIView,
                            is_login_view,
                            BorrowRecordView,ReturnRecordView,OrderRecordView,
@@ -36,8 +36,10 @@ urlpatterns = [
     url(r'^change_page/(?P<back_page>\d+)$',book_home_change_page,name="change_page"),
     url(r'^book_search/$', book_search, name='book_search'),
     url(r'^book_detail/(?P<isbn13>\d+)$$', book_detail, name='book_detail'),
-    url(r'^add_book/$',add_book,name='add_book'),
+    url(r'^add_book/$',add_single_book,name='add_book'),
+    url(r'^add_book_by_excel',add_book_excel,name="add_book_by_excel"),
     url(r'^user_home/$',user_home,name='user_home'),
     url(r'^download/$',file_download,name='download'),
     url(r'^user_detail/(?P<id>\d+)$',user_detail,name='user_detail'),
+    url(r'^create_admin/$',create_admin_user,name='create_admin'),
 ]

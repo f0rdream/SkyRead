@@ -99,7 +99,7 @@
                                     &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
                                 <button type="button" class="btn btn-success" \
                                         data-toggle="modal" data-target="#myModal" >上架书籍</button>
-                                    <a href="{%url 'add_book'%}">
+                                    <a href="{%url 'add_book_by_excel'%}">
                                     <button type="button" class="btn btn-primary" >
                                         批量上架书籍
                                     </button>
@@ -125,7 +125,22 @@
                                 </div>
                                 <!--提交表单-->
                                 	<div class="modal-body">
-                                        按下 ESC 按钮退出。
+                                        <form role="form" action="{%url 'add_book'%}" method="POST">
+                                            {%csrf_token%}
+                                        <div class="form-group">
+                                            <label>输入13位isbn编号</label>
+                                            <input class="form-control" type="text" name="isbn13">
+                                        </div>
+                                            <div class="form-group">
+                                            <label>输入索书号</label>
+                                            <input class="form-control" type="text" name="find_id">
+                                        </div>
+                                            <div class="form-group">
+                                            <label>输入馆藏位置</label>
+                                            <input class="form-control" type="text" name="location">
+                                        </div>
+                                        <button type="submit" class="btn btn-info">提交</button>
+                                    </form>
                                     </div>
                             </div><!-- /.modal-content -->
                         </div><!-- /.modal-dialog -->

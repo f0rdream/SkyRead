@@ -80,9 +80,7 @@
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
             <div id="page-inner">
-                # 展示图表
                 <div id="main" style="width: 600px;height:400px;"></div>
-                # 操作展示表格
                  <div class="panel panel-success">
                         <div class="panel-heading">
                             借出操作统计
@@ -92,27 +90,87 @@
                                 <table class="table table-striped table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th>管理员名字</th>
-                                            <th>总签到次数</th>
-                                            <th>详情</th>
+                                           <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>索书号</th>
+                                            <th>馆藏位置</th>
+                                            <th>借书时间</th>
+                                            <th>约定归还时间</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for user_id,value in reply.items %}
+                                    {% for record in borrow_record %}
+                                    <tr>
+                                        <td>{{record.borrow_item.isbn13}}</td>
+                                        <td>{{record.borrow_item.book_id}}</td>
+                                        <td>{{record.borrow_item.find_id}}</td>
+                                        <td>{{record.borrow_item.location}}</td>
+                                        <td>{{record.borrow_item.borrow_time}}</td>
+                                        <td>{{record.borrow_item.return_time}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            归还操作统计
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
                                         <tr>
-                                            <td>{{forloop.counter}}</td>
-                                            {% for key,value in value.items %}
-                                            <td>{{value}}</td>
-                                            {% endfor%}
-                                            <td>
-                                                <form action="{%url 'adminer_detail' user_id%}" method="POST">
-                                                    {%csrf_token%}
-                                                <button type="submit" class="btn btn-sm btn-success">点击查看</button>
-                                                </form>
-                                            </td>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>索书号</th>
+                                            <th>馆藏位置</th>
+                                            <th>借书时间</th>
+                                            <th>约定归还时间</th>
                                         </tr>
-                                        {%endfor%}
+                                    </thead>
+                                    <tbody>
+                                     {% for record in return_record %}
+                                    <tr>
+                                        <td>{{record.borrow_item.isbn13}}</td>
+                                        <td>{{record.borrow_item.book_id}}</td>
+                                        <td>{{record.borrow_item.find_id}}</td>
+                                        <td>{{record.borrow_item.location}}</td>
+                                        <td>{{record.borrow_item.borrow_time}}</td>
+                                        <td>{{record.borrow_item.return_time}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                 <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            订阅取书操作统计
+                        </div>
+                        <div class="panel-body">
+                           <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>书籍标题</th>
+                                            <th>约定取书时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for record in order_record %}
+                                    <tr>
+                                        <td>{{record.order_item.isbn13}}</td>
+                                        <td>{{record.order_item.book_id}}</td>
+                                        <td>{{record.order_item.title}}</td>
+                                        <td>{{record.order_item.order_time|date:"Y-m-d H:i:s"}}</td>
+                                    </tr>
+                                    {%endfor%}
                                     </tbody>
                                 </table>
                             </div>

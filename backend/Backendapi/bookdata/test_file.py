@@ -47,7 +47,5 @@ import time
 #         title_for_index += '&'
 #         title_for_index += number
 # print title_for_index
-list = list()
-if not list:
-    print "a"
-
+a = "asdasdasdaa"
+print len(a)

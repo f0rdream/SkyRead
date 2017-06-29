@@ -12,6 +12,7 @@ from serializers import UserLoginSerializer,BorrowRecordSerializer,OrderRecordSe
 from accounts.models import PhoneUser,WeChatUser
 from bookdata.models import Book,Holding
 from django.db import connection
+from bookdata.models import Holding
 import xlrd
 import sys
 reload(sys)
@@ -65,12 +66,15 @@ def web_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
+                print "yes"
                 return HttpResponseRedirect('/web/index/')
             else:
                 return HttpResponse('请输入正确的密码')
         else:
-            return render(request, 'newadmin/index.html')
+            print "no"
+            return render(request,'newadmin/login.html')
     else:
+        print "?"
         return render(request,'newadmin/login.html')
 
 
@@ -190,34 +194,98 @@ def parse_the_excel(request):
     return HttpResponse("get")
 
 
-def add_book(request):
+def add_book_excel(request):
     if request.method == 'POST':
         excel = request.FILES['excel']
         try:
             excel_file = ExcelFile.objects.create(excel=excel)
             excel_file.save()
             # 开始读取excel
+            url = excel_file.excel.url
+            file_name = url.split("/")[-1]
+            new_url = "./media_root/newadmin/upload/" + file_name
+            print new_url
+            curBook = xlrd.open_workbook(new_url)
+            sheet1 = curBook.sheet_by_index(0)
+            rownum = sheet1.nrows
+            holdings = list()
+            for i in range(1, rownum):
+                isbn13 = str('{:.0f}'.format(sheet1.cell(i, 0).value))
+                find_id = str(sheet1.cell(i, 1).value)
+                location = str(sheet1.cell(i, 2).value)
+                try:
+                    book = Book.objects.get(isbn13=isbn13)
+                    holding = Holding.objects.create(book=book, isbn13=isbn13,
+                                                     find_id=find_id, location=location,
+                                                        back_time = "--")
+                    holding.save()
+                    holdings.append(holding)
+                except:
+                    pass
+            reply = {
+                "holdings":holdings,
+                "msg":"添加成功,书籍信息如下"
+            }
+            return render(request,"newadmin/add_book_by_excel_success.html",reply)
         except Exception as e:
+            reply = {
+                "msg": "添加失败"
+            }
+            return render(request, "newadmin/add_book_by_excel_success.html", reply)
+    reply = {
+        "msg": "添加失败"
+    }
+    return render(request, "newadmin/add_book_by_excel.html", reply)
+
+
+def add_single_book(request):
+    if request.method == "POST":
+        isbn13 = request.POST['isbn13']
+        find_id = request.POST['find_id']
+        location = request.POST['location']
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            holding = Holding.objects.create(book=book,isbn13=isbn13,
+                                             find_id=find_id,location=location,back_time="--")
+            holding.save()
+            reply = {
+                "msg":"添加成功,添加的信息如下:",
+                "holding":holding,
+            }
+            return render(request, 'newadmin/add_book_success.html',reply)
+        except Exception as e :
             print e
-    return render(request, 'newadmin/add_book.html')
+            reply = {
+                "msg": "添加失败",
+            }
+            return render(request, 'newadmin/add_book_success.html', reply)
+    else:
+        return render(request,"newadmin/index.html")
 
 
 def adminer_home(request):
     user_list = User.objects.all()
     admin_user_list = list()
     reply = dict()
-
+    all_signs = list()
     for user in user_list:
         if user.admin_permission.andriod_permisson and not\
                 user.admin_permission.admin_permisson:
-            sign = Sign.objects.get(user=user)
-            admin_detail = {
-                'username':user.username,
-                'sign_times':sign.times,
-            }
-            reply[user.id] = admin_detail
-    return render(request,'newadmin/adminer.html',{'reply':reply})
-# 用户 管理员 数据总览 平台设置 书籍管理 账务管理
+            try:
+                sign = Sign.objects.get(user=user)
+                all_signs.append(sign)
+                admin_detail = {
+                    'username': user.username,
+                    'sign_times': sign.times,
+                }
+                reply[user.id] = admin_detail
+            except:
+                admin_detail = {
+                    'username': user.username,
+                    'sign_times': 0,
+                }
+                reply[user.id] = admin_detail
+    return render(request,'newadmin/adminer.html',{'reply':reply,"signs":all_signs})
 
 
 def adminer_detail(request,user_id):
@@ -230,13 +298,10 @@ def adminer_detail(request,user_id):
     borrow_queryset = AdminBorrowItemRecord.objects.filter(user=admin_user,record_type=1)
     return_queryset = AdminBorrowItemRecord.objects.filter(user=admin_user,record_type=2)
     order_queryset = AdminBorrowItemRecord.objects.filter(user=admin_user,record_type=3)
-    borrow_record = BorrowRecordSerializer(borrow_queryset,many=True,data={})
-    return_record = BorrowRecordSerializer(return_queryset,many=True,data={})
-    order_record = OrderRecordSerializer(order_queryset,many=True,data={})
     reply = {
-        "borrow_record":borrow_record,
-        "return_record":return_record,
-        "order_record":order_record,
+        "borrow_record":borrow_queryset,
+        "return_record":return_queryset,
+        "order_record":order_queryset,
         "borrow_sum": len(borrow_queryset),
         "return_sum": len(return_queryset),
         "order_sum": len(order_queryset),
@@ -380,12 +445,15 @@ def book_detail(request,isbn13):
     holding_queryset = Holding.objects.filter(book=book)
     for holding in holding_queryset:
         location = holding.location
-        l_loaction = ['总馆', '信息馆', '工学馆', '医学馆']
-        guide = ['东', '西', '南', '北']
-        location_list = location.split("->")
-        real_location = l_loaction[int(location_list[0])] + "借阅区" + str(location_list[1]) + \
-                        "楼" + guide[int(location_list[2])]
-        holding.location = real_location
+        try:
+            l_loaction = ['总馆', '信息馆', '工学馆', '医学馆']
+            guide = ['东', '西', '南', '北']
+            location_list = location.split("->")
+            real_location = l_loaction[int(location_list[0])] + "借阅区" + str(location_list[1]) + \
+                            "楼" + guide[int(location_list[2])]
+            holding.location = real_location
+        except:
+            holding.location = holding.location
     reply = {
         'book':book,
         'holdings':holding_queryset
@@ -450,3 +518,4 @@ def file_download(request):
         sheet.write(0, i, row0[i])
     workbook.save(response)
     return response
+

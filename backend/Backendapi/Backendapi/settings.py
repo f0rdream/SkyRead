@@ -1,3 +1,4 @@
+# coding:utf-8
 """
 Django settings for Backendapi project.
 
@@ -9,7 +10,6 @@ https://docs.djangoproject.com/en/1.8/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
@@ -97,10 +97,10 @@ WSGI_APPLICATION = 'Backendapi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '10.66.218.14',
-        'PORT': 3306,
+        'HOST': '593befbd766f4.sh.cdb.myqcloud.com',
+        'PORT': 17715,
         'NAME': 'skyread',
-        'USER': 'root',
+        'USER': 'cdb_outerroot',
         'PASSWORD': 'skyread614',
         'CHARSET': 'utf8'
     }
@@ -146,3 +146,18 @@ CORS_ORIGIN_ALLOW_ALL = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_ROOT = '/web/SkyRead/backend/Backendapi/wechat/static/'
 STATIC_URL = '/static/'
+
+
+# 执行定时任务
+# from datetime import datetime
+# import time
+# import os
+# from apscheduler.schedulers.background import BackgroundScheduler
+#
+# def tick():
+#     print('Tick! The time is: %s' % datetime.now())
+#
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(tick,'interval', seconds=3)
+# scheduler.start()
+# print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
