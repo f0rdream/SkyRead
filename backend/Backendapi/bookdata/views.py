@@ -58,6 +58,9 @@ class BookInfoView(APIView):
 
 
 class Serach(APIView):
+    """
+    图书搜索
+    """
     permission_classes = [AllowAny]
 
     def get(self,request):
@@ -77,17 +80,17 @@ class Serach(APIView):
             begin = time.time()
             from django.db import connection
             cursor = connection.cursor()
-            title_for_index = ''
+            text_index = ''
             for i in key:
                 sql = "select number from bookinfo.char_number where title='%s'" % i
                 cursor.execute(sql)
                 rs = cursor.fetchall()
                 for row in rs:
                     number = row[0]
-                    title_for_index += '&'
-                    title_for_index += number
+                    text_index += '&'
+                    text_index += number
             select_sql = "select isbn13 from bookdata_book where match (title_for_index)\
-              against ('+%s' in boolean mode) order by average desc limit 50;" % title_for_index
+              against ('+%s' in boolean mode) order by average desc limit 15;" % text_index
             cursor.execute(select_sql)
             title_rs = cursor.fetchall()
             isbn13_list = []
@@ -100,18 +103,30 @@ class Serach(APIView):
                 title_queryset.append(book)
             title_serializer = ShortInto(title_queryset,data=request.data,many=True)
             title_serializer.is_valid(raise_exception=True)
+
+            # 6.26日加入作者检索
+            select_sql = "select isbn13 from bookdata_book where match (author_for_index)\
+                          against ('+%s' in boolean mode) order by average desc limit 15;" % text_index
+            cursor.execute(select_sql)
+            author_rs = cursor.fetchall()
+
+            author_isbn13_list = []
+            for row in author_rs:
+                isbn13 = row[0]
+                author_isbn13_list.append(isbn13)
+            author_queryset = list()
+            for isbn13 in author_isbn13_list:
+                book = Book.objects.get(isbn13=isbn13)
+                author_queryset.append(book)
+            # 6.28加入查询补全
+            # if not title_queryset:
+            #     # 若是在数据库中找不到结果
+
+            author_serializer = ShortInto(author_queryset, data=request.data, many=True)
+            author_serializer.is_valid(raise_exception=True)
             reply = dict()
             reply['title_result'] = title_serializer.data
-            # title_queryset = Book.objects.filter(Q(title__icontains=key) |
-            #                                      Q(subtitle__icontains=key))
-            # author_queryset = Book.objects.filter(Q(author__icontains=key))
-            # title_serializer = ShortInto(title_queryset,data=request.data,many=True)
-            # title_serializer.is_valid(raise_exception=True)
-            # author_serializer = ShortInto(author_queryset,data=request.data,many=True)
-            # author_serializer.is_valid(raise_exception=True)
-            # reply = dict()
-            # reply['title_result'] = title_serializer.data
-            # reply['author_result'] = author_serializer.data
+            reply['author_result'] = author_serializer.data
             print time.time()-begin
             return Response(reply,HTTP_200_OK)
         else:
@@ -205,7 +220,7 @@ class StarBookView(APIView):
 
 class GuideBookView(APIView):
     """
-    书籍导航
+    书籍分类
     """
     permission_classes =  [AllowAny]
 
@@ -213,9 +228,22 @@ class GuideBookView(APIView):
         if page < 1:
             return Response(get_reply(81,'error page'),HTTP_404_NOT_FOUND)
         begin_page = (int(page)-1)*20
-        end_page = begin_page+20
         try:
-            queryset = Book.guide_objects.get_guide_book(int(guide_id))[begin_page:end_page]
+            from django.db import connection
+            cursor = connection.cursor()
+            sql_guide_id = str(guide_id)
+            select_sql = "select isbn13 from bookdata_book where book_guide ='%s' \
+            order by average desc limit %d,20;" % (sql_guide_id,begin_page)
+            cursor.execute(select_sql)
+            isbn13_rs = cursor.fetchall()
+            queryset = list()
+            for row in isbn13_rs:
+                isbn13 = row[0]
+                try:
+                    book = Book.objects.get(isbn13=isbn13)
+                    queryset.append(book)
+                except:
+                    pass
             serializer = ShortInto(queryset,many=True,data=request.data)
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data,HTTP_200_OK)

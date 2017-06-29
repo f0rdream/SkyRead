@@ -187,8 +187,21 @@ class InfoView(APIView):
         }
         try:
             sign = Sign.objects.get(user=user)
+            before_date = sign.date
+            import datetime
+            now_date = datetime.datetime.now().date()
+            date_list = str(before_date.date()).split("-")
+            year = int(date_list[0])
+            month = int(date_list[1])
+            day = int(date_list[2])
+            before_date = datetime.datetime(year, month, day).date()
+            if now_date == before_date:
+                signed = True
+            else:
+                signed = False
             times = sign.times
             reply['times'] = times
+            reply['signed'] = signed
         except:
             reply['times'] = 0
         return Response(reply,HTTP_200_OK)

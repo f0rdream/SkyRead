@@ -1,5 +1,7 @@
 # coding:UTF-8
 import json
+import urllib
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse,HttpResponseRedirect
@@ -48,7 +50,12 @@ def wexin(request):
         msg = parse_message(xml)
         if msg.type == 'text':
             print msg.type
-            content = "你好"
+            key = '8b005db5f57556fb96dfd98fbccfab84'
+            api = 'http://www.tuling123.com/openapi/api?key=' + key + '&info='
+            request = api + str(msg.content)
+            response = getHtml(request)
+            dic_json = json.loads(response)
+            content = dic_json['text']
             try:
                 reply = TextReply(content=content,message=msg)
                 r_xml = reply.render()
@@ -57,7 +64,12 @@ def wexin(request):
                     f.write(openid)
                 return HttpResponse(r_xml)
             except Exception as e:
-                print e
+                reply = TextReply(content=str(e), message=msg)
+                r_xml = reply.render()
+                openid = msg.source
+                with open('openid.txt', "w") as f:
+                    f.write(openid)
+                return HttpResponse(r_xml)
         elif msg.type == 'event':
             try:
                 push = ScanCodeWaitMsgEvent(msg)
@@ -199,6 +211,7 @@ def test_page(request):
 
 # 得到微信签名:
 
+
 class Sign(APIView):
     permission_classes = [AllowAny]
 
@@ -207,4 +220,9 @@ class Sign(APIView):
         reply = get_signature(url)
         return Response(reply,HTTP_200_OK)
 
+
+def getHtml(url):
+    page = urllib.urlopen(url)
+    html = page.read()
+    return html
 

@@ -83,6 +83,8 @@ class BookInfoSerializer(ModelSerializer):
                 if author == '':
                     continue
                 else:
+                    if len(author) > 15:
+                        author = author[:15]
                     author_list.append(author)
             return author_list
 
@@ -151,6 +153,7 @@ class BookInfoSerializer(ModelSerializer):
 
     def get_isbn13(self,obj):
         return obj.isbn13
+
     def get_catalog(self,obj):
         catalog = obj.catalog
         if catalog == "('',)":
@@ -207,6 +210,8 @@ class ShortInto(ModelSerializer):
                 if author == '':
                     continue
                 else:
+                    if len(author) > 15:
+                        author = author[:15]
                     author_list.append(author)
             return author_list
 

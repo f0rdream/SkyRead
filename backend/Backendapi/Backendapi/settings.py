@@ -144,3 +144,4 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_ROOT = '/web/SkyRead/backend/Backendapi/wechat/static/'
 STATIC_URL = '/static/'
+

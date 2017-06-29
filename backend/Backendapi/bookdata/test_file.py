@@ -25,26 +25,27 @@ import datetime
 import MySQLdb
 import sys
 import time
-reload(sys)
-sys.setdefaultencoding('utf-8')
-key = u"自然语言处理"
-conn = MySQLdb.Connect(
-    host = '593befbd766f4.sh.cdb.myqcloud.com',
-    port = 17715,
-    user = 'cdb_outerroot',
-    passwd = 'skyread614',
-    db = 'bookinfo',
-    charset = 'utf8'
-)
-cursor = conn.cursor()
-title_for_index = ''
-for i in key:
-    sql = "select number from char_number where title='%s'" % i
-    cursor.execute(sql)
-    rs = cursor.fetchall()
-    for row in rs:
-        number = row[0]
-        title_for_index += '&'
-        title_for_index += number
-print title_for_index
-
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
+# key = u"自然语言处理"
+# conn = MySQLdb.Connect(
+#     host = '593befbd766f4.sh.cdb.myqcloud.com',
+#     port = 17715,
+#     user = 'cdb_outerroot',
+#     passwd = 'skyread614',
+#     db = 'bookinfo',
+#     charset = 'utf8'
+# )
+# cursor = conn.cursor()
+# title_for_index = ''
+# for i in key:
+#     sql = "select number from char_number where title='%s'" % i
+#     cursor.execute(sql)
+#     rs = cursor.fetchall()
+#     for row in rs:
+#         number = row[0]
+#         title_for_index += '&'
+#         title_for_index += number
+# print title_for_index
+a = "asdasdasdaa"
+print len(a)

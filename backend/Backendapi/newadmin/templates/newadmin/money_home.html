@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>财务管理</title>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- BOOTSTRAP STYLES-->
     <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
     <!-- FONTAWESOME STYLES-->
@@ -78,11 +81,54 @@
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
             <div id="page-inner">
-                # 充值
+                <div class="container">
+                  <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#home">账务总览</a></li>
+                    <li><a data-toggle="tab" href="#menu1">充值</a></li>
+                    <li><a data-toggle="tab" href="#menu2">退款</a></li>
+                  </ul>
 
-                # 查询
+                  <div class="tab-content">
+                    <div id="home" class="tab-pane fade in active">
+                        <br>
+                        <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>绑定手机号码</th>
+                                            <th>余额</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%for phone_user in phone_users %}
+                                        <tr>
+                                            <td>{{ phone_user.phone_number}}</td>
+                                            <td>{{ phone_user.money}}</td>
+                                        </tr>
+                                        {%endfor%}
 
-                # 退款
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+                    <div id="menu1" class="tab-pane fade">
+                        图片根据不同的选项变动
+                        <form action="{% url 'search' %}" method="POST">
+					        {% csrf_token %}
+                                <select class="form-control" name= "money">
+										<option>50</option>
+										<option>100</option>
+										<option>150</option>
+										<option>200</option>
+                                </select>
+                            <input type="text" name="phone_number" placeholder="手机号码..." >
+                        </form>
+                    </div>
+                    <div id="menu2" class="tab-pane fade">
+                      退款
+                    </div>
+                  </div>
+                </div>
             </div>
             <!-- /. PAGE INNER  -->
         </div>

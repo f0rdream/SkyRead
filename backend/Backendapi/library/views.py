@@ -259,8 +259,13 @@ class VarifyAddToReturnBarView(APIView):
             serializer = ReturnBookInfoToAdmin(queryset,
                                                data=[],
                                                many=True)
+            price = get_price(id_list)
             serializer.is_valid(raise_exception=True)
-            return Response(serializer.data,HTTP_200_OK)
+            reply = {
+                'bookinfo':serializer.data,
+                'price':price
+            }
+            return Response(reply,HTTP_200_OK)
         else:
             reply = get_reply(16,'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)

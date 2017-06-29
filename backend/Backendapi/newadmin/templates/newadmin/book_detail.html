@@ -1,10 +1,221 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyRead后台管理</title>
+    <!-- BOOTSTRAP STYLES-->
+    <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet" />
+       <!--CUSTOM BASIC STYLES-->
+    <link href="{% static 'assets/css/basic.css'%}" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="{% static 'assets/css/custom.css'%}" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
 <body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">SkyRead 微读伴侣</a>
+            </div>
+
+            <div class="header-right">
+
+                <a href="message-task.html" class="btn btn-info" title="New Message"><b>30 </b><i class="fa fa-envelope-o fa-2x"></i></a>
+                <a href="message-task.html" class="btn btn-primary" title="New Task"><b>40 </b><i class="fa fa-bars fa-2x"></i></a>
+                <a href="login.html" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a>
+
+            </div>
+        </nav>
+        <!-- /. NAV TOP  -->
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+                    <li>
+                        <div class="user-img-div">
+                            <img src="{% static 'assets/img/user.png'%}" class="img-thumbnail" />
+
+                            <div class="inner-text">
+                                唐宗钰
+                            </div>
+                        </div>
+
+                    </li>
+                    <li>
+                        <a href="{%url 'newadmin_index'%}" ><i class="fa fa-dashboard "></i>数据总览</a>
+                    </li>
+                    <li>
+                        <a href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
+                    </li>
+                     <li>
+                        <a href="#"><i class="fa fa-yelp "></i>用户管理</a>
+                    </li>
+                    <li>
+                        <a class="active-menu" href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
+                    </li>
+                     <li>
+                        <a href="#"><i class="fa fa-coffee"></i>平台管理</a>
+                    </li>
+
+                    <li>
+                        <a href="{%url 'money_home'%}"><i class="fa fa-square-o "></i>财务管理</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </nav>
+        <!-- /. NAV SIDE  -->
+        <div id="page-wrapper">
+            <div id="page-inner">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            书籍详情
+                        </div>
+                        <div class="panel-body">
+                             <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-hover">
+                                        <thead>
+
+                                            <tr>
+                                                <th>属性名字</th>
+                                                <th>属性内容</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>标题</td>
+                                                <td>{{book.title}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>作者</td>
+                                                <td>{{book.author}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>出版社</td>
+                                                <td>{{book.publisher}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>豆瓣评分</td>
+                                                <td>{{book.average}}</td>
+                                            </tr>
+                                           <tr>
+                                                <td>出版日期</td>
+                                                <td>{{book.pubdate}}</td>
+                                            </tr>
+                                           <tr>
+                                                <td>页数</td>
+                                                <td>{{book.pages}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>价格</td>
+                                                <td>{{book.price}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                            <!--内容简介-->
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    内容简介
+                                </div>
+                                <div class="panel-body">
+                                     {% if book.summary != "('',)" %}
+                                    {{book.summary}}
+                                    {%else%}
+                                    暂无数据
+                                    {%endif%}
+                                </div>
+                            </div>
+                            <!--end 内容简介-->
+                             <!--目录-->
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    目录
+                                </div>
+                                <div class="panel-body">
+                                   {% if book.catalog != "('',)" %}
+                                    {{book.catalog}}
+                                    {%else%}
+                                    暂无数据
+                                    {%endif%}
+                                </div>
+                            </div>
+                            <!--end 目录-->
+                        </div>
+                        <div class="panel-footer" align="center">
+                            @SkyRead出品
+                        </div>
+                    </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    馆藏信息
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>书籍编号</th>
+                                <th>馆藏位置</th>
+                                <th>索书号</th>
+                                <th>状态</th>
+                                 <th>应还日期</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for holding in holdings %}
+                            <tr>
+                                <td>{{holding.book_id}}</td>
+                                <td>{{holding.location}}</td>
+                                <td>{{holding.find_id}}</td>
+                                {% if holding.state%}
+                                <td>在架上</td>
+                                {%else%}
+                                <td>已经借出</td>
+                                {%endif%}
+                                <td>{{holding.back_time}}</td>
+                            </tr>
+                            {%endfor%}
+
+                        </tbody>
+                    </table>
+            </div>
+                </div>
+            </div>
+
+            </div>
+            <!-- /. PAGE INNER  -->
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+    </div>
+    <!-- /. WRAPPER  -->
+
+    <div id="footer-sec">
+        &copy; Skyread- Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">出品</a>
+    </div>
+    <!-- /. FOOTER  -->
+    <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+    <!-- JQUERY SCRIPTS -->
+    <script src="assets/js/jquery-1.10.2.js"></script>
+    <!-- BOOTSTRAP SCRIPTS -->
+    <script src="assets/js/bootstrap.js"></script>
+    <!-- METISMENU SCRIPTS -->
+    <script src="assets/js/jquery.metisMenu.js"></script>
+       <!-- CUSTOM SCRIPTS -->
+    <script src="assets/js/custom.js"></script>
+
+
 
 </body>
 </html>

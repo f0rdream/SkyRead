@@ -28,7 +28,6 @@ class SearchHistorySerializer(ModelSerializer):
         fields = [
             'user',
             'key',
-            'time'
         ]
     def get_user(self,obj):
         return obj.user.username

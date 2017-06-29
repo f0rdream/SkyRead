@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^comments/(?P<isbn13>\d+)/$',CommentView.as_view()),
     url(r'^collection/(?P<isbn13>\d+)$',HoldingView.as_view(),name='holding'),
     url(r'^starbook/$',StarBookView.as_view(),name='starbook'),
-    url(r'^guide/(?P<guide_id>\d+)/(?P<page>\d+)$', GuideBookView.as_view(), name='refer'),
+    url(r'^guide/(?P<guide_id>\d+)/(?P<page>\d+)$', GuideBookView.as_view(), name='guide'),
     url(r'^starbook/(?P<pk>\d+)$',StarBookDetailView.as_view(),name='star_detail'),
     url(r'^readplan/$',ReadPlanView.as_view(),name='read_plan'),
     url(r'^readplan/(?P<pk>\d+)$',ReadPlanDetailView.as_view(),name='read_plan_detail'),
