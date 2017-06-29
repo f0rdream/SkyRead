@@ -2,8 +2,11 @@
   <view-box class="app">
     <!-- <x-header :right-options="{showMore: true}" slot="header">个人信息</x-header> -->
     <tab v-model="selectedIndex">
-      <tab-item @on-item-click="$router.replace('/bookshelf/scaned')">扫码的书</tab-item>
+      <tab-item @on-item-click="$router.replace('/bookshelf/scaned')">已扫码</tab-item>
+      <tab-item @on-item-click="$router.replace('/bookshelf/ordered')">已预订</tab-item>
       <tab-item @on-item-click="$router.replace('/bookshelf/lending')">正在借阅</tab-item>
+      <tab-item @on-item-click="$router.replace('/bookshelf/favorite')">收藏夹</tab-item>
+      <tab-item @on-item-click="$router.replace('/bookshelf/readplan')">阅读计划</tab-item>
     </tab>
     <transition name="router-fade" mode="out-in">
       <router-view></router-view>
@@ -35,5 +38,5 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 </style>

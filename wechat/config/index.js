@@ -55,6 +55,18 @@ module.exports = {
       '/test_page': {
         target: 'http://115.159.185.170',
         changeOrigin: true
+      },
+      '/media/**': {
+        target: 'http://115.159.185.170',
+        changeOrigin: true
+      },
+      '/history/**': {
+        target: 'http://115.159.185.170',
+        changeOrigin: true
+      },
+      '/list/**': {
+        target: 'http://115.159.185.170',
+        changeOrigin: true
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"

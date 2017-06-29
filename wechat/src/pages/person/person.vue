@@ -6,9 +6,8 @@
       <p class="avatar-info">{{ userInfo.nickname }}</p>
     </section>
     <group class="book-part">
-      <clickable-list :books="books" labelText="我的借阅"></clickable-list>
       <clickable-list :books="books" labelText="我的预订"></clickable-list>
-      <clickable-list :books="books" labelText="借阅历史"></clickable-list>
+      <clickable-list :books="historyList" labelText="借阅历史"></clickable-list>
     </group>
     <group class="setting-part">
       <x-switch v-model="recommend" title="系统推荐"></x-switch>
@@ -26,7 +25,7 @@
       <cell title="关于我们"></cell>
       <cell title="意见反馈"></cell>
     </group>
-    <bottom-bar :activeTab="3"></bottom-bar>
+    <bottom-bar :activeTab="3" slot="bottom"></bottom-bar>
   </view-box>
 </template>
 <script>
@@ -53,20 +52,26 @@ export default {
         email: '',
         have_phone: 0
       },
-      username: '微信名字',
       recommend: true,
       orderRemind: true,
       backRemind: true,
-      books: ['1', '1', '1']
+      books: ['1', '1', '1'],
+      historyList: []
     }
   },
   mounted () {
     this.getAccount()
+    this.getHistory()
   },
   methods: {
     getAccount () {
-      this.$http.get('accounts/').then((res) => {
+      this.$http.get('/accounts/').then((res) => {
         this.userInfo = res.data
+      })
+    },
+    getHistory () {
+      this.$http.get('/library/readed/').then(res => {
+        this.historyList = res.data
       })
     }
   }

@@ -19,6 +19,18 @@ export default {
     this.testLocal()
     this.getSign()
   },
+  computed: {
+    errorMsg () {
+      return this.$store.state.errorMsg
+    }
+  },
+  watch: {
+    errorMsg (newOne, oldOne) {
+      this.$vux.toast.show({
+        text: newOne
+      })
+    }
+  },
   methods: {
     testLocal () {
       if (process.env.NODE_ENV === 'development') {

@@ -1,16 +1,34 @@
-import { SET_WECHATSIGN, SET_BORROWQRINFO, SET_SCANEDCART, DEL_SCANEDCART } from './mutation-types'
+import { SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, DEL_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, ADD_FAVROITES, SET_ERRORMSG, SET_ORDEREDCART, SET_READPLAN } from './mutation-types'
 
 export default {
+  [SET_ERRORMSG] (state, msg) {
+    state.errorMsg = msg
+  },
   [SET_WECHATSIGN] (state, sign) {
     state.wechatSign = sign
   },
-  [SET_BORROWQRINFO] (state, payload) {
-    state.borrowQRInfo = payload
+  [SET_QRINFO] (state, payload) {
+    state.QRInfo = payload
   },
   [SET_SCANEDCART] (state, payload) {
     state.scanedCart = payload
   },
   [DEL_SCANEDCART] (state, index) {
     state.scanedCart.splice(index, 1)
+  },
+  [SET_RENTINGCART] (state, payload) {
+    state.rentingCart = payload
+  },
+  [SET_FAVROITES] (state, payload) {
+    state.favorite = payload
+  },
+  [ADD_FAVROITES] (state, payload) {
+    state.favorite += payload
+  },
+  [SET_ORDEREDCART] (state, payload) {
+    state.orderedCart = payload
+  },
+  [SET_READPLAN] (state, payload) {
+    state.readPlan = payload
   }
 }

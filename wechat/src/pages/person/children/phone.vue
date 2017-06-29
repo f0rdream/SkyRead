@@ -66,7 +66,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .btn-gap {
   margin-top: .15rem;
 }

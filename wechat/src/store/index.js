@@ -8,12 +8,15 @@ import '../config/ajax'
 Vue.use(Vuex)
 
 const state = {
+  errorMsg: '',
   wechatSign: '',
-  favoraite: [],
+  favorite: [],
   scanedCart: [],
   rentingCart: [],
   rentedHistory: [],
-  borrowQRInfo: {}
+  orderedCart: {},
+  readPlan: [],
+  QRInfo: {}
 }
 export default new Vuex.Store({
   state,

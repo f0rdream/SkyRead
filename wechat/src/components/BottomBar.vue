@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-wrapper vux-1px-t">
+  <div class="bar-wrapper">
     <div :class="getBarStyle(index)" @click="tabBarLink(index)" v-for="(item, index) in currentTabs">{{currentTabs[index].name}}</div>
     <!-- <div :class="activeTab === currentTabs[0].name ? 'active' : ''" @click="$router.replace(currentTabs[0].url)">{{currentTabs[0].name}}</div>
     <div class="bar-left" :class="activeTab === currentTabs[1].name ? 'active' : ''" @click="$router.replace(currentTabs[1].url)">{{currentTabs[1].name}}</div>
@@ -110,6 +110,7 @@ export default {
   font-size: 12px;
   background-color: #f4f4f4;
   flex-flow: row nowrap;
+  box-shadow: 1px -1px 1px #ccc;
 }
 .bar-wrapper .active {
   color: #2bc3c2;

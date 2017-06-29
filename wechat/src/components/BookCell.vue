@@ -1,6 +1,7 @@
 <template lang="html">
   <div class="cell-container">
     <div class="left">
+      <slot class="book-checker" name="book-checker"></slot>
       <slot class="book-title" name="book-title"></slot>
       <slot class="book-info" name="book-info"></slot>
     </div>
@@ -15,7 +16,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .cell-container {
   display: flex;
   justify-content: space-between;

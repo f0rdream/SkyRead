@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="title-container">
-    <div class="title">根据标题</div>
-    <list-item v-for="item in typeList"  :itemInfo="item"></list-item>
+    <div class="title">他的书</div>
+    <list-item v-for="item in bookList"  :itemInfo="item"></list-item>
   </div>
 </template>
 
@@ -18,21 +18,19 @@ export default {
   },
   data () {
     return {
-      typeId: this.$route.params.typeid,
-      typeList: [],
-      pageNum: 1
+      personName: this.$route.params.personName,
+      personIndex: this.$route.params.personIndex,
+      bookList: []
     }
   },
   mounted () {
-    this.getTypelist()
+    this.getPersonBooks()
   },
   methods: {
-    getTypelist () {
-      this.$http.get(`book/guide/${this.typeId}/${this.pageNum}`).then((res) => {
-        this.typeList = res.data
-      }).catch((err) => {
-        console.error(err)
-      })
+    getPersonBooks () {
+      this.$http.get(`/list/user_like/${this.personIndex}`).then(res => {
+        this.bookList = res.data
+      }).catch(err => console.warn(err))
     }
   }
 }

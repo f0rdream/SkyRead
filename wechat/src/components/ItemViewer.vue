@@ -54,7 +54,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .viewer-box {
   margin-top: .25rem;
   background-color: #fff;

@@ -1,0 +1,63 @@
+<template lang="html">
+  <div class="children-container">
+    <group>
+      <popup-picker :data="[favorList]" v-model="checkedBook" title="选择书籍" placeholder="请选择" :show-name="true"></popup-picker>
+    </group>
+    <group title="选择时间">
+      <datetime :title="'开始时间'" v-model="beginTime"></datetime>
+      <datetime :title="'结束时间'" v-model="endTime" :start-date="beginTime"></datetime>
+    </group>
+    <x-button type="primary" @click.native="submit">提交</x-button>
+  </div>
+</template>
+
+<script>
+import { Cell, PopupPicker, Group, Datetime, XButton } from 'vux'
+import { mapGetters, mapActions } from 'vuex'
+import { timeJS2PY } from '@/config/utils'
+
+export default {
+  components: {
+    Cell,
+    PopupPicker,
+    Group,
+    Datetime,
+    XButton
+  },
+  data () {
+    return {
+      checkedBook: [],
+      beginTime: '',
+      endTime: ''
+    }
+  },
+  computed: {
+    ...mapGetters({
+      favorList: 'favoriteList'
+    })
+  },
+  mounted () {
+    this.getFavorite()
+  },
+  methods: {
+    ...mapActions({
+      getFavorite: 'getFavorite',
+      setErrMsg: 'setErrMsg'
+    }),
+    submit () {
+      // let begin_time = timeJS2PY(this.beginTime)
+      // let end_time = timeJS2PY(this.endTime)
+      let form = {isbn13: this.checkedBook[0], begin_time: timeJS2PY(this.beginTime), end_time: timeJS2PY(this.endTime)}
+      this.$http.post('/book/readplan/', form).then(res => {
+        this.setErrMsg('信息更新成功')
+        setTimeout(() => {
+          this.$router.go(-1)
+        }, 2000)
+      }).catch(err => this.setErrMsg(err))
+    }
+  }
+}
+</script>
+
+<style lang="css">
+</style>

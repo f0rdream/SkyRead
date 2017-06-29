@@ -3,7 +3,6 @@
     <img :src="currentQRInfo.url" alt="QRCode" class="qrcode">
     <div class="confirm-status">
       {{ isConfirmed ? ' 确认成功' :'等待管理员确认'}}
-      <x-button :disable="!isConfirmed">支付</x-button>
     </div>
   </div>
 </template>
@@ -26,7 +25,6 @@ export default {
   },
   data () {
     return {
-      isPaying: false,
       isConfirmed: false
     }
   },
