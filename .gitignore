@@ -149,3 +149,7 @@ buck-out/
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots
+
+
+# Ignore the upload script
+wechat/upload/

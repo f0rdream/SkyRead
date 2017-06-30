@@ -13,27 +13,20 @@ const PrimaryNav = StackNavigator({
   LaunchScreen: { screen: Launch },
   HomeScreen: {
     screen: Home,
-    navigationOptions: { title: '图书管理员' }
   },
   LoginScreen: {
     screen: Login,
-    navigationOptions: { title: 'Login' }
   },
   ScanScreen: {
     screen: Scan,
-    navigationOptions: { title: '扫码' }
   },
   BookScreen: {
     screen: BookInfo,
-    navigationOptions: { title: '书籍详情' }
   }
 }, {
   // Default config for all screens
-  // headerMode: 'none',
+  headerMode: 'none',
   initialRouteName: 'LaunchScreen',
-  navigationOptions: {
-    headerStyle: styles.header
-  }
 })
 
 export default PrimaryNav

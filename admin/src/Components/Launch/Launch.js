@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, Image } from 'react-native'
+import { NavigationActions } from 'react-navigation'
 import { isLoginURL} from '../../Config/APIs'
 import CookieManager from 'react-native-cookies'
 
@@ -20,8 +21,15 @@ export default class Home extends React.Component {
     })
   }
 
+  // componentDidUpdate () {
+  //   if (this.props.isAppReady) {
+  //     if (this.props.isLoggedIn) {
+  //       this._na
+  //     }
+  //   }
+  // }
+
   async getIsLogin () {
-    const { navigate } = this.props.navigation
     try {
       let response = await fetch(isLoginURL, {
         headers: {
@@ -32,14 +40,22 @@ export default class Home extends React.Component {
       let res  = await response.text()
       if (response.status >= 200 && response.status < 400) {
         this.setState({ isLogin: 1 })
-        navigate('HomeScreen')
+        this._navigateTo('HomeScreen')
       } else {
         this.setState({ isLogin: 0 })
-        navigate('LoginScreen')
+        this._navigateTo('LoginScreen')
       }
     } catch(error) {
       console.log("error: " + error)
     }
+  }
+
+  _navigateTo = (routeName: string) => {
+    const actionToDispatch = NavigationActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({ routeName })]
+    })
+    this.props.navigation.dispatch(actionToDispatch)
   }
 
   render () {

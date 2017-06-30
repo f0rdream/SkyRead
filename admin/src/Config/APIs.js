@@ -2,14 +2,14 @@
 
 import axios from 'axios'
 
-const baseURL = 'http://skyread.fordream001.cn/'
+const baseURL = 'http://skyread.fordream001.cn'
 
-export const loginURL = baseURL + 'web/android_login/'
-export const isLoginURL = baseURL + 'web/is_login/'
-export const timesURL = baseURL + 'web/record/sum/'
-export const signURL = baseURL + 'web/sign/'
-export const signTimesURL = baseURL + 'web/a_info/'
-export const borrowInfo = baseURL + 'library/borrow/verify/'
+export const loginURL = baseURL + '/web/android_login/'
+export const isLoginURL = baseURL + '/web/is_login/'
+export const timesURL = baseURL + '/web/record/sum/'
+export const signURL = baseURL + '/web/sign/'
+export const signTimesURL = baseURL + '/web/a_info/'
+export const borrowInfo = baseURL + '/library/borrow/verify/'
 export const orderInfo = baseURL + '/library/order/finish/'
 export const returnInfo = baseURL + '/library/return/verify/'
 export const borrowConfirm = baseURL + '/library/confirm/' // + something
