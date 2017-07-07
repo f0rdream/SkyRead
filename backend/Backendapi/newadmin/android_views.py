@@ -1,4 +1,5 @@
 # coding:utf-8
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST,HTTP_403_FORBIDDEN
@@ -11,12 +12,16 @@ from models import AdminBorrowItemRecord,Sign,SignRecord
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User, Permission
 
+
+
 def get_reply(code,msg):
     reply = dict()
     reply['error_code'] = code
     reply['msg'] = msg
     return reply
 
+
+@csrf_exempt
 @api_view(['GET'])
 def is_login_view(request):
     """
@@ -38,6 +43,7 @@ class AndroidUserLoginAPIView(APIView):
     serializer_class = UserLoginSerializer
     authentication_classes = (SessionAuthentication, BasicAuthentication)
 
+    @csrf_exempt
     def post(self, request, *args, **kwargs):
         data = request.data
         serializer = UserLoginSerializer(data=data)
@@ -61,6 +67,7 @@ class BorrowRecordView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @csrf_exempt
     def get(self,request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
                                                         record_type=1)
@@ -75,6 +82,7 @@ class ReturnRecordView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @csrf_exempt
     def get(self, request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
                                                         record_type=2)
@@ -89,6 +97,7 @@ class OrderRecordView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @csrf_exempt
     def get(self,request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
                                                         record_type=3)
@@ -103,6 +112,7 @@ class AccountsInfoView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @csrf_exempt
     def get(self,request):
         user= request.user
         reply = dict()
@@ -116,6 +126,7 @@ class RecordSumView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @csrf_exempt
     def get(self,request):
         user = request.user
         reply = {
@@ -132,6 +143,7 @@ class SignItView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @csrf_exempt
     def get(self,request):
         user = request.user
         if not user.admin_permission.andriod_permisson:
@@ -176,6 +188,7 @@ class InfoView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @csrf_exempt
     def get(self,request):
         user = request.user
         username = user.username
@@ -205,7 +218,3 @@ class InfoView(APIView):
         except:
             reply['times'] = 0
         return Response(reply,HTTP_200_OK)
-
-
-
-
