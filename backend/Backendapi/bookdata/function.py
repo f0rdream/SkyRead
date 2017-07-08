@@ -1,7 +1,6 @@
 # coding:utf-8
 # 查询补全部分
 import time
-from get_isbn import get_book_isbn
 import json
 import sys
 reload(sys)
@@ -16,57 +15,28 @@ global count
 global id  # 豆瓣id,用来爬评论
 global isbn13 # 校验码正确的isbn编号,用来爬藏书量和位置
 global img_id # 豆瓣图片id
-
+from transfer_index import get_author_index,get_title_index
 headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
            'Accept-Encoding': 'gzip, deflate, sdch, br',
            'Accept-Language': 'zh-CN,zh;q=0.8',
            'Connection': 'keep-alive',
-           'Cache-Control': 'max-age=0'
-    , 'Upgrade-Insecure-Requests': '1'
-    ,
+           'Cache-Control': 'max-age=0',
+           'Upgrade-Insecure-Requests': '1',
            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
            }
 
 conn = MySQLdb.Connect(
-    host = '127.0.0.1',
-    port = 3306,
-    user = 'root',
-    passwd = '1234',
-    db = 'softcup',
+    host = '593befbd766f4.sh.cdb.myqcloud.com',
+    port = 17715,
+    user = 'cdb_outerroot',
+    passwd = 'skyread614',
+    db = 'skyread',
     charset = 'utf8'
 )
 
 
-def db_set_ok(book_isbn,code):
-    global conn
-    try:
-        conn.ping()
-    except:
-        conn = MySQLdb.Connect(
-            host='127.0.0.1',
-            port=3306,
-            user='root',
-            passwd='1234',
-            db='softcup',
-            charset='utf8'
-        )
-    if code == 1:
-        cursor = conn.cursor()
-        sql = 'insert into check_400 values(%s,"1","0")' % book_isbn
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-    else:
-        cursor = conn.cursor()
-        sql = 'insert into check_400 values(%s,"1","1")' % book_isbn
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-
-
 def entry(key):
     global headers
-    # api = "https://book.douban.com/subject_search?search_text="
     api = 'https://book.douban.com/subject_search?search_text='
     req_api = api+key
     try:
@@ -74,30 +44,15 @@ def entry(key):
         req.encoding = 'utf-8'
         global conn
         if req.status_code == 200:
-            handler(key,req.text)
-            # db_set_ok(book_isbn,1)
+            isbn13 = handler(key,req.text)
             time.sleep(1)
             # 设置校验数据库为true
+            return isbn13
         elif req.status_code == 404:
-            with open('log.txt','a') as l:
-                l.write(book_isbn+"404 not found"+"\n")
-                l.close()
+            pass
             # 设置校验数据库为true
-        elif req.status_code == 400 or req.status_code == 403:
-            with open('log.txt','a') as l:
-                l.write("代理被封了11111111111111111111111111111正在更换代理"+"\n")
-                l.close()
-            entry(book_isbn)
-        else:
-            with open('log.txt', 'a') as l:
-                l.write(str(req.status_code)+str(book_isbn) + "爬取失败"+"\n")
-                l.close()
-            entry(book_isbn)
     except Exception as e:
-        with open('log.txt', 'a') as l:
-            l.write(str(e.message) +"出现了一些问题"+"\n")
-            l.close()
-        entry(key)
+        pass
 
 
 def handler(book_isbn,text):
@@ -105,11 +60,9 @@ def handler(book_isbn,text):
     try:
         book_url = main_soup.find_all(attrs={'class':'info'})[0].find('a').get('href')
         print book_url
-        get_html(book_url,book_isbn)
+        isbn13 = get_html(book_url,book_isbn)
+        return isbn13
     except:
-        with open('log.txt', 'a') as l:
-            l.write( book_isbn + "404 not found"+"\n")
-            l.close()
         pass
 
 
@@ -120,24 +73,14 @@ def get_html(book_url,book_isbn):
         status_code = req.status_code
         if status_code == 200:
             html = req.text
-            parser(html,book_url)
-            # db_set_ok(book_isbn, 2)
-            # 设置数据库解析成功
+            isbn13 = parser(html,book_url)
+            return isbn13
         elif status_code == 400 or status_code == 403:
-            with open('log.txt','a') as l:
-                l.write("代理被封了正在更换代理"+"\n")
-                l.close()
-            get_html(book_url,book_isbn)
+            pass
         else:
-            with open('log.txt','a') as l:
-                l.write("代理被封了正在更换代理"+"\n")
-                l.close()
-            get_html(book_url, book_isbn)
+            pass
     except Exception as e:
-        with open('log.txt', 'a') as l:
-            l.write(str(e.message) +"出现了一些问题"+"\n")
-            l.close()
-        get_html(book_url, book_isbn)
+        pass
 
 
 def parser(html,book_url):
@@ -209,8 +152,7 @@ def parser(html,book_url):
             pass
 
     else:
-        with open('info_fail.txt', 'a') as i:
-            i.write(d_id)
+        pass
     try:
         dir_id = ("dir_" + d_id + "_full").encode('utf-8')
         catalog = main_soup.find_all(attrs={'id': dir_id})[0].text.replace('<br/>', '').replace(' ', '')
@@ -271,16 +213,18 @@ def parser(html,book_url):
         conn.ping()
     except:
         conn = MySQLdb.Connect(
-            host='127.0.0.1',
-            port=3306,
-            user='root',
-            passwd='1234',
-            db='softcup',
+            host='593befbd766f4.sh.cdb.myqcloud.com',
+            port=17715,
+            user='cdb_outerroot',
+            passwd='skyread614',
+            db='skyread',
             charset='utf8'
         )
     cursor = conn.cursor()
-    #sql = 'insert into book_info values("test","aaass","","","","","","","","","","","","","","","","","");'
-    sql = 'insert into douban_p202 values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+    sql = 'insert into bookdata_book values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+    author_for_index = get_author_index(author)
+    title_for_index = get_title_index(title)
+
     try:
         cursor.execute(sql,(str(isbn13),str(numRaters),str(average),
                             str(subtitle),str(author),str(pubdate),
@@ -288,26 +232,10 @@ def parser(html,book_url):
                             str(tag),str(catalog),str(pages),
                             str(d_id),str(publisher),str(title),
                             str(summary),str(author_intro),
-                            str(price)))
+                            str(price),str(0),str(title_for_index),str(author_for_index)))
+
     except Exception as e:
         print e
     conn.commit()
     conn.close()
-    with open('log.txt', 'a') as l:
-        l.write(str(isbn13) +"insert into database success===================================================================================成功"+"\n")
-        l.close()
-    print
-
-
-class Spider():
-    isbn_dict = []
-
-    def get_isbn(self):
-        dict = [202]
-        self.isbn_dict = get_book_isbn(dict,0,100000)
-    def spider(self):
-        self.get_isbn()
-        for isbn in self.isbn_dict:
-            entry(isbn)
-spider = Spider()
-spider.spider()
+    return str(isbn13)

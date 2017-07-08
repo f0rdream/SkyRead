@@ -599,6 +599,7 @@ class SuccessOrderDetailView(APIView):
     返回或删除单个订阅成功的详情
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pk):
         try:
             s = SuccessOrderItem.objects.get(pk=pk)

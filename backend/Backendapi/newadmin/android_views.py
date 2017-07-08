@@ -35,6 +35,7 @@ def is_login_view(request):
         return Response({'message':"the user is not found"}, status=HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 class AndroidUserLoginAPIView(APIView):
     """
     用户登录
@@ -61,6 +62,7 @@ class AndroidUserLoginAPIView(APIView):
             return Response(get_reply(120, 'fail'), HTTP_403_FORBIDDEN)
 
 
+@csrf_exempt
 class BorrowRecordView(APIView):
     """
     管理员操作的借出记录
@@ -76,6 +78,7 @@ class BorrowRecordView(APIView):
         return Response(serializer.data,HTTP_200_OK)
 
 
+@csrf_exempt
 class ReturnRecordView(APIView):
     """
     管理员操作的归还记录
@@ -91,6 +94,7 @@ class ReturnRecordView(APIView):
         return Response(serializer.data,HTTP_200_OK)
 
 
+@csrf_exempt
 class OrderRecordView(APIView):
     """
     管理员操作的订阅记录
@@ -105,7 +109,7 @@ class OrderRecordView(APIView):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data,HTTP_200_OK)
 
-
+@csrf_exempt
 class AccountsInfoView(APIView):
     """
     返回管理员信息
@@ -119,7 +123,7 @@ class AccountsInfoView(APIView):
         reply['username'] = user.username
         return Response(reply,HTTP_200_OK)
 
-
+@csrf_exempt
 class RecordSumView(APIView):
     """
     记录统计
@@ -137,6 +141,7 @@ class RecordSumView(APIView):
         return Response(reply,HTTP_200_OK)
 
 
+@csrf_exempt
 class SignItView(APIView):
     """
     员工签到
@@ -182,6 +187,7 @@ class SignItView(APIView):
                 return Response(get_reply(0,'success'),HTTP_200_OK)
 
 
+@csrf_exempt
 class InfoView(APIView):
     """
     签到统计
