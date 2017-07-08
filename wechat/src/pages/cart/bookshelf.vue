@@ -1,7 +1,7 @@
 <template lang="html">
   <view-box class="app">
     <!-- <x-header :right-options="{showMore: true}" slot="header">个人信息</x-header> -->
-    <tab v-model="selectedIndex">
+    <tab v-model="selectedIndex" bar-active-color="#2bc6b9" active-color="#2bc6b9">
       <tab-item @on-item-click="$router.replace('/bookshelf/scaned')">已扫码</tab-item>
       <tab-item @on-item-click="$router.replace('/bookshelf/ordered')">已预订</tab-item>
       <tab-item @on-item-click="$router.replace('/bookshelf/lending')">正在借阅</tab-item>

@@ -59,6 +59,7 @@ export default new Router({
       children: [
         {
           path: 'scaned',
+
           component: scaned
         },
         {

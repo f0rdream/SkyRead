@@ -1,11 +1,12 @@
 <template>
   <div class="bar-wrapper">
-    <div :class="getBarStyle(index)" @click="tabBarLink(index)" v-for="(item, index) in currentTabs">{{currentTabs[index].name}}</div>
-    <!-- <div :class="activeTab === currentTabs[0].name ? 'active' : ''" @click="$router.replace(currentTabs[0].url)">{{currentTabs[0].name}}</div>
-    <div class="bar-left" :class="activeTab === currentTabs[1].name ? 'active' : ''" @click="$router.replace(currentTabs[1].url)">{{currentTabs[1].name}}</div>
-    <div class="bar-right" :class="activeTab === currentTabs[2].name ? 'active' : ''" @click="$router.replace(currentTabs[2].url)">{{currentTabs[2].name}}</div>
-    <div :class="activeTab === currentTabs[3].name ? 'active' : ''" @click="$router.replace(currentTabs[3].url)">{{currentTabs[3].name}}</div> -->
-    <div class="bar-center" @click="scanQR">扫码借书</div>
+    <div class="bottom-item" :class="getBarStyle(index)" @click="tabBarLink(index)" v-for="(item, index) in currentTabs">
+      <img :src="index === activeTab ? item.cImg : item.img" class="bottom-icon">
+      <div class="bottom-text">{{currentTabs[index].name}}</div>
+    </div>
+    <div class="bar-center" @click="scanQR">
+      <img src="/static/others/brush.png" class="bottom-center-icon">
+    </div>
   </div>
 </template>
 <script>
@@ -26,19 +27,27 @@ export default {
       let defaultTabs = [
         {
           name: '首页',
-          url: '/home/indexpage'
+          url: '/home/indexpage',
+          img: '/static/bottom/home.png',
+          cImg: '/static/bottom/home_c.png'
         },
         {
           name: '搜索',
-          url: '/search'
+          url: '/search',
+          img: '/static/bottom/search.png',
+          cImg: '/static/bottom/search_c.png'
         },
         {
           name: '书架',
-          url: '/bookshelf/scaned'
+          url: '/bookshelf/scaned',
+          img: '/static/bottom/bookshelf.png',
+          cImg: '/static/bottom/bookshelf_c.png'
         },
         {
           name: '个人',
-          url: '/person'
+          url: '/person',
+          img: '/static/bottom/person.png',
+          cImg: '/static/bottom/person_c.png'
         }
       ]
       return this.tabs || defaultTabs
@@ -116,10 +125,10 @@ export default {
   color: #2bc3c2;
 }
 .bar-wrapper>div:not(.bar-center) {
-  text-align: center;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 8px;
   width: 25%;
+  text-align: center;
+  font-size: 10px;
 }
 .bar-wrapper .bar-left {
   padding-right: 34px;
@@ -130,7 +139,6 @@ export default {
 .bar-center {
   background-color: #f4f4f4;
   height: 68px;
-  line-height: 68px;
   width: 68px;
   position: absolute;
   left: 50%;
@@ -139,5 +147,22 @@ export default {
   border-radius: 50%;
   text-align: center;
   box-shadow: 0 0 5px #2bc0cb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bottom-center-icon {
+  height: 40px;
+  width: 40px;
+}
+
+.bottom-icon {
+  height: 25px;
+  width: 25px;
+}
+.botton-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>

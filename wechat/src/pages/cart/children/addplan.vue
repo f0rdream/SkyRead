@@ -7,7 +7,9 @@
       <datetime :title="'开始时间'" v-model="beginTime"></datetime>
       <datetime :title="'结束时间'" v-model="endTime" :start-date="beginTime"></datetime>
     </group>
-    <x-button type="primary" @click.native="submit">提交</x-button>
+    <div class="btn-container">
+      <button class="i-btn" @click="submit">提交</button>
+    </div>
   </div>
 </template>
 
@@ -60,4 +62,9 @@ export default {
 </script>
 
 <style lang="css">
+.btn-container {
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+}
 </style>
