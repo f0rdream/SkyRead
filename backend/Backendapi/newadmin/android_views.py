@@ -71,6 +71,7 @@ class BorrowRecordView(APIView):
     管理员操作的借出记录
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self,request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
@@ -85,6 +86,7 @@ class ReturnRecordView(APIView):
     管理员操作的归还记录
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
@@ -99,6 +101,7 @@ class OrderRecordView(APIView):
     管理员操作的订阅记录
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self,request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
@@ -113,6 +116,7 @@ class AccountsInfoView(APIView):
     返回管理员信息
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self,request):
         user= request.user
@@ -126,7 +130,7 @@ class RecordSumView(APIView):
     记录统计
     """
     permission_classes = [IsAuthenticated]
-
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self,request):
         user = request.user
@@ -143,6 +147,7 @@ class SignItView(APIView):
     员工签到
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self,request):
         user = request.user
@@ -187,6 +192,7 @@ class InfoView(APIView):
     签到统计
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self,request):
         user = request.user
