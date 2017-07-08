@@ -1,3 +1,4 @@
+
 <template lang="html">
   <section class="main-part">
     <swiper :list="imgList" v-model="imgIndex"></swiper>

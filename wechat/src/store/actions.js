@@ -93,6 +93,21 @@ export default {
       })
     }).catch(err => commit(SET_ERRORMSG, err))
   },
+  delOrdered ({ commit }, id, type) {
+    if (type === 1) {
+      Vue.http.delete(`/library/order/wait/${id}`).then(res => {
+        commit(SET_ERRORMSG, '删除成功')
+      }).catch(err => {
+        commit(SET_ERRORMSG, err)
+      })
+    } else {
+      Vue.http.delete(`/library/order/success/${id}`).then(res => {
+        commit(SET_ERRORMSG, '删除成功')
+      }).catch(err => {
+        commit(SET_ERRORMSG, err)
+      })
+    }
+  },
   getReadPlan ({ commit }) {
     Vue.http.get('/book/readplan/').then(res => {
       commit(SET_READPLAN, res.data)
