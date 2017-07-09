@@ -37,10 +37,10 @@ class TagBookListView(APIView):
 
     def get(self,request,page):
         import time
-        begin =time.time()
+        begin = time.time()
         key = self.request.GET.get("key")
         cursor = connection.cursor()
-        select_sql ="select isbn13 from bookinfo.isbn13_tag \
+        select_sql = "select isbn13 from bookinfo.isbn13_tag \
         where tag='%s' limit  %d,20" % (key,int(page))
         cursor.execute(select_sql)
         tag_rs = cursor.fetchall()
@@ -116,7 +116,7 @@ class RecommendView(APIView):
                              '4242172', '1083428', '1090043', '1026425', '2256039',]
             queryset = list()
             for douban_id in recommend_list:
-                isbn13_sql = "select isbn13 from bookdata_book where d_id='%s' " % str(douban_id[0])
+                isbn13_sql = "select isbn13 from bookdata_book where d_id='%s' " % str(douban_id)
                 cursor = connection.cursor()
                 cursor.execute(isbn13_sql)
                 isbn13_rs = cursor.fetchall()
@@ -126,7 +126,8 @@ class RecommendView(APIView):
                     try:
                         book = Book.objects.get(isbn13=isbn13)
                         queryset.append(book)
-                    except:
+                    except Exception as e:
+                        print e
                         pass
             serializer = ShortInto(queryset, many=True, data=request.data)
             serializer.is_valid(raise_exception=True)
