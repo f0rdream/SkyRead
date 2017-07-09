@@ -14,7 +14,7 @@
           <p class="item-info">评分：{{ bookInfo.average }}</p>
         </div>
         <div class="item-info-right">
-          <button class="i-btn" mini @click="addFavroite(bookInfo.isbn13)">收藏</button>
+          <button class="i-btn" mini @click="addFavorite(bookInfo.isbn13)">收藏</button>
         </div>
       </div>
     </div>
@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'addFavroite'
+      'addFavorite'
     ]),
     bookClick () {
       this.$router.push(`/home/bookdetail/${this.bookInfo.isbn13}`)

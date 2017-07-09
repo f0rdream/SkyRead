@@ -1,7 +1,7 @@
 
 <template lang="html">
   <section class="main-part">
-    <swiper :list="imgList" v-model="imgIndex"></swiper>
+    <swiper :list="imgList" v-model="imgIndex" :auto="true" :loop="true"></swiper>
     <div class="category">
       <div class="cate-item" v-for="(value, key) in bookTypes" v-if="key < 8 || isMore">
         <router-link :to="`/home/category/${ key }`">
@@ -9,7 +9,7 @@
           <p class="cate-item-string">{{ value.type }}</p>
         </router-link>
       </div>
-      <div class="cate-item" @click="toggleMore">
+      <div class="cate-item" @click="isMore = !isMore">
         <img src="/static/class/more.png" class="cate-img">
         <p class="cate-item-string">
           {{ isMore ? '收起分类' : '更多分类'}}
@@ -17,7 +17,7 @@
       </div>
     </div>
     <recommend-card :bookItems="recommendBooks" ></recommend-card>
-    <related-person></related-person>
+    <!-- <related-person></related-person> -->
   </section>
 </template>
 
@@ -38,28 +38,13 @@ export default {
       isMore: false,
       bookTypes: bookTypes,
       recommendBooks: [],
-      imgList: [
-        {
-          url: 'javascript:',
-          img: 'https://static.vux.li/demo/1.jpg',
-          title: '送你一朵fua'
-        },
-        {
-          url: 'javascript:',
-          img: 'https://static.vux.li/demo/2.jpg',
-          title: '送你一辆车'
-        },
-        {
-          url: 'javascript:',
-          img: 'https://static.vux.li/demo/3.jpg',
-          title: '送你一次旅行'
-        }
-      ],
+      imgList: [],
       imgIndex: 0
     }
   },
   mounted () {
     this.getRecommend()
+    this.getSwiper()
   },
   methods: {
     getRecommend () {
@@ -67,8 +52,12 @@ export default {
         this.recommendBooks = res.data
       }).catch(err => console.warn(err))
     },
-    toggleMore () {
-      this.isMore = !this.isMore
+    getSwiper () {
+      this.$http.get('/picture/').then(res => {
+        for (let item of res.data) {
+          this.imgList.push({url: `/home/bookdetail/${item.isbn13}`, img: item.picture, title: item.title})
+        }
+      }).catch(err => console.log(err))
     }
   }
 }

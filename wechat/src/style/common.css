@@ -58,9 +58,13 @@ p.body-info {
   text-overflow:ellipsis;
   white-space: nowrap;
 }
+/* Fix Vux rem problems */
 
 .vux-timeline .vux-timeline-item-content {
   padding: 8px 0 25px 30px;
+}
+.main-part .vux-slider > .vux-swiper > .vux-swiper-item > a > .vux-swiper-desc {
+  height: 56px;
 }
 
 /* Button */
