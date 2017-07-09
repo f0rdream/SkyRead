@@ -1,7 +1,8 @@
 import React from 'react'
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, AsyncStorage } from 'react-native'
-import { axios, loginURL } from '../../Config/APIs'
+import { axios, loginURL, isLoginURL } from '../../Config/APIs'
 import { Toast } from 'native-base'
+import { NavigationActions } from 'react-navigation'
 
 export default class LoginForm extends React.Component {
   constructor (props) {
@@ -13,6 +14,15 @@ export default class LoginForm extends React.Component {
         error: '',
         showProgress: false,
       }
+      this.getIsLogin = this.getIsLogin.bind(this)
+  }
+
+  _navigateTo = (routeName: string) => {
+    const actionToDispatch = NavigationActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({ routeName })]
+    })
+    this.props.navigation.dispatch(actionToDispatch)
   }
 
   async onLoginPressed() {
@@ -43,11 +53,16 @@ export default class LoginForm extends React.Component {
         })
       })
       let res  = await response.text()
-      if (response.status >= 200 && response.status < 300) {
-        this.setState({error: ''})
-        this.props.navigation.navigate('HomeScreen')
+      if (response.status >= 200 && response.status < 400) {
+        this._navigateTo('HomeScreen')
+        Toast.show({
+          supportedOrientations: ['portrait','landscape'],
+          text: res,
+          position: 'bottom',
+          buttonText: 'Okay'
+        })
       } else {
-        this.setState({error: res})
+        this.getIsLogin()
         Toast.show({
           supportedOrientations: ['portrait','landscape'],
           text: res,
@@ -56,14 +71,30 @@ export default class LoginForm extends React.Component {
         })
       }
     } catch(err) {
+      this.getIsLogin()
       Toast.show({
         supportedOrientations: ['portrait','landscape'],
         text: err,
         position: 'bottom',
         buttonText: 'Okay'
       })
-      this.setState({error: err})
-      console.log("error: " + err)
+    }
+  }
+
+  async getIsLogin () {
+    try {
+      let response = await fetch(isLoginURL, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      let res  = await response.text()
+      if (response.status >= 200 && response.status < 400) {
+        this._navigateTo('HomeScreen')
+      }
+    } catch(error) {
+      console.log("error: " + error)
     }
   }
 
@@ -71,19 +102,17 @@ export default class LoginForm extends React.Component {
     return (
       <View style={styles.container}>
         <TextInput
-          placeholder="Plase enter the username"
+          placeholder="用户名"
           returnKeyType="next"
           onSubmitEditing={() => this.passwordInput.focus()}
-          keybordType="default"
           style={styles.input}
           onChangeText={(text) => this.setState({username: text})}
         />
         <TextInput
-          placeholder="Plase enter the password"
+          placeholder="密码"
           returnKeyType="go"
           secureTextEntry
           ref={(input) => this.passwordInput = input}
-          keybordType="default"
           style={styles.input}
           onChangeText={(text) => this.setState({password: text})}
         />
@@ -106,7 +135,7 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: 'rgba(255,255,255, 0.2)',
     marginBottom: 20,
-    color: '#FFF',
+    color: '#333',
     paddingHorizontal: 10
   },
   buttonContainer: {

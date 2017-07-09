@@ -17,9 +17,9 @@ export default class Scan extends React.Component {
   }
 
   getQR = (data) => {
-    let qrResult = this.convertData(data)
+    let qrResult = this.convertData(data.data)
     qrResult.id = qrResult.id.split('b').splice(0,1)
-    getBookInfo(qrResult)
+    this.getBookInfo(qrResult)
   }
 
   async getBookInfo (qrObj) {
@@ -51,8 +51,11 @@ export default class Scan extends React.Component {
         credentials: 'include',
         body: JSON.stringify(form)
       })
-      let res  = await response.text()
+      console.log(response);
+      let res  = await response.json()
+      console.log(res);
       if (response.status >= 200 && response.status < 400) {
+        consolo.log(type)
         this.props.navigation.navigate('BookScreen', { booksData: res, type: type})
       } else {
         Toast.show({
@@ -72,9 +75,10 @@ export default class Scan extends React.Component {
     }
   }
 
-  convertData = (string) => {
+  convertData = (queryString) => {
     let params = {}, queries, temp, i, l
     // Split into key/value pairs
+    queryString = queryString.split('?')[1]
     queries = queryString.split("&")
     // Convert the array of strings into an object
     for ( i = 0, l = queries.length; i < l; i++ ) {

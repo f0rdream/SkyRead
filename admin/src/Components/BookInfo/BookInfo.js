@@ -57,7 +57,7 @@ export default class BookInfo extends React.Component {
 
 
   render () {
-    let list = [1]
+    let list = [1, 1]
     let booksDom = []
     for (let i in list) {
       booksDom.push(<InfoPart/>)

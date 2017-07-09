@@ -51,7 +51,7 @@ from permissions import have_phone_register
 from bookdata.models import Holding,Book
 from accounts.models import PhoneUser,WeChatUser
 from newadmin.models import AdminBorrowItemRecord
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication,BasicAuthentication
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):

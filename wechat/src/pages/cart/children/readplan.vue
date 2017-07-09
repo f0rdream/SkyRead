@@ -11,7 +11,7 @@
     				<p class="item-info">阅读时间: {{dateFormat(item.begin_time, 'YYYY.MM.DD') + '-' + dateFormat(item.end_time, 'YYYY.MM.DD')}}</p>
   				</div>
           <div class="right-part">
-            <button class="i-btn">删除</button>
+            <button class="i-btn" @click="delReadPlan(item.id)">删除</button>
           </div>
 				</div>
 			</timeline-item>
@@ -43,7 +43,8 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getReadPlan'
+      'getReadPlan',
+      'delReadPlan'
     ]),
     dateFormat,
     addClick () {
@@ -64,9 +65,7 @@ export default {
 .children-container .vux-timeline {
   padding: 15px;
 }
-.vux-timeline .vux-timeline-item-content {
-  padding: 8px 0 25px 30px;
-}
+
 .item-info {
   color: #676767;
   font-size: 14px;
@@ -76,6 +75,8 @@ export default {
 }*/
 .time-item-container {
   display: flex;
+  border-top: 1px rgba(200, 200, 200, 0.3) solid;
+  padding-top: 10px;
 };
 .left-part {
   flex: 1;
@@ -93,7 +94,7 @@ export default {
   border: 0;
   border-radius: 50%;
   outline: 0;
-  background-color: rgba(255, 255, 255, 0)
+  background-color: rgba(255, 255, 255, 0);
 }
 .round-add {
   display: inline-block;
