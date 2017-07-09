@@ -11,7 +11,13 @@ from serializers import UserLoginSerializer,BorrowRecordSerializer,OrderRecordSe
 from models import AdminBorrowItemRecord,Sign,SignRecord
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User, Permission
+from rest_framework.authentication import SessionAuthentication
 
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
 
 
 def get_reply(code,msg):
@@ -41,9 +47,8 @@ class AndroidUserLoginAPIView(APIView):
     """
     permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def post(self, request, *args, **kwargs):
         data = request.data
         serializer = UserLoginSerializer(data=data)
@@ -66,8 +71,8 @@ class BorrowRecordView(APIView):
     管理员操作的借出记录
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def get(self,request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
                                                         record_type=1)
@@ -81,8 +86,8 @@ class ReturnRecordView(APIView):
     管理员操作的归还记录
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def get(self, request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
                                                         record_type=2)
@@ -96,8 +101,8 @@ class OrderRecordView(APIView):
     管理员操作的订阅记录
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def get(self,request):
         queryset = AdminBorrowItemRecord.objects.filter(user=request.user,
                                                         record_type=3)
@@ -111,8 +116,8 @@ class AccountsInfoView(APIView):
     返回管理员信息
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def get(self,request):
         user= request.user
         reply = dict()
@@ -125,8 +130,8 @@ class RecordSumView(APIView):
     记录统计
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def get(self,request):
         user = request.user
         reply = {
@@ -142,8 +147,8 @@ class SignItView(APIView):
     员工签到
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def get(self,request):
         user = request.user
         if not user.admin_permission.andriod_permisson:
@@ -187,8 +192,8 @@ class InfoView(APIView):
     签到统计
     """
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
-    @csrf_exempt
     def get(self,request):
         user = request.user
         username = user.username

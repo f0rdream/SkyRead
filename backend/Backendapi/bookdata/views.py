@@ -28,6 +28,8 @@ from rest_framework.response import Response
 from history.models import SearchHistory
 from l_lib.function import get_reply
 from models import Comment,BrowsedBook
+from function import entry
+
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]
@@ -119,8 +121,15 @@ class Serach(APIView):
                 book = Book.objects.get(isbn13=isbn13)
                 author_queryset.append(book)
             # 6.28加入查询补全
-            # if not title_queryset:
-            #     # 若是在数据库中找不到结果
+            if not title_queryset and not author_queryset:
+                try:
+                    isbn13 = entry(key)
+                    print isbn13
+                    book = Book.objects.get(isbn13=isbn13)
+                    title_queryset.append(book)
+                except Exception as e:
+                    print e
+                    print e.message
 
             author_serializer = ShortInto(author_queryset, data=request.data, many=True)
             author_serializer.is_valid(raise_exception=True)
