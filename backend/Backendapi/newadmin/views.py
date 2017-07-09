@@ -212,7 +212,7 @@ def add_book_excel(request):
             rownum = sheet1.nrows
             holdings = list()
             for i in range(1, rownum):
-                isbn13 = str('{:.0f}'.format(sheet1.cell(i, 0).value))
+                isbn13 = str(sheet1.cell(i, 0).value)
                 find_id = str(sheet1.cell(i, 1).value)
                 location = str(sheet1.cell(i, 2).value)
                 try:
@@ -231,6 +231,8 @@ def add_book_excel(request):
             }
             return render(request,"newadmin/add_book_by_excel_success.html",reply)
         except Exception as e:
+            print e
+            print e.message
             reply = {
                 "msg": "添加失败",
                 "username": request.user.username
