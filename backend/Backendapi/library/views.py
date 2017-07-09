@@ -622,6 +622,7 @@ class SuccessOrderDetailView(APIView):
             reply['msg'] = 'not found'
             return Response(reply,HTTP_404_NOT_FOUND)
 
+
     def delete(self,request,pk):
         try:
             s = SuccessOrderItem.objects.get(pk=pk)
@@ -699,6 +700,7 @@ class WaitOrderDetailView(APIView):
             reply['error_code'] = 24
             reply['msg'] = 'not found'
             return Response(reply,HTTP_404_NOT_FOUND)
+
     def delete(self,request,pk):
         try:
             w = WaitOrderItem.objects.get(pk=pk)

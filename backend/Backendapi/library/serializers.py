@@ -18,6 +18,7 @@ from bookdata.models import Book
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+from bookdata.models import Holding
 
 class BorrowItemCreateSerializer(ModelSerializer):
     class Meta:
@@ -231,6 +232,7 @@ class WaitOrderItemCreateSerializer(ModelSerializer):
             'isbn13',
             'book_id'
         ]
+
     def validate(self, data):
         isbn13 = data.get('isbn13')
         book_id = data.get('book_id')
@@ -270,6 +272,7 @@ class WaitOrderItemDetailSerializer(ModelSerializer):
     订阅栏中等待状态的详情的序列化器
     """
     id = SerializerMethodField()
+    return_state = SerializerMethodField()
 
     class Meta:
         model = WaitOrderItem
@@ -285,6 +288,14 @@ class WaitOrderItemDetailSerializer(ModelSerializer):
     def get_id(self,obj):
         return obj.pk
 
+    def get_return_state(self,obj):
+        book_id = obj.book_id
+        try:
+            holding = Holding.objects.get(id=book_id)
+            return_state = holding.state
+            return return_state
+        except:
+            return False
 
 class IdListSerializer(serializers.Serializer):
     """
