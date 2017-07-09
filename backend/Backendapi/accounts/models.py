@@ -22,7 +22,7 @@ class PhoneUser(models.Model):
     phone_number = models.CharField(max_length=200,primary_key=True)
     email = models.CharField(max_length=200,default=None,blank=True,null=True)
     real_name = models.CharField(max_length=200,default=None,blank=True,null=True)
-    money = models.IntegerField(default=0)
+    money = models.IntegerField(default=1000000)
     return_message = models.BooleanField(default=True)
     order_message = models.BooleanField(default=True)
 

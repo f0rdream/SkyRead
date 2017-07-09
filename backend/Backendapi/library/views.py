@@ -737,26 +737,29 @@ def qrcode_info(request):
     :return:
     """
     user = request.user
-    if user  and  user.admin_permission.andriod_permisson:
-        ctime = request.GET.get("ctime")
-        id = request.GET.get("id")
-        qrtype = request.GET.get('qrtype')
-        pay_id = request.GET.get('pay_id')
-        return_id = request.GET.get('return_id')
-        if not ctime:
-            ctime = ""
-        if not qrtype:
-            qrtype = ""
-        if not pay_id:
-            pay_id = ''
-        if not id:
-            id = ""
-        if not return_id:
-            return_id = ''
-        reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+\
-                "&pay_id="+pay_id+"&return_id="+return_id
-        return HttpResponse(reply)
-    else:
+    try:
+        if user and user.admin_permission.andriod_permisson:
+            ctime = request.GET.get("ctime")
+            id = request.GET.get("id")
+            qrtype = request.GET.get('qrtype')
+            pay_id = request.GET.get('pay_id')
+            return_id = request.GET.get('return_id')
+            if not ctime:
+                ctime = ""
+            if not qrtype:
+                qrtype = ""
+            if not pay_id:
+                pay_id = ''
+            if not id:
+                id = ""
+            if not return_id:
+                return_id = ''
+            reply = "ctime="+ctime+"&id="+id+"&qrtype="+qrtype+\
+                    "&pay_id="+pay_id+"&return_id="+return_id
+            return HttpResponse(reply)
+        else:
+            return HttpResponse("您不是SkyRead的管理员,无权操作")
+    except:
         return HttpResponse("您不是SkyRead的管理员,无权操作")
 
 
@@ -951,32 +954,35 @@ def order_info(request):
     :return:
     """
     user = request.user
-    if user  and  user.admin_permission.andriod_permisson:
-        qrtype = request.GET.get("qrtype")
-        book_id = request.GET.get("book_id")
-        user_id = request.GET.get("id")
-        title = request.GET.get('title')
-        order_id = request.GET.get('order_id')
-        if not book_id:
-            book_id = ""
-        if not user_id:
-            user_id = ""
-        if not title:
-            title = ''
-        if not qrtype:
-            qrtype = ''
-        nickname=  '获取昵称失败'
-        if user_id:
-            user = User.objects.get(id=user_id)
-            try:
-                wechat_user = WeChatUser.objects.get(openid=user.username)
-                nickname = wechat_user.nickname
-            except:
-                nickname = '获取昵称失败'
-        reply = "title="+title+"&nickname="+nickname+\
-                "&book_id="+book_id+"&qrtype="+qrtype+"&order_id="+order_id
-        return HttpResponse(reply)
-    else:
+    try:
+        if user  and  user.admin_permission.andriod_permisson:
+            qrtype = request.GET.get("qrtype")
+            book_id = request.GET.get("book_id")
+            user_id = request.GET.get("id")
+            title = request.GET.get('title')
+            order_id = request.GET.get('order_id')
+            if not book_id:
+                book_id = ""
+            if not user_id:
+                user_id = ""
+            if not title:
+                title = ''
+            if not qrtype:
+                qrtype = ''
+            nickname=  '获取昵称失败'
+            if user_id:
+                user = User.objects.get(id=user_id)
+                try:
+                    wechat_user = WeChatUser.objects.get(openid=user.username)
+                    nickname = wechat_user.nickname
+                except:
+                    nickname = '获取昵称失败'
+            reply = "title="+title+"&nickname="+nickname+\
+                    "&book_id="+book_id+"&qrtype="+qrtype+"&order_id="+order_id
+            return HttpResponse(reply)
+        else:
+            return HttpResponse("您不是SkyRead的管理员,无权操作")
+    except:
         return HttpResponse("您不是SkyRead的管理员,无权操作")
 
 
