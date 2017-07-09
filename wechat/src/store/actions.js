@@ -1,20 +1,18 @@
 import Vue from 'vue'
 import store from './index'
-import { SET_ERRORMSG, SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN } from './mutation-types'
+import { SET_ACCOUNTSINFO, SET_ERRORMSG, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN, SET_HAVEPHONE } from './mutation-types'
 import '../config/ajax'
 import Router from '../router/index'
 
 export default {
-  setWechatSign ({commit, state}) {
-    let url = window.location.href.split('#')[0]
-    this.$http.get('url', url).then(res => {
-      commit(SET_WECHATSIGN, res.data)
-    }).catch(err => {
-      console.err(err)
-    })
-  },
   setErrMsg ({ commit }, msg) {
     commit(SET_ERRORMSG, msg)
+  },
+  getAccountsInfo ({ commit }, info) {
+    Vue.http.get('/accounts/').then((res) => {
+      commit(SET_ACCOUNTSINFO, res.data)
+      commit(SET_HAVEPHONE, res.data.have_phone)
+    })
   },
   getBorrowQR ({ commit, state }, indexList) {
     Vue.http.post('/library/borrow/qrcode/', {id_list: indexList}).then(res => {
@@ -50,7 +48,7 @@ export default {
     // }
     Vue.http.post('/library/return/qrcode/', {id_list: indexList}).then(res => {
       commit(SET_QRINFO, res.data)
-      Router.push('/bookshelf/paying')
+      Router.push('/bookshelf/backing')
     })
   },
   reNewRenting ({ commit }, id) {

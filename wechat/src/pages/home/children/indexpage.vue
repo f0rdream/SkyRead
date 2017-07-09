@@ -3,10 +3,18 @@
   <section class="main-part">
     <swiper :list="imgList" v-model="imgIndex"></swiper>
     <div class="category">
-      <div class="cate-item" v-for="(value, key) in bookTypes2" v-if="key < 8 || isMore">
-        <router-link :to="`/home/category/${ key }`">{{ value }}</router-link>
+      <div class="cate-item" v-for="(value, key) in bookTypes" v-if="key < 8 || isMore">
+        <router-link :to="`/home/category/${ key }`">
+          <img :src="value.img" class="cate-img">
+          <p class="cate-item-string">{{ value.type }}</p>
+        </router-link>
       </div>
-      <div class="cate-item" @click="toggleMore">{{ isMore ? '收起分类' : '更多分类'}}</div>
+      <div class="cate-item" @click="toggleMore">
+        <img src="/static/class/more.png" class="cate-img">
+        <p class="cate-item-string">
+          {{ isMore ? '收起分类' : '更多分类'}}
+        </p>
+      </div>
     </div>
     <recommend-card :bookItems="recommendBooks" ></recommend-card>
     <related-person></related-person>
@@ -28,7 +36,7 @@ export default {
   data () {
     return {
       isMore: false,
-      bookTypes2: bookTypes,
+      bookTypes: bookTypes,
       recommendBooks: [],
       imgList: [
         {
@@ -48,95 +56,10 @@ export default {
         }
       ],
       imgIndex: 0
-      // books: [
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   }
-      // ]
     }
   },
   mounted () {
     this.getRecommend()
-    // setInterval(() => {
-    //   this.recommendBooks = [1, 2, 3, 4, 5]
-    // }, 5000)
   },
   methods: {
     getRecommend () {
@@ -164,5 +87,11 @@ export default {
   color: #5f5f5f;
   font-size: 12px;
   flex: 0 1 21%;
+}
+.cate-img {
+  width: 50%;
+}
+.cate-item-string {
+  color: #5f5f5f;
 }
 </style>

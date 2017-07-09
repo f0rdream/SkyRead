@@ -6,11 +6,11 @@
       <p slot="book-info" class="book-info">借书时间: {{ book.borrow_time }}</p>
       <p slot="book-info" class="book-info">归还时间: {{ book.return_time }}</p>
       <p slot="book-info" class="book-info" :class="getStyle(book.due)">剩余时间: {{ book.due }}天</p>
-      <button slot="right" @click="reNewRenting(book.id)" class="i-btn multi-btn">续借</button>
+      <button slot="right" @click="reNewRenting(book.id)" class="i-btn multi-btn" :disabled="book.due > 59">续借</button>
       <button slot="right" @click="genQR([book.id])" class="i-btn multi-btn">还书码</button>
     </book-cell>
     <div class="btn-bottom-container">
-      <button @click.native="genQR(checkedCells)" :disabled="allQRAvailble" class="i-btn" v-if="bookList.length > 0">批量生成还书码</button>
+      <button @click="genQR(checkedCells)" :disabled="allQRAvailble" class="i-btn i-btn-lg" v-if="bookList.length > 0">批量生成还书码</button>
     </div>
   </div>
 </template>
@@ -56,10 +56,10 @@ export default {
     getStyle (day) {
       if (day > 7) {
         return
-      } else if (day < 3) {
+      } else if (day <= 3) {
         return 'due-eager'
       } else {
-        return 'dye-normal'
+        return 'due-normal'
       }
     }
   }
@@ -67,10 +67,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.due-earger {
+.book-info.due-eager {
   color: red;
 }
-.due-eager {
+.book-info.due-normal {
   color: #2bc6b9;
 }
 .btn-bottom-container {

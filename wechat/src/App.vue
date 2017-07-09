@@ -3,13 +3,20 @@
     <transition name="router-fade" mode="out-in">
       <router-view></router-view>
     </transition>
+    <alert v-model="lackPhone" @on-hide="alertHide">请您先绑定手机享受全部服务</alert>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
+import { Alert } from 'vux'
 import './style/common.css'
+
 export default {
   name: 'app',
+  components: {
+    Alert
+  },
   data () {
     return {
       wxSign: {}
@@ -17,11 +24,19 @@ export default {
   },
   mounted () {
     this.testLocal()
+    this.getAccountsInfo()
     this.getSign()
   },
   computed: {
+    ...mapState({
+      havePhone: 'havePhone'
+    }),
     errorMsg () {
       return this.$store.state.errorMsg
+    },
+    lackPhone () {
+      let havePhone = Boolean(this.havePhone)
+      return !havePhone
     }
   },
   watch: {
@@ -32,6 +47,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      getAccountsInfo: 'getAccountsInfo'
+    }),
     testLocal () {
       if (process.env.NODE_ENV === 'development') {
         this.$http.get('test_page/').then(res => {
@@ -57,6 +75,10 @@ export default {
       }).catch(err => {
         console.warn(err)
       })
+    },
+    alertHide () {
+      // console.log('hide')
+      this.$router.push('/person/phone')
     }
   }
 }

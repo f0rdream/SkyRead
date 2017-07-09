@@ -4,7 +4,7 @@
     <tab v-model="selectedIndex" bar-active-color="#2bc6b9" active-color="#2bc6b9">
       <tab-item @on-item-click="$router.replace('/bookshelf/scaned')">已扫码</tab-item>
       <tab-item @on-item-click="$router.replace('/bookshelf/ordered')">已预订</tab-item>
-      <tab-item @on-item-click="$router.replace('/bookshelf/lending')">正在借阅</tab-item>
+      <tab-item @on-item-click="$router.replace('/bookshelf/renting')">正在借阅</tab-item>
       <tab-item @on-item-click="$router.replace('/bookshelf/favorite')">收藏夹</tab-item>
       <tab-item @on-item-click="$router.replace('/bookshelf/readplan')">阅读计划</tab-item>
     </tab>

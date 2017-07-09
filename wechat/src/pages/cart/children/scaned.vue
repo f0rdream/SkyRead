@@ -10,12 +10,12 @@
       <check-box slot="book-checker" :value="book.id" v-model="checkedCells"></check-box>
       <p slot="book-title" class="book-title">{{ book.title }}</p>
       <p slot="book-info" class="book-info">借书时间: {{ book.borrow_time }}</p>
-      <p slot="book-info" class="book-info">还书时间: {{ book.borrow_time }}</p>
+      <p slot="book-info" class="book-info">索书号: {{ book.find_id }}</p>
       <button slot="right" class="i-btn multi-btn" @click="genQR([book.id])" >借书码</button>
       <button slot="right" class="i-btn multi-btn" @click="delScaned(book.id, index)">删除</button>
     </book-cell>
     <div class="btn-bottom-container">
-      <button @click.native="genQR(checkedCells)" :disabled="allQRAvailble" class="i-btn" v-if="bookList.length > 0">批量生成借书码</button>
+      <button @click="genQR(checkedCells)" :disabled="allQRAvailble" class="i-btn i-btn-lg" v-if="bookList.length > 0">批量生成借书码</button>
     </div>
 
   </div>

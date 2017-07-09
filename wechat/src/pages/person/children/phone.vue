@@ -3,10 +3,12 @@
     <group class="child-container">
       <x-input title="新手机号码" v-model="phoneNum"></x-input>
       <x-input title="发送验证码" v-model="captcha">
-          <x-button slot="right" type="primary" mini @click.native="sendMsg">发送验证码</x-button>
+        <button slot="right" class="i-btn" @click="sendMsg" :disabled="hasSend">{{hasSend ? `等待${timer}` : '发送验证码'}}</button>
       </x-input>
     </group>
-    <x-button type="primary btn-gap" @click.native="bindPhone">绑定手机号码</x-button>
+    <div class="btn-container">
+      <button class="i-btn i-btn-lg" @click="bindPhone">绑定手机号码</button>
+    </div>
   </div>
 </template>
 
@@ -23,16 +25,20 @@ export default {
     return {
       phoneNum: '',
       captcha: '',
-      hasSend: false
+      hasSend: false,
+      timer: 0
     }
+  },
+  computed: {
   },
   methods: {
     sendMsg () {
       this.$http.post('accounts/send/', { phone_number: this.phoneNum }, {
-        // headers: {'X-CSRFToken': '4YoLA5dqALSjNZ4bVwE57hlXu9iVVuoK'}
         xsrfCookieName: 'csrftoken',
         xsrfHeaderName: 'X-CSRFToken'
       }).then(res => {
+        this.hasSend = true
+        this.setTimer()
         if (res.data.status === 'success') {
           this.$vux.toast.show({
             text: '已发送'
@@ -61,13 +67,26 @@ export default {
           })
         }
       })
+    },
+    setTimer () {
+      if (this.hasSend) {
+        this.timer = 60
+        let interval = window.setInterval(() => {
+          this.timer -= 1
+          if (this.timer === 0) {
+            window.clearInterval(interval)
+            this.hasSend = false
+          }
+        }, 100)
+      }
     }
   }
 }
 </script>
 
 <style lang="css" scoped>
-.btn-gap {
-  margin-top: .15rem;
+.btn-container {
+  display: flex;
+  justify-content: center;
 }
 </style>

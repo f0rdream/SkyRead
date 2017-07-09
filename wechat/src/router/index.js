@@ -11,7 +11,7 @@ import indexpage from '../pages/home/children/indexpage'
 import category from '../pages/home/children/category'
 
 import bookshelf from '../pages/cart/bookshelf'
-import lending from '../pages/cart/children/lending'
+import renting from '../pages/cart/children/renting'
 import scaned from '../pages/cart/children/scaned'
 import paying from '../pages/cart/children/paying'
 import favorite from '../pages/cart/children/favorite'
@@ -19,6 +19,7 @@ import readplan from '../pages/cart/children/readplan'
 import addplan from '../pages/cart/children/addplan'
 import ordered from '../pages/cart/children/ordered'
 import ordertime from '../pages/cart/children/ordertime'
+import backing from '../pages/cart/children/backing'
 
 import SearchPage from '../pages/search/searchpage'
 import SearchResult from '../pages/search/searchresult'
@@ -64,12 +65,16 @@ export default new Router({
           component: scaned
         },
         {
-          path: 'lending',
-          component: lending
+          path: 'renting',
+          component: renting
         },
         {
           path: 'paying',
           component: paying
+        },
+        {
+          path: 'backing',
+          component: backing
         },
         {
           path: 'favorite',

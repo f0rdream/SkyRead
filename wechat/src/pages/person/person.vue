@@ -15,7 +15,7 @@
       <cell title="手机信息" :is-link="true" :link="'/person/phone'">
         <span>{{ userInfo.phone_number }}</span>
       </cell>
-      <cell title="绑定信息"></cell>
+      <!-- <cell title="绑定信息"></cell> -->
     </group>
     <group class="about-part">
       <cell title="关于我们"></cell>
@@ -25,6 +25,7 @@
 </template>
 <script>
 import { XHeader, Group, Cell, XSwitch, ViewBox } from 'vux'
+import { mapState } from 'vuex'
 import ClickableList from '@/components/ClickableList'
 import BottomBar from '@/components/BottomBar'
 
@@ -40,41 +41,29 @@ export default {
   },
   data () {
     return {
-      userInfo: {
-        nickname: '',
-        headimgurl: '',
-        phone_number: '',
-        email: '',
-        have_phone: 0
-      },
-      recommend: true,
-      orderRemind: true,
       backRemind: true,
-      books: ['1', '1', '1'],
       historyList: []
     }
   },
+  computed: {
+    ...mapState({
+      userInfo: 'accountsInfo'
+    })
+  },
   mounted () {
-    this.getAccount()
     this.getHistory()
   },
   methods: {
-    getAccount () {
-      this.$http.get('/accounts/').then((res) => {
-        this.userInfo = res.data
-      })
-    },
     getHistory () {
       this.$http.get('/library/readed/').then(res => {
         this.historyList = res.data
-      })
+      }).catch(err => console.log(err))
     }
   }
 }
 </script>
 <style scoped>
 .app-wrapper {
-  height: 100%;
   background-color: #fbfbfb;
 }
 .avatar-part {

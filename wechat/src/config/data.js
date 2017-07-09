@@ -1,3 +1,19 @@
-const bookTypes = {1: '马列主义', 2: '哲学宗教', 3: '社会科学', 4: '政治法律', 5: '经济文化', 6: '文学艺术', 7: '语言文字', 8: '历史人文', 9: '自然科学', 10: '数理科学', 11: '天文地理', 12: '生物医药', 13: '工业科学', 14: '环境安全'}
+const bookTypes = {
+  1: {type: '马列主义', img: '/static/class/Mars.png'},
+  2: {type: '哲学宗教', img: '/static/class/religion.png'},
+  3: {type: '社会科学', img: '/static/class/society.png'},
+  4: {type: '政治法律', img: '/static/class/law.png'},
+  5: {type: '经济文化', img: '/static/class/money.png'},
+  6: {type: '文学艺术', img: '/static/class/culture.png'},
+  7: {type: '语言文字', img: '/static/class/word.png'},
+  8: {type: '历史人文', img: '/static/class/history.png'},
+  9: {type: '自然科学', img: '/static/class/chemistry.png'},
+  10: {type: '数理科学', img: '/static/class/math.png'},
+  11: {type: '天文地理', img: '/static/class/geography.png'},
+  12: {type: '生物医药', img: '/static/class/science.png'},
+  13: {type: '工业科学', img: '/static/class/tool.png'},
+  14: {type: '环境安全', img: '/static/class/environment.png'},
+  15: {type: '', img: ''} // Blank data
+}
 
 export { bookTypes }

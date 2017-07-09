@@ -66,6 +66,8 @@ p.body-info {
 /* Button */
 
 .i-btn {
+  display: inline-block;
+  line-height: 1;
   border: 0;
   padding: 10px 16px;
   background-color: #2bc6b9;
@@ -109,4 +111,10 @@ p.body-info {
 }
 .i-checker-input:checked+.i-checker-icon {
   background-color: #2bc6b9;
+}
+
+.i-btn-lg {
+  display: block;
+  width: 90%;
+  border-radius: 4px;
 }
