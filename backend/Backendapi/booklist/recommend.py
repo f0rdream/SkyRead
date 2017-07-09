@@ -124,8 +124,7 @@ def book_recommend(username,douban_id_list):
         rank = single_user_recommend(username,related_user,30,default_train_dict)
         new_list = sorted(rank.items(),key=operator.itemgetter(1),reverse=True)
         for book in new_list:
-            if book[0] in ['1770782', '1084336', '1008145', '1082154', '25862578',
-                             '3259440', '1046265', '3211779', '2567698', '1017143',
+            if book[0] in [
                              '1007305', '1016300', '1040771', '20427187', '6082808',
                              '5275059', '1461903', '1200840', '1141406', '1041007',
                              '10554308', '3066477', '1068920', '4238362', '5363767',
