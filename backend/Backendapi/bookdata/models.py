@@ -44,6 +44,7 @@ class Refer(models.Model):
     """
     isbn13 = models.CharField(max_length=100, primary_key=True)
     refer_id = models.TextField(default=None)
+
     def __unicode__(self):
         return self.isbn13
 

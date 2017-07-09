@@ -7,7 +7,8 @@ from .views import (test_perm,index,
                     book_home_change_page,
                     book_search,book_detail,
                     add_single_book,user_home,
-                    file_download,add_book_excel)
+                    file_download,add_book_excel,plant_home,add_picture,
+                    picture_delete)
 from android_views import (AndroidUserLoginAPIView,
                            is_login_view,
                            BorrowRecordView,ReturnRecordView,OrderRecordView,
@@ -23,7 +24,7 @@ urlpatterns = [
     url(r'^info/$',InfoView.as_view()),
     # urls for web admin
     url(r'^test/$',test_perm),
-    url(r'^index/$',index,name='newadmin_index'),
+    url(r'^index/$',adminer_home,name='newadmin_index'),
     url(r'^create_admin',create_admin_user,name='create_admin_user'),
     url(r'^login/$',web_login,name='web_login'),
     url(r'^logout/$',web_logout,name='web_logout'),
@@ -42,4 +43,8 @@ urlpatterns = [
     url(r'^download/$',file_download,name='download'),
     url(r'^user_detail/(?P<id>\d+)$',user_detail,name='user_detail'),
     url(r'^create_admin/$',create_admin_user,name='create_admin'),
+    url(r'^plant_home/$',plant_home,name='plant_home'),
+    url(r'^picture_delete/(?P<id>\d+)$',picture_delete,name='picture_delete'),
+    url(r'^add_picture/$',add_picture,name='add_picture'),
+    # url(r'^delete_picture/(?P<id>\d+)$',delete_picture,'delete_picture'),
 ]

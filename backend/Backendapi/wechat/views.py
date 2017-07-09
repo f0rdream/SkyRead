@@ -23,6 +23,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from sign import get_signature
 from rest_framework.status import HTTP_200_OK
+from newadmin.models import Admin_Permission
+from serializers import PictureSerializer
+from newadmin.models import Picture
 @csrf_exempt
 def wexin(request):
     """
@@ -119,6 +122,7 @@ def wexin(request):
 @csrf_exempt
 def auth(request):
     return HttpResponse('认证页面')
+
 @csrf_exempt
 def redict(request):
     # 本地模拟时候假设已经拿到数据
@@ -160,8 +164,14 @@ def redict(request):
         wechat_user = WeChatUser.objects.create(openid=openid, sex=sex, nickname=nickname, city=city,
                                                 province=province, country=country, headimgurl=headimgurl)
         wechat_user.save()
+
         user = User.objects.create_user(username=openid, email='email', password="pwd" + openid)
         user.save()
+
+        # 添加用户权限:
+        admin_permission = Admin_Permission.objects.create(user=user)
+        admin_permission.save()
+
         login_user = authenticate(username=openid, password="pwd" + openid)
         if login_user is not None:
             if login_user.is_active:
@@ -171,6 +181,7 @@ def redict(request):
                 return HttpResponse('登录失败')
         else:
             return HttpResponse('登录失败')
+
 @csrf_exempt
 def test_page(request):
     openid = 'oYMTS0jjf2rhak6v6AxjC_nKl5hQ'
@@ -225,4 +236,15 @@ def getHtml(url):
     page = urllib.urlopen(url)
     html = page.read()
     return html
+
+
+class PictureVIEW(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self,request):
+        picture = Picture.objects.all()
+        serializer = PictureSerializer(picture,data=request.data,many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data,HTTP_200_OK)
+
 

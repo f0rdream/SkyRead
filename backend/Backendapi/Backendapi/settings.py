@@ -93,13 +93,14 @@ WSGI_APPLICATION = 'Backendapi.wsgi.application'
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '10.66.218.14',
-        'PORT': 3306,
+        'HOST': '593befbd766f4.sh.cdb.myqcloud.com',
+        'PORT': 17715,
         'NAME': 'skyread',
-        'USER': 'root',
+        'USER': 'cdb_outerroot',
         'PASSWORD': 'skyread614',
         'CHARSET': 'utf8'
     }

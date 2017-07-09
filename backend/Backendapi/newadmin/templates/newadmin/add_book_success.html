@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkyRead后台管理</title>
-
     <!-- BOOTSTRAP STYLES-->
     <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
     <!-- FONTAWESOME STYLES-->
@@ -39,37 +38,33 @@
             </div>
         </nav>
         <!-- /. NAV TOP  -->
-        <nav class="navbar-default navbar-side" role="navigation">
+               <nav class="navbar-default navbar-side" role="navigation">
             <div class="sidebar-collapse">
                 <ul class="nav" id="main-menu">
                     <li>
                         <div class="user-img-div">
                             <img src="{% static 'assets/img/user.png'%}" class="img-thumbnail" />
-
-                            <div class="inner-text">
-                                唐宗钰
+                            <a class="inner-text">&nbsp;&nbsp;&nbsp;姓名:{{username}}</a>
+                                <br>
+                                <br>
+                                 <a href="{%url 'web_logout' %}">
+                                 <button type="button" class="btn btn-success">
+                                     退出
+                                 </button>
+                                     </a>
                             </div>
-                        </div>
-
                     </li>
                     <li>
-                        <a class="active-menu"><i class="fa fa-dashboard "></i>数据总览</a>
-                    </li>
-                    <li>
-                        <a href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
+                        <a  href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
                     </li>
                      <li>
-                        <a href="{%url 'user_home'%}"><i class="fa fa-yelp "></i>用户管理</a>
+                        <a  href="{%url 'user_home'%}"><i class="fa fa-yelp "></i>用户管理</a>
                     </li>
                     <li>
-                        <a href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
+                        <a class="active-menu" href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
                     </li>
                      <li>
-                        <a href="#"><i class="fa fa-coffee"></i>平台管理</a>
-                    </li>
-
-                    <li>
-                        <a href="{%url 'money_home'%}"><i class="fa fa-square-o "></i>财务管理</a>
+                        <a href="{%url 'plant_home'%}"><i class="fa fa-coffee"></i>平台管理</a>
                     </li>
                 </ul>
 
@@ -126,8 +121,5 @@
     <script src="assets/js/jquery.metisMenu.js"></script>
        <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
-
-
-
 </body>
 </html>
