@@ -17,9 +17,22 @@
       </cell>
       <!-- <cell title="绑定信息"></cell> -->
     </group>
-    <group class="about-part">
-      <cell title="关于我们"></cell>
-    </group>
+    <div class="setting-part">
+      <div class="cell-item" :class="isSpread ? 'vux-1px-tb' : 'vux-1px-t'">
+        <span class="label-text">发现</span>
+        <span class="label-btn">{{ expSpread ? '收起' : '展开'}}</span>
+      </div>
+      <div class="cell-addon">
+        <div class="app-item" @click="$router.push('/person/related')">
+          <img class="app-img" src="/static/bottom/home.png">
+          <p class="app-title">相似用户</p>
+        </div>
+        <div class="app-item" @click="$router.push('/person/nearby')">
+          <img class="app-img" src="/static/bottom/home.png">
+          <p class="app-title">附近的书</p>
+        </div>
+      </div>
+    </div>
     <bottom-bar :activeTab="3" slot="bottom"></bottom-bar>
   </view-box>
 </template>
@@ -42,7 +55,8 @@ export default {
   data () {
     return {
       backRemind: true,
-      historyList: []
+      historyList: [],
+      expSpread: true
     }
   },
   computed: {
@@ -75,5 +89,36 @@ export default {
   height: 1rem;
   width: 1rem;
   border-radius: 50% 50%;
+}
+.cell-item {
+  display: flex;
+  justify-content: space-between;
+  margin-top: .15rem;
+  padding: 8px 15px;
+  background-color: #fff;
+}
+.cell-item .label-btn {
+  color: #858585;
+  font-size: 12px;
+  line-height: 27px;
+}
+.cell-addon {
+  display: flex;
+  flex-direction: row;
+}
+.app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 25%;
+  margin: 10px 10px;
+}
+.app-img {
+  width: 50%;
+}
+.app-title {
+  font-size: 14px;
+  color: #333;
 }
 </style>

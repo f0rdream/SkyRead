@@ -4,7 +4,7 @@
       <popup-picker :data="[favorList]" v-model="checkedBook" title="选择书籍" placeholder="请选择" :show-name="true"></popup-picker>
     </group>
     <group title="选择时间">
-      <datetime :title="'开始时间'" v-model="beginTime"></datetime>
+      <datetime :title="'开始时间'" v-model="beginTime" :start-date="todayString"></datetime>
       <datetime :title="'结束时间'" v-model="endTime" :start-date="beginTime"></datetime>
     </group>
     <div class="btn-container">
@@ -36,7 +36,11 @@ export default {
   computed: {
     ...mapGetters({
       favorList: 'favoriteList'
-    })
+    }),
+    todayString () {
+      let today = new Date()
+      return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    }
   },
   mounted () {
     this.getFavorite()

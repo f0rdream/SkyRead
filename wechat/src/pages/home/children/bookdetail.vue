@@ -28,14 +28,14 @@
       <div class="book-description book-part">
         <p class="part-title">
           <span>内容简介</span>
-          <img class="more-icon" :src="isContentMuch ? '/static/others/fold.png' : '/static/others/unfold.png'" @click="isContentMuch = !isContentMuch"></img>
+          <img class="more-icon" :src="isContentMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isContentMuch = !isContentMuch"></img>
         </p>
         <p class="part-body" v-show="!isContentMuch">{{ bookDetail.summary }}</p>
       </div>
       <div class="book-index book-part">
         <p class="part-title">
           <span>书籍简介</span>
-          <img class="more-icon" :src="isIndexMuch ? '/static/others/fold.png' : '/static/others/unfold.png'" @click="isIndexMuch = !isIndexMuch"></img>
+          <img class="more-icon" :src="isIndexMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isIndexMuch = !isIndexMuch"></img>
         </p>
         <div v-html="bookDetail.catalog" v-show="!isIndexMuch" class="part-body"></div>
       </div>
@@ -43,7 +43,7 @@
     <div class="store-box">
       <p class="part-title">
         <span>馆藏信息</span>
-        <img class="more-icon" :src="isTableMuch ? '/static/others/fold.png' : '/static/others/unfold.png'" @click="isTableMuch = !isTableMuch"></img>
+        <img class="more-icon" :src="isTableMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isTableMuch = !isTableMuch"></img>
       </p>
       <table class="store-table" v-show="!isTableMuch">
         <tr class="table-head">
@@ -56,7 +56,7 @@
           <td>{{ item.location }}</td>
           <td>{{ item.state }}</td>
           <td>{{ item.back_time }}</td>
-          <td><a class="info-link">预定</a></td>
+          <td><a class="info-link" @click="orderBook(item.id, item.isbn13, item.state)">预定</a></td>
         </tr>
       </table>
     </div>
@@ -118,6 +118,17 @@ export default {
       this.$http.get(`/book/collection/${this.bookDetail.isbn13}`).then(res => {
         this.storeInfo = res.data
       }).catch(err => console.log(err))
+    },
+    orderBook (id, isbn13, state) {
+      if (state === '在架上') {
+        this.$router.push(`/bookshelf/ordertime/${id}/${isbn13}`)
+      } else if (state === '已经借出') {
+        this.$http.post('/library/order/wait', {isbn13: isbn13, book_id: id}).then(res => {
+          this.$vux.toast.show({
+            text: '图书尚未归还，已加入预定栏'
+          })
+        }).catch(err => console.log(err))
+      }
     }
   }
 }
@@ -161,6 +172,7 @@ export default {
   font-size: 10px;
   max-height: 250px;
   overflow: hidden;
+  padding: 10px 0;
 }
 
 .body-info {
@@ -184,13 +196,14 @@ export default {
 
 .detail-box .store-box {
   margin: .15rem 0;
-  padding: 0 .15rem;
+  padding: .08rem .15rem;
   background-color: #fff;
 }
 .store-table {
   width: 100%;
   text-align: center;
 }
+
 .table-item {
   font-size: 13px;
 }

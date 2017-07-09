@@ -99,7 +99,7 @@ export default new Router({
           component: ordered
         },
         {
-          path: 'ordertime/:bookId',
+          path: 'ordertime/:bookId/:isbn13',
           component: ordertime
         }
       ]

@@ -118,6 +118,12 @@ export default {
       commit(SET_ERRORMSG, '预约成功')
     }).catch(err => commit(SET_ERRORMSG, err))
   },
+  getOrderQR ({ commit, state }, indexList) {
+    Vue.http.post('/library/borrow/qrcode/', {id_list: indexList}).then(res => {
+      commit(SET_QRINFO, res.data)
+      Router.push('/bookshelf/paying')
+    })
+  },
   getReadPlan ({ commit }) {
     Vue.http.get('/book/readplan/').then(res => {
       commit(SET_READPLAN, res.data)
