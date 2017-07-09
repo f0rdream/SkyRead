@@ -9,7 +9,7 @@
       </p>
       <div class="item-info-container">
         <div class="item-info-left" @click="bookClick">
-          <p class="item-info">作者：<span v-for="author in bookInfo.author" :key="bookInfo.isbn13">{{author}}</span></p>
+          <p class="item-info">作者：<span v-for="author in bookInfo.author" :key="bookInfo.isbn13">{{author}} </span></p>
           <p class="item-info">出版信息：{{ bookInfo.publisher }}</p>
           <p class="item-info">评分：{{ bookInfo.average }}</p>
         </div>

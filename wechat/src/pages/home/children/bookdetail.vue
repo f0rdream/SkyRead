@@ -20,34 +20,43 @@
         <div class="book-opt">
           <div class="left"></div>
           <div class="right">
-            <a class="i-btn-blank"><img src="/static/others/collect.png" class="i-btn-icon" @click="clickFavor">收藏</a>
-            <a class="i-btn-blank"><img src="/static/others/comment.png" class="i-btn-icon" @click="comment">评论</a>
+            <a class="i-btn-blank" @click="clickFavor"><img src="/static/others/collect.png" class="i-btn-icon">收藏</a>
+            <a class="i-btn-blank" @click="comment"><img src="/static/others/comment.png" class="i-btn-icon">评论</a>
           </div>
         </div>
       </div>
       <div class="book-description book-part">
-        <p class="part-title">内容简介</p>
-        <p class="part-body">{{ bookDetail.summary }}</p>
+        <p class="part-title">
+          <span>内容简介</span>
+          <img class="more-icon" :src="isContentMuch ? '/static/others/fold.png' : '/static/others/unfold.png'" @click="isContentMuch = !isContentMuch"></img>
+        </p>
+        <p class="part-body" v-show="!isContentMuch">{{ bookDetail.summary }}</p>
       </div>
       <div class="book-index book-part">
-        <p class="part-title">内容简介</p>
-        <p class="part-body">一行共有三十个字，该字号为二十像素，内容简介字号二十八像素，测试</p>
+        <p class="part-title">
+          <span>书籍简介</span>
+          <img class="more-icon" :src="isIndexMuch ? '/static/others/fold.png' : '/static/others/unfold.png'" @click="isIndexMuch = !isIndexMuch"></img>
+        </p>
+        <div v-html="bookDetail.catalog" v-show="!isIndexMuch" class="part-body"></div>
       </div>
     </div>
     <div class="store-box">
-      <p class="store-title">馆藏信息</p>
-      <table class="store-table">
+      <p class="part-title">
+        <span>馆藏信息</span>
+        <img class="more-icon" :src="isTableMuch ? '/static/others/fold.png' : '/static/others/unfold.png'" @click="isTableMuch = !isTableMuch"></img>
+      </p>
+      <table class="store-table" v-show="!isTableMuch">
         <tr class="table-head">
           <th>书籍定位</th>
           <th>状态</th>
           <th>应还日期</th>
           <th>预订</th>
         </tr>
-        <tr class="table-item">
-          <td>3楼C区15架</td>
-          <td>在架上</td>
-          <td>2015-1-1</td>
-          <td>添加</td>
+        <tr class="table-item" v-for="item in storeInfo">
+          <td>{{ item.location }}</td>
+          <td>{{ item.state }}</td>
+          <td>{{ item.back_time }}</td>
+          <td><a class="info-link">预定</a></td>
         </tr>
       </table>
     </div>
@@ -64,7 +73,11 @@ export default {
   data () {
     return {
       isbn13: this.$route.params.isbn13 || '9787111251217',
-      bookDetail: {}
+      bookDetail: {},
+      isContentMuch: false,
+      isIndexMuch: true,
+      isTableMuch: true,
+      storeInfo: {}
     }
   },
   mounted () {
@@ -90,15 +103,21 @@ export default {
         }
         this.bookDetail = {...res.data, ...{ tags: tagsMax, author: authorMax }}
         this.bookDetail.imgSrc = 'https://img3.doubanio.com/lpic/' + res.data.img_id
+        this.getStoreInfo()
       }).catch((err) => {
         console.log(err)
       })
     },
     comment () {
-      console.log('comment')
+      this.$router.push(`/home/comment/${this.bookDetail.isbn13}`)
     },
     clickFavor () {
       this.addFavorite(this.bookDetail.isbn13)
+    },
+    getStoreInfo () {
+      this.$http.get(`/book/collection/${this.bookDetail.isbn13}`).then(res => {
+        this.storeInfo = res.data
+      }).catch(err => console.log(err))
     }
   }
 }
@@ -138,8 +157,10 @@ export default {
   background-color: #fff;
   z-index: 100;
 }
-.book-part .part-body {
+.part-body {
   font-size: 10px;
+  max-height: 250px;
+  overflow: hidden;
 }
 
 .body-info {
@@ -161,13 +182,17 @@ export default {
   color: #ff8019;
 }
 
-.store-box {
+.detail-box .store-box {
   margin: .15rem 0;
   padding: 0 .15rem;
+  background-color: #fff;
 }
 .store-table {
   width: 100%;
   text-align: center;
+}
+.table-item {
+  font-size: 13px;
 }
 
 .book-background {
@@ -195,17 +220,26 @@ export default {
 }
 .book-opt {
   display: flex;
-  padding: 6px 10px;
+  padding: .05rem .15rem ;
   background-color: #fff;
 }
 
 .book-opt .i-btn-blank {
   margin: 0 5px;
-  vertical-align: baseline;
+  vertical-align: center;
 }
 .i-btn-icon {
   height: 12px;
-  vertical-align: baseline;
+  vertical-align: center;
   padding-right: 4px;
+}
+.part-title {
+  color: #2bc2c3;
+  display: flex;
+  justify-content: space-between;
+}
+.more-icon {
+  height: 14px;
+  padding-right: 10px;
 }
 </style>
