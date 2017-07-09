@@ -18,6 +18,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from library.models import BorrowItem,SuccessOrderItem,WaitOrderItem
+from models import Picture
 
 def test_perm(request):
     user = request.user
@@ -129,6 +130,7 @@ def user_detail(request,id):
         "return_sum": return_sum,
         "order_success_sum":success_sum,
         "order_wait_sum": wait_sum,
+        "username": request.user.username,
     }
     return render(request,"newadmin/user_detail.html",reply)
 
@@ -224,16 +226,19 @@ def add_book_excel(request):
                     pass
             reply = {
                 "holdings":holdings,
-                "msg":"添加成功,书籍信息如下"
+                "msg":"添加成功,书籍信息如下",
+                "username": request.user.username
             }
             return render(request,"newadmin/add_book_by_excel_success.html",reply)
         except Exception as e:
             reply = {
-                "msg": "添加失败"
+                "msg": "添加失败",
+                "username": request.user.username
             }
             return render(request, "newadmin/add_book_by_excel_success.html", reply)
     reply = {
-        "msg": "添加失败"
+        "msg": "添加失败",
+        "username": request.user.username
     }
     return render(request, "newadmin/add_book_by_excel.html", reply)
 
@@ -251,12 +256,14 @@ def add_single_book(request):
             reply = {
                 "msg":"添加成功,添加的信息如下:",
                 "holding":holding,
+                "username": request.user.username
             }
             return render(request, 'newadmin/add_book_success.html',reply)
         except Exception as e :
             print e
             reply = {
                 "msg": "添加失败",
+                "username": request.user.username
             }
             return render(request, 'newadmin/add_book_success.html', reply)
     else:
@@ -285,7 +292,8 @@ def adminer_home(request):
                     'sign_times': 0,
                 }
                 reply[user.id] = admin_detail
-    return render(request,'newadmin/adminer.html',{'reply':reply,"signs":all_signs})
+    return render(request,'newadmin/adminer.html',{'reply':reply,"signs":all_signs,
+                                                   "username":request.user.username})
 
 
 def adminer_detail(request,user_id):
@@ -305,6 +313,7 @@ def adminer_detail(request,user_id):
         "borrow_sum": len(borrow_queryset),
         "return_sum": len(return_queryset),
         "order_sum": len(order_queryset),
+        "username": request.user.username,
     }
     return render(request, 'newadmin/adminer_detail.html',reply)
 
@@ -333,6 +342,7 @@ def book_home(request):
     reply  = {
         "book_items":book_items,
         "page":1,
+        "username": request.user.username
     }
     print time.time() - begin
     return render(request,"newadmin/book_home.html",reply)
@@ -358,6 +368,7 @@ def book_home_change_page(request, back_page):
         reply = {
             "book_items":book_items,
             "page": 1,
+            "username": request.user.username
         }
         return render(request,'newadmin/book_home.html',reply)
     else:
@@ -374,6 +385,7 @@ def book_home_change_page(request, back_page):
         reply = {
             "book_items": book_items,
             "page": back_page,
+            "username": request.user.username
         }
         return render(request, 'newadmin/book_home.html', reply)
 
@@ -422,6 +434,7 @@ def book_search(request):
         reply = {
             "book_items": book_items,
             "page": 1,
+            "username": request.user.username
         }
         print time.time()-begin
         return render(request, 'newadmin/book_home.html', reply)
@@ -430,6 +443,7 @@ def book_search(request):
         reply = {
             "book_items": book_items,
             "page": 1,
+            "username": request.user.username
         }
         return render(request, "newadmin/book_home.html", reply)
 
@@ -456,7 +470,8 @@ def book_detail(request,isbn13):
             holding.location = holding.location
     reply = {
         'book':book,
-        'holdings':holding_queryset
+        'holdings':holding_queryset,
+        "username": request.user.username
     }
     return render(request,"newadmin/book_detail.html",reply)
 
@@ -470,6 +485,7 @@ def user_home(request):
     all_wechat_user = WeChatUser.objects.all()
     reply = {
         "wechat_users":all_wechat_user,
+        "username": request.user.username,
     }
     return render(request,"newadmin/user_home.html",reply)
 
@@ -502,6 +518,7 @@ def user_record(request,id):
                 "borrow_sum": len(borrow_queryset),
                 "return_sum": len(return_queryset),
                 "order_sum": len(order_queryset),
+                "username": request.user.username,
             }
             reply_json[str(count)] = reply
     print type(wechat_list)
@@ -519,3 +536,40 @@ def file_download(request):
     workbook.save(response)
     return response
 
+
+def add_picture(request):
+    if request.method == 'POST':
+        picture = request.FILES['picture']
+        title = request.POST['title']
+        isbn13 = request.POST['isbn13']
+        try:
+            about_book = Book.objects.get(isbn13=isbn13)
+            picture = Picture.objects.create(picture=picture,title=title,
+                                             isbn13=isbn13,about_book=about_book)
+            picture.save()
+            return HttpResponseRedirect('/web/plant_home')
+        except Exception as e:
+            print e
+            return HttpResponseRedirect('/web/plant_home')
+    return HttpResponseRedirect('/web/plant_home')
+
+
+def picture_delete(request,id):
+    try:
+        picture = Picture.objects.get(id=id)
+        picture.delete()
+        return HttpResponseRedirect('/web/plant_home')
+    except:
+        pass
+    return HttpResponseRedirect('/web/plant_home')
+
+
+
+
+def plant_home(request):
+    all_picture = Picture.objects.all()
+    reply = {
+        "all_picture":all_picture,
+        "username":request.user.username,
+    }
+    return render(request, "newadmin/plantform_home.html", reply)

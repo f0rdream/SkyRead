@@ -41,31 +41,30 @@
                     <li>
                         <div class="user-img-div">
                             <img src="{% static 'assets/img/user.png'%}" class="img-thumbnail" />
-
-                            <div class="inner-text">
-                                唐宗钰
+                            <a class="inner-text">&nbsp;&nbsp;&nbsp;姓名:{{username}}</a>
+                                <br>
+                                <br>
+                                 <a href="{%url 'web_logout' %}">
+                                 <button type="button" class="btn btn-success">
+                                     退出
+                                 </button>
+                                     </a>
                             </div>
-                        </div>
-
                     </li>
                     <li>
-                        <a  href="{%url 'adminer_home'%}"><i class="fa fa-dashboard "></i>数据总览</a>
-                    </li>
-                    <li>
-                        <a href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
+                        <a  href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
                     </li>
                      <li>
-                        <a href="#"><i class="fa fa-yelp "></i>用户管理</a>
+                        <a  href="{%url 'user_home'%}"><i class="fa fa-yelp "></i>用户管理</a>
                     </li>
                     <li>
-                        <a class="active-menu"><i class="fa fa-flash "></i>书籍管理</a>
+                        <a class="active-menu" href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
                     </li>
                      <li>
-                        <a href="#"><i class="fa fa-coffee"></i>平台管理</a>
+                        <a href="{%url 'plant_home'%}"><i class="fa fa-coffee"></i>平台管理</a>
                     </li>
-
                     <li>
-                        <a href="{%url 'money_home'%}"><i class="fa fa-square-o "></i>财务管理</a>
+                        <a href="blank.html"><i class="fa fa-square-o "></i>财务管理</a>
                     </li>
                 </ul>
 

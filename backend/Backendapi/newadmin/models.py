@@ -4,6 +4,7 @@ from django.db import models
 
 from library.models import BorrowItem,SuccessOrderItem
 from library.models import PayItem
+from bookdata.models import Book
 # Create your models here.
 
 
@@ -56,5 +57,15 @@ class ExcelFile(models.Model):
     excel = models.FileField(upload_to='./newadmin/upload/')
     def __unicode__(self):
         return self.excel.url
+
+
+class Picture(models.Model):
+    """
+    轮播图
+    """
+    title = models.CharField(max_length=200)
+    picture = models.ImageField(upload_to='./newadmin/picture')
+    isbn13 = models.TextField()
+    about_book = models.ForeignKey(Book,default=None)
 
 
