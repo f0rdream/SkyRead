@@ -566,8 +566,6 @@ def picture_delete(request,id):
     return HttpResponseRedirect('/web/plant_home')
 
 
-
-
 def plant_home(request):
     all_picture = Picture.objects.all()
     reply = {
