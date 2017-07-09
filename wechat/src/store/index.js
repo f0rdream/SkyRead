@@ -18,7 +18,8 @@ const state = {
   readPlan: [],
   QRInfo: {},
   accountsInfo: {},
-  havePhone: true
+  havePhone: true,
+  currentTab: 0
 }
 export default new Vuex.Store({
   state,

@@ -122,3 +122,20 @@ p.body-info {
   width: 90%;
   border-radius: 4px;
 }
+
+.i-btn-blank {
+  display: inline-block;
+  line-height: 1;
+  border: 1px #727271 solid;
+  color: #727271;
+  border-radius: 10px;
+  padding: 6px 20px;
+  background-color: transparent;
+  transition: all .3s ease-in-out;
+  outline: none;
+}
+.i-btn-blank:active {
+  border-color: #fff;
+  color: #fff;
+  background-color: #2bcaab;
+}

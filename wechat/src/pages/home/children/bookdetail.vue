@@ -1,37 +1,27 @@
 <template>
   <div class="detail-box">
-    <div class="book-card">
-      <div class="book-body">
-        <div class="left">
-          <img :src="bookDetail.imgSrc" class="book-img">
-          <p class="body-title ellipsis">{{ bookDetail.title }}</p>
-          <div class="opt-box">
-            <!--  TODO  添加收藏的mutation -->
-            <router-link to="">收藏</router-link>
+    <div class="book-card ">
+      <div class="book-body-container">
+        <div class="book-background" :style="{backgroundImage: `url(${bookDetail.imgSrc})`}"></div>
+        <div class="book-body">
+          <div class="left">
+            <img :src="bookDetail.imgSrc" class="book-img">
+          </div>
+          <div class="right">
+            <p class="body-title ellipsis">{{ bookDetail.title }}</p>
+            <p class="body-info ellipsis">标签： <router-link v-for="item in bookDetail.tags" :to="`/home/list/tag/${item}`" :key="bookDetail.tags" class="info-link">{{ item }}, </router-link></p>
+            <p class="body-info ellipsis">作者：<router-link v-for="item in bookDetail.author" class="info-link" :to="`/home/list/author/${item}`" :key="bookDetail.author">{{item}}, </router-link></p>
+            <p class="body-info">出版社：{{ bookDetail.publisher }}</p>
+            <p class="body-info">出版时间：{{ bookDetail.pubdate }}</p>
+            <p class="body-info">ISBN：{{ bookDetail.isbn13 }}</p>
+            <p class="body-info">豆瓣评分：{{ bookDetail.average }}</p>
           </div>
         </div>
-        <div class="right">
-          <p class="body-info">作者：{{ bookDetail.author }}</p>
-          <p class="body-info">作者简介：{{ bookDetail.author_intro }}</p>
-          <p class="body-info">出版社：{{ bookDetail.publisher }}</p>
-          <p class="body-info">出版时间：{{ bookDetail.pubdate }}</p>
-          <p class="body-info">价格：{{ bookDetail.price }}</p>
-          <p class="body-info">ISBN：{{ bookDetail.isbn13 }}</p>
-          <p class="body-info">页数：{{ bookDetail.pages }}页</p>
-          <p class="body-info">标签： <router-link v-for="item in bookDetail.tags" to="" :key="bookDetail.tags">{{ item }} </router-link></p>
-          <div class="times-box">
-            <div class="times-info">
-              <p>16524人</p>
-              <p>读过</p>
-            </div>
-            <div class="times-info">
-              <p>16524人</p>
-              <p>收藏</p>
-            </div>
-            <div class="times-info">
-              <p class="times-score">{{ bookDetail.average }}</p>
-              <p>豆瓣评分</p>
-            </div>
+        <div class="book-opt">
+          <div class="left"></div>
+          <div class="right">
+            <a class="i-btn-blank"><img src="/static/others/collect.png" class="i-btn-icon" @click="clickFavor">收藏</a>
+            <a class="i-btn-blank"><img src="/static/others/comment.png" class="i-btn-icon" @click="comment">评论</a>
           </div>
         </div>
       </div>
@@ -66,6 +56,7 @@
 
 <script>
 import { XImg } from 'vux'
+import { mapActions } from 'vuex'
 export default {
   components: {
     XImg
@@ -73,33 +64,41 @@ export default {
   data () {
     return {
       isbn13: this.$route.params.isbn13 || '9787111251217',
-      bookDetail: {
-        isbn13: '',
-        title: '',
-        author: [],
-        summary: '',
-        average: '',
-        pubdate: '',
-        publisher: '',
-        imgSrc: '',
-        img_id: '',
-        pages: '',
-        tags: [],
-        price: ''
-      }
+      bookDetail: {}
     }
   },
   mounted () {
     this.getBook()
   },
   methods: {
+    ...mapActions({
+      addFavorite: 'addFavorite'
+    }),
     getBook () {
       this.$http.get(`book/isbn/${this.isbn13}`).then((res) => {
-        this.bookDetail = res.data
+        let tagsMax = []
+        let authorMax = []
+        for (let index in res.data.tags) {
+          if (index < 5) {
+            tagsMax.push(res.data.tags[index])
+          }
+        }
+        for (let index in res.data.author) {
+          if (index < 5) {
+            authorMax.push(res.data.author[index])
+          }
+        }
+        this.bookDetail = {...res.data, ...{ tags: tagsMax, author: authorMax }}
         this.bookDetail.imgSrc = 'https://img3.doubanio.com/lpic/' + res.data.img_id
       }).catch((err) => {
         console.log(err)
       })
+    },
+    comment () {
+      console.log('comment')
+    },
+    clickFavor () {
+      this.addFavorite(this.bookDetail.isbn13)
     }
   }
 }
@@ -111,59 +110,54 @@ export default {
 }
 .book-body {
   display: flex;
-  flex-flow: row nowrap;
   padding: .05rem .15rem ;
-  justify-content: space-between;
 }
-.book-body .left {
+.left {
   text-align: center;
-  width: 1.3rem;
-  flex: 1 1 auto;
+  flex: 0 0 35%;
   height: 100%;
 }
-.book-body .left .book-img {
-  width: 100%;
+.book-img {
+  width: 90%;
+  border: 3px #fff solid;
+  border-radius: 2px;
+  position: relative;
+  top: 35px;
 }
-.book-body .left .body-title {
-  font-size: 14px;
-}
-.book-body .left .opt-box {
-  font-size: 12px;
+
+.right {
+  font-size: 11px;
+  flex: 0 1 auto;
+  padding: 0 0.10rem;
+  overflow: hidden;
 }
 .book-part {
+  position: relative;
   margin: .05rem 0;
   padding: .10rem .15rem;
-  border-top: 1px solid #333;
-}
-.book-part .part-title {
-  font-size: 14px;
+  background-color: #fff;
+  z-index: 100;
 }
 .book-part .part-body {
   font-size: 10px;
 }
 
-.book-body .right {
-  font-size: 10px;
-  max-width: 2.4rem;
-  flex: 1.5 1 auto;
-  margin: 0 0.10rem;
+.body-info {
+  margin: .04rem 0;
 }
-.book-body .right .body-info {
-  margin: .08rem 0;
-}
-.book-body .times-box {
+.times-box {
   display: flex;
   justify-content: space-between;
 }
-.book-body .times-box .times-info {
+.times-info {
   text-align: center;
 }
-.book-body .times-box .times-info:nth-child(2) {
+.times-info:nth-child(2) {
   border-left: 1px solid #000;
   border-right: 1px solid #000;
   padding: 0 .15rem;
 }
-.book-body .times-box .times-score{
+.times-score{
   color: #ff8019;
 }
 
@@ -174,5 +168,44 @@ export default {
 .store-table {
   width: 100%;
   text-align: center;
+}
+
+.book-background {
+  position: relative;
+  height: 180px;
+  z-index: 0;
+  filter: blur(10px);
+}
+.book-body {
+  position: relative;
+  margin-top: -180px;
+  color: #cecece;
+  z-index: 100;
+  padding-top: 20px;
+  background-color: rgba(50, 50, 50, 0.6)
+}
+
+.body-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+.info-link {
+  color: #2bc5bc;
+  text-decoration: underline;
+}
+.book-opt {
+  display: flex;
+  padding: 6px 10px;
+  background-color: #fff;
+}
+
+.book-opt .i-btn-blank {
+  margin: 0 5px;
+  vertical-align: baseline;
+}
+.i-btn-icon {
+  height: 12px;
+  vertical-align: baseline;
+  padding-right: 4px;
 }
 </style>

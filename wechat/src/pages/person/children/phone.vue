@@ -77,7 +77,7 @@ export default {
             window.clearInterval(interval)
             this.hasSend = false
           }
-        }, 100)
+        }, 1000)
       }
     }
   }

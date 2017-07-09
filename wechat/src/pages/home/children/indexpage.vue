@@ -4,19 +4,19 @@
     <swiper :list="imgList" v-model="imgIndex" :auto="true" :loop="true"></swiper>
     <div class="category">
       <div class="cate-item" v-for="(value, key) in bookTypes" v-if="key < 8 || isMore">
-        <router-link :to="`/home/category/${ key }`">
+        <a @click="getToCate(key)">
           <img :src="value.img" class="cate-img">
           <p class="cate-item-string">{{ value.type }}</p>
-        </router-link>
+        </a>
       </div>
-      <div class="cate-item" @click="isMore = !isMore">
+      <div class="cate-item cate-item-rear" @click="isMore = !isMore">
         <img src="/static/class/more.png" class="cate-img">
         <p class="cate-item-string">
           {{ isMore ? '收起分类' : '更多分类'}}
         </p>
       </div>
     </div>
-    <recommend-card :bookItems="recommendBooks" ></recommend-card>
+    <recommend-card :bookItems="recommendBooks"></recommend-card>
     <!-- <related-person></related-person> -->
   </section>
 </template>
@@ -58,6 +58,11 @@ export default {
           this.imgList.push({url: `/home/bookdetail/${item.isbn13}`, img: item.picture, title: item.title})
         }
       }).catch(err => console.log(err))
+    },
+    getToCate (key) {
+      if (key < 15) {
+        this.$router.push(`/home/category/${key}`)
+      }
     }
   }
 }
@@ -76,6 +81,9 @@ export default {
   color: #5f5f5f;
   font-size: 12px;
   flex: 0 1 21%;
+}
+.cate-item-rear {
+  align-self: flex-end;
 }
 .cate-img {
   width: 50%;

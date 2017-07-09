@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import store from './index'
-import { SET_ACCOUNTSINFO, SET_ERRORMSG, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN, SET_HAVEPHONE } from './mutation-types'
+import { SET_ACCOUNTSINFO, SET_ERRORMSG, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN, SET_HAVEPHONE, SET_CURRENTTAB } from './mutation-types'
 import '../config/ajax'
 import Router from '../router/index'
 
@@ -66,7 +66,7 @@ export default {
     })
   },
   addFavorite ({ commit }, isbn13) {
-    Vue.http.post('/book/starbook/', { isbn13 }).then(res => {
+    Vue.http.post('/book/starbook/', { isbn13: isbn13 }).then(res => {
       res = res.data
       if (res.error_code === 0) {
         commit(SET_ERRORMSG, '加入成功')
@@ -134,5 +134,8 @@ export default {
       store.dispatch('getReadPlan')
       commit(SET_ERRORMSG, '添加成功')
     }).catch(err => commit(SET_ERRORMSG, err))
+  },
+  setCurrentTab ({ commit }, tab) {
+    commit(SET_CURRENTTAB, tab)
   }
 }

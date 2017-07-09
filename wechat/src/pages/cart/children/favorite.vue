@@ -5,8 +5,8 @@
       <p slot="book-title" class="book-title">{{ book.short_info.title }}</p>
       <p slot="book-info" class="book-info">作者: <span v-for="author in book.short_info.author">{{ author }}</span></p>
       <p slot="book-info" class="book-info">评分: {{ book.short_info.average}}</p>
-      <button class="i-btn multi-btn" slot="right" @click.native="bookClick(book.short_info.isbn13)">书籍详情</button>
-      <button class="i-btn multi-btn" slot="right" @click.native="delFavorite(book.id)">删除</button>
+      <button class="i-btn multi-btn" slot="right" @click="bookClick(book.short_info.isbn13)">书籍详情</button>
+      <button class="i-btn multi-btn" slot="right" @click="delFavorite(book.id)">删除</button>
     </book-cell>
     <!-- <x-button @click.native="genQR(checkedCells)" :disabled="allQRAvailble">批量删除</x-button> -->
   </div>

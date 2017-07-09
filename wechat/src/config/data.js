@@ -13,7 +13,7 @@ const bookTypes = {
   12: {type: '生物医药', img: '/static/class/science.png'},
   13: {type: '工业科学', img: '/static/class/tool.png'},
   14: {type: '环境安全', img: '/static/class/environment.png'},
-  15: {type: '', img: ''} // Blank data
+  15: {type: '', img: '/static/class/blank.png'} // Blank data
 }
 
 export { bookTypes }

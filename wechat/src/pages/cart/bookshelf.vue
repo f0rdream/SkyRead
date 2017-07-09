@@ -17,6 +17,7 @@
 
 <script>
 import { ViewBox, Tab, TabItem } from 'vux'
+import { mapActions } from 'vuex'
 import BottomBar from '@/components/BottomBar'
 
 export default {
@@ -26,14 +27,26 @@ export default {
     TabItem,
     BottomBar
   },
+  computed: {
+    selectedIndex: {
+      get () {
+        return this.$store.state.currentTab
+      },
+      set (val) {
+        this.setCurrentTab(val)
+      }
+    }
+  },
   data () {
     return {
-      selectedIndex: 0
     }
   },
   watch: {
   },
   methods: {
+    ...mapActions([
+      'setCurrentTab'
+    ])
   }
 }
 </script>

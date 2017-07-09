@@ -1,4 +1,4 @@
-import { SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, DEL_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, ADD_FAVROITES, SET_ERRORMSG, SET_ORDEREDCART, SET_READPLAN, SET_ACCOUNTSINFO, SET_HAVEPHONE } from './mutation-types'
+import { SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, DEL_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, ADD_FAVROITES, SET_ERRORMSG, SET_ORDEREDCART, SET_READPLAN, SET_ACCOUNTSINFO, SET_HAVEPHONE, SET_CURRENTTAB } from './mutation-types'
 
 export default {
   [SET_ERRORMSG] (state, msg) {
@@ -36,5 +36,8 @@ export default {
   },
   [SET_HAVEPHONE] (state, payload) {
     state.havePhone = payload
+  },
+  [SET_CURRENTTAB] (state, payload) {
+    state.currentTab = payload
   }
 }

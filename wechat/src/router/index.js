@@ -9,6 +9,7 @@ import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
 import indexpage from '../pages/home/children/indexpage'
 import category from '../pages/home/children/category'
+import list from '../pages/home/children/list'
 
 import bookshelf from '../pages/cart/bookshelf'
 import renting from '../pages/cart/children/renting'
@@ -52,6 +53,10 @@ export default new Router({
         {
           path: 'category/:typeid',
           component: category
+        },
+        {
+          path: 'list/:kind/:itemId',
+          component: list
         }
       ]
     },
