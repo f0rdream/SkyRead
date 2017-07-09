@@ -51,6 +51,13 @@ from permissions import have_phone_register
 from bookdata.models import Holding,Book
 from accounts.models import PhoneUser,WeChatUser
 from newadmin.models import AdminBorrowItemRecord
+from rest_framework.authentication import SessionAuthentication
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
 
 class BorrowItemView(APIView):
     """
@@ -231,6 +238,7 @@ class VarifyAddToReturnBarView(APIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = AddToReturnBarSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def post(self,request):
         user = request.user
@@ -432,6 +440,8 @@ class VarifyReturnBookBarView(APIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = ReturnBookSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
     def post(self,request):
         user = request.user
         # 此处判断是否是管理员
@@ -974,6 +984,7 @@ class FinishGiveOrderItemView(APIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = GetOrderRecordSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def post(self,request):
         serializer = GetOrderRecordSerializer(data=request.data)
