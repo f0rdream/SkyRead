@@ -30,7 +30,7 @@ export default class AdminInfo extends React.Component {
           'Content-Type': 'application/json'
         }
       })
-      let res  = await response.text()
+      let res  = await response.json()
       if (response.status >= 200 && response.status < 400) {
         this.setState({
           returnTime: res.return,
@@ -71,13 +71,13 @@ export default class AdminInfo extends React.Component {
     let signBtn
     if (this.state.signStat) {
       signBtn = (
-        <Button style={styles.logo} info rounded small onPress={this.attend}>
+        <Button info rounded small onPress={this.attend}>
           <Text style={styles.btnText}>签到</Text>
         </Button>
       )
     } else {
       signBtn = (
-        <Button style={styles.logo} info rounded small disabled>
+        <Button info rounded small disabled>
           <Text style={styles.btnText}>已签到</Text>
         </Button>
       )

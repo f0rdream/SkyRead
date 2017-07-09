@@ -18,6 +18,7 @@ import favorite from '../pages/cart/children/favorite'
 import readplan from '../pages/cart/children/readplan'
 import addplan from '../pages/cart/children/addplan'
 import ordered from '../pages/cart/children/ordered'
+import ordertime from '../pages/cart/children/ordertime'
 
 import SearchPage from '../pages/search/searchpage'
 import SearchResult from '../pages/search/searchresult'
@@ -81,6 +82,10 @@ export default new Router({
         {
           path: 'ordered',
           component: ordered
+        },
+        {
+          path: 'ordertime/:bookId',
+          component: ordertime
         }
       ]
     },

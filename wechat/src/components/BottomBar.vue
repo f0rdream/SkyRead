@@ -120,6 +120,7 @@ export default {
   background-color: #f4f4f4;
   flex-flow: row nowrap;
   box-shadow: 1px -1px 1px #ccc;
+  z-index: 100;
 }
 .bar-wrapper .active {
   color: #2bc3c2;

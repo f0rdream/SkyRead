@@ -53,6 +53,13 @@ export default {
       Router.push('/bookshelf/paying')
     })
   },
+  reNewRenting ({ commit }, id) {
+    Vue.http.post('/library/return/continue/', {id: id}).then(res => {
+      store.dispatch('getRentingList')
+      commit(SET_ERRORMSG, '续借成功')
+    }).catch(err => commit(SET_ERRORMSG, err))
+  },
+
   getFavorite ({ commit }) {
     Vue.http.get('/book/starbook/').then(res => {
       commit(SET_FAVROITES, res.data)
@@ -108,6 +115,11 @@ export default {
       })
     }
   },
+  orderTime ({ commit }, form) {
+    Vue.http.post('/library/order/success/', form).then(res => {
+      commit(SET_ERRORMSG, '预约成功')
+    }).catch(err => commit(SET_ERRORMSG, err))
+  },
   getReadPlan ({ commit }) {
     Vue.http.get('/book/readplan/').then(res => {
       commit(SET_READPLAN, res.data)
@@ -115,7 +127,13 @@ export default {
   },
   addReadPlan ({ commit }, form) {
     Vue.http.post('/book/readplan/', form).then(res => {
-      store.dispatch('getFavorite')
+      store.dispatch('getReadPlan')
+      commit(SET_ERRORMSG, '添加成功')
+    }).catch(err => commit(SET_ERRORMSG, err))
+  },
+  delReadPlan ({ commit }, id) {
+    Vue.http.delete(`/book/readplan/${id}`).then(res => {
+      store.dispatch('getReadPlan')
       commit(SET_ERRORMSG, '添加成功')
     }).catch(err => commit(SET_ERRORMSG, err))
   }

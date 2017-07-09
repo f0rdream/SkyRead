@@ -6,8 +6,8 @@
       <p slot="book-info" class="book-info">借书时间: {{ book.borrow_time }}</p>
       <p slot="book-info" class="book-info">归还时间: {{ book.return_time }}</p>
       <p slot="book-info" class="book-info" :class="getStyle(book.due)">剩余时间: {{ book.due }}天</p>
-      <button slot="right" @click.native="genQR([book.id])" class="i-btn multi-btn">续借</button>
-      <button slot="right" @click.native="genQR([book.id])" class="i-btn multi-btn">还书码</button>
+      <button slot="right" @click="reNewRenting(book.id)" class="i-btn multi-btn">续借</button>
+      <button slot="right" @click="genQR([book.id])" class="i-btn multi-btn">还书码</button>
     </book-cell>
     <div class="btn-bottom-container">
       <button @click.native="genQR(checkedCells)" :disabled="allQRAvailble" class="i-btn" v-if="bookList.length > 0">批量生成还书码</button>
@@ -50,7 +50,8 @@ export default {
   methods: {
     ...mapActions({
       genQR: 'getRentingQR',
-      getData: 'getRentingList'
+      getData: 'getRentingList',
+      reNewRenting: 'reNewRenting'
     }),
     getStyle (day) {
       if (day > 7) {

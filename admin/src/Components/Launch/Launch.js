@@ -11,6 +11,7 @@ export default class Home extends React.Component {
       isLogin: -1
     }
     this.getIsLogin = this.getIsLogin.bind(this)
+    this._navigateTo = this._navigateTo.bind(this)
   }
 
   componentDidMount () {
@@ -50,7 +51,7 @@ export default class Home extends React.Component {
     }
   }
 
-  _navigateTo = (routeName: string) => {
+  _navigateTo (routeName) {
     const actionToDispatch = NavigationActions.reset({
       index: 0,
       actions: [NavigationActions.navigate({ routeName })]
