@@ -24,6 +24,8 @@ from rest_framework.views import APIView
 from sign import get_signature
 from rest_framework.status import HTTP_200_OK
 from newadmin.models import Admin_Permission
+from serializers import PictureSerializer
+from newadmin.models import Picture
 @csrf_exempt
 def wexin(request):
     """
@@ -234,4 +236,15 @@ def getHtml(url):
     page = urllib.urlopen(url)
     html = page.read()
     return html
+
+
+class PictureVIEW(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self,request):
+        picture = Picture.objects.all()
+        serializer = PictureSerializer(picture,data=request.data,many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data,HTTP_200_OK)
+
 
