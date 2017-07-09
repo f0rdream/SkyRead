@@ -37,10 +37,10 @@ class TagBookListView(APIView):
 
     def get(self,request,page):
         import time
-        begin =time.time()
+        begin = time.time()
         key = self.request.GET.get("key")
         cursor = connection.cursor()
-        select_sql ="select isbn13 from bookinfo.isbn13_tag \
+        select_sql = "select isbn13 from bookinfo.isbn13_tag \
         where tag='%s' limit  %d,20" % (key,int(page))
         cursor.execute(select_sql)
         tag_rs = cursor.fetchall()
@@ -108,15 +108,20 @@ class RecommendView(APIView):
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, HTTP_200_OK)
         except:
-            recommend_list = ['1770782', '1084336', '1008145', '1082154', '25862578',
-                             '3259440', '1046265', '3211779', '2567698', '1017143',
-                             '1007305', '1016300', '1040771', '20427187', '6082808',
-                             '5275059', '1461903', '1200840', '1141406', '1041007',
-                             '10554308', '3066477', '1068920', '4238362', '5363767',
-                             '4242172', '1083428', '1090043', '1026425', '2256039',]
+            recommend_list = ['1873231', '1071241', '3995526', '1400705', '1039487',
+                             '1041482', '1059406', '1023045', '2209098', '4742918',
+                             '1022060', '4886245', '3879301', '1529893', '1009257',
+                             '1057244', '1858513', '1066462', '4913064', '1082334',
+                             '25747921', '2062200', '1255625', '3646172', '1049219',
+                             '1975797', '4074636', '1432596', '2250587', '1045818',
+                             '1029791', '1049189', '1948901', '1361264', '10594787',
+                             '1013129', '2022979', '3426869', '1059419', '1050339',
+                             '1085860', '1007914', '1019568', '26340138', '1089243',
+                             '1065970', '3598313', '4714734', '1827374', '2159042',
+                             '1029159', '6388661', '1030052', '3369600', '1949338',]
             queryset = list()
             for douban_id in recommend_list:
-                isbn13_sql = "select isbn13 from bookdata_book where d_id='%s' " % str(douban_id[0])
+                isbn13_sql = "select isbn13 from bookdata_book where d_id='%s' " % str(douban_id)
                 cursor = connection.cursor()
                 cursor.execute(isbn13_sql)
                 isbn13_rs = cursor.fetchall()
@@ -126,7 +131,8 @@ class RecommendView(APIView):
                     try:
                         book = Book.objects.get(isbn13=isbn13)
                         queryset.append(book)
-                    except:
+                    except Exception as e:
+                        print e
                         pass
             serializer = ShortInto(queryset, many=True, data=request.data)
             serializer.is_valid(raise_exception=True)

@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
 from django.shortcuts import render
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate,logout
 from .models import Admin_Permission,AdminBorrowItemRecord,ExcelFile,Sign
 from serializers import UserLoginSerializer,BorrowRecordSerializer,OrderRecordSerializer
 from accounts.models import PhoneUser,WeChatUser
@@ -86,7 +86,7 @@ def web_logout(request):
     :return:
     """
     response = HttpResponseRedirect('/web/login')
-    response.delete_cookie('username')
+    logout(request)
     return response
 
 
@@ -277,26 +277,28 @@ def adminer_home(request):
     admin_user_list = list()
     reply = dict()
     all_signs = list()
-    for user in user_list:
-        if user.admin_permission.andriod_permisson and not\
-                user.admin_permission.admin_permisson:
-            try:
-                sign = Sign.objects.get(user=user)
-                all_signs.append(sign)
-                admin_detail = {
-                    'username': user.username,
-                    'sign_times': sign.times,
-                }
-                reply[user.id] = admin_detail
-            except:
-                admin_detail = {
-                    'username': user.username,
-                    'sign_times': 0,
-                }
-                reply[user.id] = admin_detail
-    return render(request,'newadmin/adminer.html',{'reply':reply,"signs":all_signs,
-                                                   "username":request.user.username})
-
+    if request.user.is_authenticated():
+        for user in user_list:
+            if user.admin_permission.andriod_permisson and not\
+                    user.admin_permission.admin_permisson:
+                try:
+                    sign = Sign.objects.get(user=user)
+                    all_signs.append(sign)
+                    admin_detail = {
+                        'username': user.username,
+                        'sign_times': sign.times,
+                    }
+                    reply[user.id] = admin_detail
+                except:
+                    admin_detail = {
+                        'username': user.username,
+                        'sign_times': 0,
+                    }
+                    reply[user.id] = admin_detail
+        return render(request,'newadmin/adminer.html',{'reply':reply,"signs":all_signs,
+                                                       "username":request.user.username})
+    else:
+        return render(request, 'newadmin/login.html')
 
 def adminer_detail(request,user_id):
     """
@@ -564,8 +566,6 @@ def picture_delete(request,id):
     except:
         pass
     return HttpResponseRedirect('/web/plant_home')
-
-
 
 
 def plant_home(request):
