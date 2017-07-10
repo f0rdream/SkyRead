@@ -8,9 +8,9 @@ export default class BookInfo extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      pageType: this.props.type,
-      // books: this.props.booksData.books,
-      // order: this.props.booksData.order
+      pageType: this.props.navigation.state.params.type,
+      books: this.props.navigation.state.params.booksData.bookinfo,
+      price: this.props.navigation.state.params.booksData.price
     }
   }
 
@@ -18,7 +18,7 @@ export default class BookInfo extends React.Component {
   //   let type = this.props.qrResult.qrtype
   //   this.setState({pageType: type})
   // }
-  //
+
   // async getBookInfo (type) {
   //   let url
   //   switch (type) {
@@ -57,10 +57,9 @@ export default class BookInfo extends React.Component {
 
 
   render () {
-    let list = [1, 1]
     let booksDom = []
-    for (let i in list) {
-      booksDom.push(<InfoPart/>)
+    for (let i in this.state.books) {
+      booksDom.push(<InfoPart book={this.state.books[i]}/>)
     }
     return (
       <View style={styles.container}>
@@ -75,7 +74,7 @@ export default class BookInfo extends React.Component {
             <PayPart/>
           </View>
           <View style={styles.confirmPart}>
-            <ConfirmBtn/>
+            <ConfirmBtn type={this.state.pageType}/>
           </View>
         </View>
       </View>
@@ -84,7 +83,12 @@ export default class BookInfo extends React.Component {
 }
 
 class InfoPart extends React.Component {
+  constructor (props) {
+    super(props)
+  }
+
   render () {
+    let book = this.props.book
     return (
       <View style={styles.infoContainer}>
         <View style={styles.logoContainer}>
@@ -96,23 +100,23 @@ class InfoPart extends React.Component {
         <View style={styles.rightPart}>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>书名</Text>
-            <Text style={styles.rightRight}>编译原理</Text>
+            <Text style={styles.rightRight}>{book.title}</Text>
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>ISBN</Text>
-            <Text style={styles.rightRight}>432423432</Text>
+            <Text style={styles.rightRight}>{book.isbn13}</Text>
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>借出时间</Text>
-            <Text style={styles.rightRight}>书名</Text>
+            <Text style={styles.rightRight}>{book.borrow_time}</Text>
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>归还时间</Text>
-            <Text style={styles.rightRight}>书名</Text>
+            <Text style={styles.rightRight}>{book.return_time}</Text>
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>借书人</Text>
-            <Text style={styles.rightRight}>书名</Text>
+            <Text style={styles.rightRight}>{book.nickname}</Text>
           </View>
         </View>
       </View>
@@ -138,6 +142,11 @@ class PayPart extends React.Component {
 }
 
 class ConfirmBtn extends React.Component {
+  constructor (props) {
+    super(props)
+  }
+
+
   render () {
     return (
       <View style={styles.confirmContainer}>
