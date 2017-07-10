@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyRead后台管理</title>
+     <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- BOOTSTRAP STYLES-->
+    <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet" />
+       <!--CUSTOM BASIC STYLES-->
+    <link href="{% static 'assets/css/basic.css'%}" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="{% static 'assets/css/custom.css'%}" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+<body>
+        <div align="center"><h2>本页面用于测试消息发送,不是用户界面</h2></div>
+<div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+               <div class="panel panel-primary">
+                        <div class="panel-heading">
+                           发送即将到期的归还提醒 的 短信
+                        </div>
+                        <div class="panel-body">
+                            <form role="form" action="{%url 'backmsg'%}" method="POST">
+                                {%csrf_token%}
+                                        <div class="form-group">
+                                            <label>输入手机号码</label>
+                                            <input class="form-control" type="text" name="phone">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>输入到期书名</label>
+                                            <input class="form-control" type="text" name="name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>输入剩余时间</label>
+                                            <input class="form-control" type="text" name="time">
+                                        </div>
+                                    <button type="submit" class="btn btn-danger">发送 </button>
+                            </form>
+                            </div>
+                        </div>
+                            </div>
+<div class="col-md-6 col-sm-6 col-xs-12">
+               <div class="panel panel-success">
+                        <div class="panel-heading">
+                            发送即将到期的归还提醒 的 微信消息
+                        </div>
+                        <div class="panel-body">
+                            <form role="form" action="{%url 'back_wechat'%}" method="POST">
+                                {%csrf_token%}
+                                        <div class="form-group">
+                                            <label>输入用户openid,这个信息可以在用户列表中查到</label>
+                                            <input class="form-control" type="text" name="openid">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>输入到期书名</label>
+                                            <input class="form-control" type="text" name="name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>输入剩余时间</label>
+                                            <input class="form-control" type="text" name="time">
+                                        </div>
+                                    <button type="submit" class="btn btn-danger">发送 </button>
+                            </form>
+                            </div>
+                        </div>
+                            </div>
+        </div>
+
+        <div align="center">
+            <h3>
+            备注：本页面用于测试两种站外的提醒方式:短信和微信消息<br><br>
+
+            此页面测试了 提醒归还书籍 的提醒,其余两种提醒:订阅取书提醒和有书归还的提醒,<br><br>
+
+            调用方法相同,参数不同而已<br><br>
+
+            第一种:您可以输入自己的手机号进行测试<br><br>
+
+            第二种:您可以先关注公众号,然后在web后台管理的用户列表模块中找到自己的openid进行测试<br><br>
+            </h3>
+        </div>
+</body>
+</html>

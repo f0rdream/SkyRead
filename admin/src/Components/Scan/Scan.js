@@ -8,7 +8,8 @@ export default class Scan extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      booksData: {}
+      booksData: {},
+      stop: false
     }
   }
 
@@ -18,8 +19,12 @@ export default class Scan extends React.Component {
 
   getQR = (data) => {
     let qrResult = this.convertData(data.data)
-    qrResult.id = qrResult.id.split('b').splice(0,1)
-    this.getBookInfo(qrResult)
+    qrResult.id_list = qrResult.id.split('b')
+    qrResult.id_list.splice(0,1)
+    delete qrResult.id
+    if (!this.state.stop) {
+      this.getBookInfo(qrResult)
+    }
   }
 
   async getBookInfo (qrObj) {
@@ -51,16 +56,17 @@ export default class Scan extends React.Component {
         credentials: 'include',
         body: JSON.stringify(form)
       })
-      console.log(response);
+      console.log(JSON.stringify(form));
       let res  = await response.json()
       console.log(res);
       if (response.status >= 200 && response.status < 400) {
-        consolo.log(type)
+        this.setState({stop: true})
         this.props.navigation.navigate('BookScreen', { booksData: res, type: type})
       } else {
+        console.log('Toast before')
         Toast.show({
           supportedOrientations: ['portrait','landscape'],
-          text: res.msg,
+          text: res,
           position: 'bottom',
           buttonText: 'Okay'
         })

@@ -65,7 +65,7 @@ export default class Home extends React.Component {
         <View style={styles.logoContainer}>
           <Image
             style={styles.logo}
-            source={{uri: 'http://cn.vuejs.org/images/logo.png'}}
+            source={require('../../Assets/logo.png')}
           />
           <Text>Launch Screen</Text>
         </View>

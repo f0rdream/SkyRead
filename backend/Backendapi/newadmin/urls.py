@@ -8,6 +8,7 @@ from .views import (test_perm,index,
                     book_search,book_detail,
                     add_single_book,user_home,
                     file_download,add_book_excel,plant_home,add_picture,
+                    send_message,backmsg,back_wechat,
                     picture_delete)
 from android_views import (AndroidUserLoginAPIView,
                            is_login_view,
@@ -44,7 +45,9 @@ urlpatterns = [
     url(r'^user_detail/(?P<id>\d+)$',user_detail,name='user_detail'),
     url(r'^create_admin/$',create_admin_user,name='create_admin'),
     url(r'^plant_home/$',plant_home,name='plant_home'),
-    # url(r'^messsage/$')
+    url(r'^message/$',send_message,name='send_message'),
+    url(r'^backmsg/$',backmsg,name='backmsg'),
+    url(r'^backwechat/$',back_wechat,name='back_wechat'),
     url(r'^picture_delete/(?P<id>\d+)$',picture_delete,name='picture_delete'),
     url(r'^add_picture/$',add_picture,name='add_picture'),
     # url(r'^delete_picture/(?P<id>\d+)$',delete_picture,'delete_picture'),

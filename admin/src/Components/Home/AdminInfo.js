@@ -88,7 +88,7 @@ export default class AdminInfo extends React.Component {
         <View style={styles.logoContainer}>
           <Image
             style={styles.logo}
-            source={{uri: 'http://cn.vuejs.org/images/logo.png'}}
+            source={require('../../Assets/head/1.png')}
           />
           <View style={styles.btnContainer}>
             {signBtn}
