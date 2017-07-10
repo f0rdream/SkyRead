@@ -151,6 +151,7 @@ class ReturnBookInfoToAdmin(ModelSerializer):
     title =  SerializerMethodField()
     price = SerializerMethodField()
     nickname =  SerializerMethodField()
+    image = SerializerMethodField()
 
     class Meta:
         model = BorrowItem
@@ -159,6 +160,7 @@ class ReturnBookInfoToAdmin(ModelSerializer):
             'nickname',
             'isbn13',
             'title',
+            'image',
             'price',
             'borrow_time',
             'return_time',
@@ -166,6 +168,15 @@ class ReturnBookInfoToAdmin(ModelSerializer):
             'find_id',
             'location',
         ]
+
+    def get_image(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.img_id
+            return title
+        except:
+            return None
 
     def get_title(self,obj):
         isbn13 = obj.isbn13
