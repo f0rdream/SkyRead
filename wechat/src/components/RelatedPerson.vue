@@ -1,17 +1,25 @@
 <template lang="html">
   <section class="viewer-box">
     <div class="title-box">
-      <span class="title">
-        猜你喜欢
-      </span>
-      <span class="view-changer" @click="switchItem">
-        换一换
-      </span>
+      <div class="left-part">
+        <span class="title">
+          猜你喜欢
+        </span>
+      </div>
+      <div class="right-part">
+        <span class="view-changer" @click="changeView" v-if="listable">
+          {{ isList ? '网格视图' : '列表视图' }}
+        </span>
+        <span class="item-changer" @click="switchItem">
+          换一批
+        </span>
+      </div>
     </div>
     <div class="viewer-block">
       <div v-for="(item, index) in currentItems" :key="item.isbn13" class="viewer-item">
-        <img :src="getImg(index)" class="item-img" @click="$router.push(`/relatedperson/${index}/${item}`)">
-        <p class="item-title">{{ item.title }}</p>
+        <img src="/static/head/1.png" class="item-img">
+        <!-- <img :src="getImg(index)" class="item-img" @click="$router.push(`/relatedperson/${index}/${item}`)"> -->
+        <p class="item-title">{{ item }}</p>
       </div>
     </div>
   </section>
@@ -37,7 +45,7 @@ export default {
       }).catch(err => console.warn('Err: ' + err))
     },
     switchItem () {
-      const amount = 6
+      const amount = 4
       const flagMax = parseInt(this.totalItems.length / amount)
       if (this.flag < flagMax - 1) {
         this.flag += 1
@@ -52,6 +60,22 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.title-box {
+  display: flex;
+  padding: 10px 15px;
+  justify-content: space-between;
+}
+.title {
+  padding: 2px 5px;
+  border-bottom: 2px #2bc1c8 solid;
+  font-weight: 600;
+  color: #5f5f5f;
+}
+.view-changer, .item-changer {
+  padding: 2px 5px;
+  font-size: 14px;
+  color: #5f5f5f;
+}
 .viewer-box {
   margin-top: .25rem;
   background-color: #fff;

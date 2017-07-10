@@ -15,6 +15,9 @@ export const returnInfo = baseURL + '/library/return/verify/'
 export const borrowConfirm = baseURL + '/library/confirm/' // + something
 export const borrowPay = baseURL + '/library/pay_info/'  //+pay_id
 export const adminInfoURL = baseURL + '/web/info/'
+export const confirmBorrow = baseURL + '/library/confirm/'
+export const confirmReturn = baseURL + '/library/return/change_bar/'
+export const confirmOrder = baseURL + '/library/order/finish/'
 
 const xsrfCookieName = 'csrftoken' // default
 const xsrfHeaderName = 'X-CSRFToken' // default

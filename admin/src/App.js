@@ -1,4 +1,5 @@
 import React from 'react'
+import { Root } from "native-base";
 import {
   AppRegistry,
   Text,
@@ -61,9 +62,9 @@ class AppContainer extends React.Component {
 
   render () {
     return (
-      <View style={{flex: 1}}>
+      <Root>
         <Navigation/>
-      </View>
+      </Root>
     )
   }
 }

@@ -62,7 +62,7 @@ export default {
       this.$http.get(`signature?url=${url}`).then(res => {
         this.wxSign = res.data
         this.$wechat.config({
-          debug: true,
+          debug: false,
           appId: this.wxSign.appId || 'wx06e40e988b339f37',
           timestamp: this.wxSign.timestamp,
           nonceStr: this.wxSign.nonceStr,

@@ -55,7 +55,8 @@ export default {
   methods: {
     ...mapActions({
       getData: 'getOrdered',
-      delOrdered: 'delOrdered'
+      delOrdered: 'delOrdered',
+      genQR: 'getOrderQR'
     }),
     convert: timePY2JS,
     dateFormat

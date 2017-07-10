@@ -29,4 +29,9 @@ const PrimaryNav = StackNavigator({
   initialRouteName: 'LaunchScreen',
 })
 
+// export default () =>
+//   (<Root>
+//     <PrimaryNav />
+//   </Root>)
+
 export default PrimaryNav
