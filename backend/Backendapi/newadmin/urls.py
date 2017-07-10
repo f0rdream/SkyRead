@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^user_detail/(?P<id>\d+)$',user_detail,name='user_detail'),
     url(r'^create_admin/$',create_admin_user,name='create_admin'),
     url(r'^plant_home/$',plant_home,name='plant_home'),
+    # url(r'^messsage/$')
     url(r'^picture_delete/(?P<id>\d+)$',picture_delete,name='picture_delete'),
     url(r'^add_picture/$',add_picture,name='add_picture'),
     # url(r'^delete_picture/(?P<id>\d+)$',delete_picture,'delete_picture'),

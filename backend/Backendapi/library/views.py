@@ -782,6 +782,9 @@ class PayView(APIView):
 
 
 class PayItView(APIView):
+    """
+    修改馆藏 修改状态
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self,request,pay_id):
@@ -789,6 +792,23 @@ class PayItView(APIView):
         try:
             pay = PayItem.objects.get(id=pay_id,user=user)
             price = pay.price
+            borrow_id = pay.borrow_id
+            dict = borrow_id.split("b")
+            for number in dict[1:]:
+                id = int(number)
+                try:
+                    borrow_item1 = BorrowItem.objects.get(pk=id)
+                    borrow_item1.in_return_bar = True
+                    # 获取book_id
+                    book_id = borrow_item1.book_id
+                    # 修改馆藏信息
+                    holding = Holding.objects.get(id=book_id)
+                    holding.state = False
+                    holding.back_time = borrow_item1.return_time
+                    holding.save()
+                    borrow_item1.save()
+                except:
+                    pass
             try:
                 phone_user = PhoneUser.objects.get(user=user)
                 phone_user.money -= price
@@ -829,13 +849,34 @@ class AdminConfirmInfo(APIView):
 
 class ConfirmIt(APIView):
     """
-    管理员确认信息接口
+    管理员确认信息接口,记录这一次操作
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pay_id):
         try:
+            user = request.user
             pay = PayItem.objects.get(id=pay_id)
             pay.confirm = True
+            borrow_id = pay.borrow_id
+            dict = borrow_id.split("b")
+            for number in dict[1:]:
+                id = int(number)
+                try:
+                    borrow_item1 = BorrowItem.objects.get(pk=id)
+                    # 记录管理员这次借出操作
+                    try:
+                        record = AdminBorrowItemRecord.objects.create(user=user,
+                                                                      record_type=1,
+                                                                      borrow_item=borrow_item1,
+                                                                      pay_id=pay_id,
+                                                                      about_user=borrow_item1.user.id)
+                        record.save()
+                    except:
+                        # TODO 异常处理
+                        pass
+                except:
+                    pass
             pay.save()
             reply = get_reply(0,'success')
             return Response(reply,HTTP_200_OK)
