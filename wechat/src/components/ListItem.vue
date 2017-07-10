@@ -9,13 +9,12 @@
       </p>
       <div class="item-info-container">
         <div class="item-info-left" @click="bookClick">
-          <p class="item-info">作者：<span v-for="author in bookInfo.author" :key="bookInfo.isbn13">{{author}}</span></p>
+          <p class="item-info">作者：<span v-for="author in bookInfo.author" :key="bookInfo.isbn13">{{author}} </span></p>
           <p class="item-info">出版信息：{{ bookInfo.publisher }}</p>
           <p class="item-info">评分：{{ bookInfo.average }}</p>
-          <p class="item-info">价格：{{ bookInfo.price }}</p>
         </div>
         <div class="item-info-right">
-          <x-button type="primary" mini @click.native="addFavroite(bookInfo.isbn13)">收藏</x-button>
+          <button class="i-btn" mini @click="addFavorite(bookInfo.isbn13)">收藏</button>
         </div>
       </div>
     </div>
@@ -40,7 +39,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'addFavroite'
+      'addFavorite'
     ]),
     bookClick () {
       this.$router.push(`/home/bookdetail/${this.bookInfo.isbn13}`)
@@ -55,8 +54,9 @@ export default {
   background-color: #fff;
 }
 .left-part {
-  width: 25%;
-  min-width: 25%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 25%;
   padding: 15px 15px;
 }
 .book-img {
@@ -80,10 +80,14 @@ export default {
 }
 .item-info-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+}
+.item-info-left {
+  flex-grow: 1;
+  padding-right: 10px;
 }
 .item-info-right {
-  margin: 15px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding-right: 15px;
 }
 </style>

@@ -1,15 +1,19 @@
 <template lang="html">
   <section class="viewer-box">
     <div class="title-box">
-      <span class="title">
-        猜你喜欢
-      </span>
-      <span class="view-changer" @click="changeView" v-if="listable">
-        {{ isList ? '网格视图' : '列表视图' }}
-      </span>
-      <span class="item-changer" @click="switchItem" v-if="listable">
-        换一换
-      </span>
+      <div class="left-part">
+        <span class="title">
+          猜你喜欢
+        </span>
+      </div>
+      <div class="right-part">
+        <span class="view-changer" @click="changeView" v-if="listable">
+          {{ isList ? '网格视图' : '列表视图' }}
+        </span>
+        <span class="item-changer" @click="switchItem">
+          换一批
+        </span>
+      </div>
     </div>
     <div class="viewer-block" v-if="!isList">
       <div v-for="item in currentItems" :key="item.isbn13" class="viewer-item">
@@ -18,7 +22,7 @@
       </div>
     </div>
     <div class="list-block" v-else>
-      <div v-for="item in currentItems" class="list-item vux-1px-b" @click="$router.push(`/home/bookdetail/${item.isbn13}`)">
+      <div v-for="item in currentItems" class="list-item vux-1px-b" @click="$router.push(`/home/bookdetail/${item.isbn13}`)" :key="item.isbn13">
         <p class="item-title">{{ item.title }}</p>
         <p class="item-info">作者：<span v-for="authorItem in item.author">{{ authorItem }}</span></p>
         <p class="item-info">评分: {{ item.average }}</p>
@@ -81,6 +85,7 @@ export default {
 .viewer-box {
   margin-top: .25rem;
   background-color: #fff;
+  padding-bottom: .10rem;
 }
 .viewer-block {
   margin: 0 .20rem;
@@ -107,5 +112,21 @@ export default {
 .list-item .item-info {
   color: #787878;
   font-size: 10px;
+}
+.title-box {
+  display: flex;
+  padding: 10px 15px;
+  justify-content: space-between;
+}
+.title {
+  padding: 2px 5px;
+  border-bottom: 2px #2bc1c8 solid;
+  font-weight: 600;
+  color: #5f5f5f;
+}
+.view-changer, .item-changer {
+  padding: 2px 5px;
+  font-size: 14px;
+  color: #5f5f5f;
 }
 </style>

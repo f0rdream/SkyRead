@@ -1,15 +1,23 @@
 
 <template lang="html">
   <section class="main-part">
-    <swiper :list="imgList" v-model="imgIndex"></swiper>
+    <swiper :list="imgList" v-model="imgIndex" :auto="true" :loop="true"></swiper>
     <div class="category">
-      <div class="cate-item" v-for="(value, key) in bookTypes2" v-if="key < 8 || isMore">
-        <router-link :to="`/home/category/${ key }`">{{ value }}</router-link>
+      <div class="cate-item" v-for="(value, key) in bookTypes" v-if="key < 8 || isMore">
+        <a @click="getToCate(key)">
+          <img :src="value.img" class="cate-img">
+          <p class="cate-item-string">{{ value.type }}</p>
+        </a>
       </div>
-      <div class="cate-item" @click="toggleMore">{{ isMore ? '收起分类' : '更多分类'}}</div>
+      <div class="cate-item cate-item-rear" @click="isMore = !isMore">
+        <img src="/static/class/more.png" class="cate-img">
+        <p class="cate-item-string">
+          {{ isMore ? '收起分类' : '更多分类'}}
+        </p>
+      </div>
     </div>
-    <recommend-card :bookItems="recommendBooks" ></recommend-card>
-    <related-person></related-person>
+    <recommend-card :bookItems="recommendBooks"></recommend-card>
+    <!-- <related-person></related-person> -->
   </section>
 </template>
 
@@ -28,115 +36,15 @@ export default {
   data () {
     return {
       isMore: false,
-      bookTypes2: bookTypes,
+      bookTypes: bookTypes,
       recommendBooks: [],
-      imgList: [
-        {
-          url: 'javascript:',
-          img: 'https://static.vux.li/demo/1.jpg',
-          title: '送你一朵fua'
-        },
-        {
-          url: 'javascript:',
-          img: 'https://static.vux.li/demo/2.jpg',
-          title: '送你一辆车'
-        },
-        {
-          url: 'javascript:',
-          img: 'https://static.vux.li/demo/3.jpg',
-          title: '送你一次旅行'
-        }
-      ],
+      imgList: [],
       imgIndex: 0
-      // books: [
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   },
-      //   {
-      //     'isbn13': '9787111077039',
-      //     'title': '编译原理及实践',
-      //     'author': [
-      //       'Kenneth C·Louden'
-      //     ],
-      //     'img_id': 'https://img3.doubanio.com/lpic/s1074793.jpg',
-      //     'publisher': '机械工业出版社',
-      //     'price': '39.00元'
-      //   }
-      // ]
     }
   },
   mounted () {
     this.getRecommend()
-    // setInterval(() => {
-    //   this.recommendBooks = [1, 2, 3, 4, 5]
-    // }, 5000)
+    this.getSwiper()
   },
   methods: {
     getRecommend () {
@@ -144,8 +52,17 @@ export default {
         this.recommendBooks = res.data
       }).catch(err => console.warn(err))
     },
-    toggleMore () {
-      this.isMore = !this.isMore
+    getSwiper () {
+      this.$http.get('/picture/').then(res => {
+        for (let item of res.data) {
+          this.imgList.push({url: `/home/bookdetail/${item.isbn13}`, img: item.picture, title: item.title})
+        }
+      }).catch(err => console.log(err))
+    },
+    getToCate (key) {
+      if (key < 15) {
+        this.$router.push(`/home/category/${key}`)
+      }
     }
   }
 }
@@ -164,5 +81,14 @@ export default {
   color: #5f5f5f;
   font-size: 12px;
   flex: 0 1 21%;
+}
+.cate-item-rear {
+  align-self: flex-end;
+}
+.cate-img {
+  width: 50%;
+}
+.cate-item-string {
+  color: #5f5f5f;
 }
 </style>

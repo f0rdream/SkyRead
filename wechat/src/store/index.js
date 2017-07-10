@@ -16,7 +16,10 @@ const state = {
   rentedHistory: [],
   orderedCart: {},
   readPlan: [],
-  QRInfo: {}
+  QRInfo: {},
+  accountsInfo: {},
+  havePhone: true,
+  currentTab: 0
 }
 export default new Vuex.Store({
   state,

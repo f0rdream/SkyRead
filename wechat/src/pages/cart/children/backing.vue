@@ -33,9 +33,15 @@ export default {
       this.$http.get(`/library/confirm_info/${this.currentQRInfo.pay_id}`).then(res => {
         if (res.data.confirm) {
           this.isConfirmed = true
+        } else {
+          setTimeout(() => {
+            this.getConfirm()
+          }, 500)
         }
       }).catch(err => {
-        this.getConfirm()
+        setTimeout(() => {
+          this.getConfirm()
+        }, 500)
         console.log(err)
       })
     }
@@ -46,5 +52,8 @@ export default {
 <style lang="css" scoped>
 .qrcode {
   width: 100%;
+}
+.confirm-status {
+  padding: 5px 15px;
 }
 </style>

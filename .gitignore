@@ -152,4 +152,4 @@ fastlane/screenshots
 
 
 # Ignore the upload script
-wechat/upload/
+wechat/upload/*

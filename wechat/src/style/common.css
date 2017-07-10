@@ -58,14 +58,20 @@ p.body-info {
   text-overflow:ellipsis;
   white-space: nowrap;
 }
+/* Fix Vux rem problems */
 
 .vux-timeline .vux-timeline-item-content {
   padding: 8px 0 25px 30px;
+}
+.main-part .vux-slider > .vux-swiper > .vux-swiper-item > a > .vux-swiper-desc {
+  height: 56px;
 }
 
 /* Button */
 
 .i-btn {
+  display: inline-block;
+  line-height: 1;
   border: 0;
   padding: 10px 16px;
   background-color: #2bc6b9;
@@ -109,4 +115,27 @@ p.body-info {
 }
 .i-checker-input:checked+.i-checker-icon {
   background-color: #2bc6b9;
+}
+
+.i-btn-lg {
+  display: block;
+  width: 90%;
+  border-radius: 4px;
+}
+
+.i-btn-blank {
+  display: inline-block;
+  line-height: 1;
+  border: 1px #727271 solid;
+  color: #727271;
+  border-radius: 10px;
+  padding: 6px 20px;
+  background-color: transparent;
+  transition: all .3s ease-in-out;
+  outline: none;
+}
+.i-btn-blank:active {
+  border-color: #fff;
+  color: #fff;
+  background-color: #2bcaab;
 }

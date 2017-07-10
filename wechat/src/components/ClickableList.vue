@@ -4,10 +4,11 @@
       <span class="label-text">{{ currentLabel }}</span>
       <span class="label-btn">{{ isSpread ? '收起' : '展开'}}</span>
     </div>
-    <div class="book-list vux-1px-b" v-for="book in currentbooks" v-show="isSpread" @click="$router.push(`/home/details/${book.isbn13}`)">
+    <div class="book-list vux-1px-b" v-for="book in currentbooks" v-show="isSpread" @click="$router.push(`/home/bookdetail/${book.isbn13}`)">
       <div class="left">
         <p class="book-title">{{ book.title}}</p>
-        <p class="book-info">{{ book.author }}</p>
+        <p class="book-info">借阅时间: {{ book.borrow_time }}</p>
+        <p class="book-info">归还时间: {{ book.return_time }}</p>
         <slot name="addition-info"></slot>
       </div>
       <div class="right">

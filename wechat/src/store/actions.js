@@ -1,20 +1,18 @@
 import Vue from 'vue'
 import store from './index'
-import { SET_ERRORMSG, SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN } from './mutation-types'
+import { SET_ACCOUNTSINFO, SET_ERRORMSG, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN, SET_HAVEPHONE, SET_CURRENTTAB } from './mutation-types'
 import '../config/ajax'
 import Router from '../router/index'
 
 export default {
-  setWechatSign ({commit, state}) {
-    let url = window.location.href.split('#')[0]
-    this.$http.get('url', url).then(res => {
-      commit(SET_WECHATSIGN, res.data)
-    }).catch(err => {
-      console.err(err)
-    })
-  },
   setErrMsg ({ commit }, msg) {
     commit(SET_ERRORMSG, msg)
+  },
+  getAccountsInfo ({ commit }, info) {
+    Vue.http.get('/accounts/').then((res) => {
+      commit(SET_ACCOUNTSINFO, res.data)
+      commit(SET_HAVEPHONE, res.data.have_phone)
+    })
   },
   getBorrowQR ({ commit, state }, indexList) {
     Vue.http.post('/library/borrow/qrcode/', {id_list: indexList}).then(res => {
@@ -50,7 +48,7 @@ export default {
     // }
     Vue.http.post('/library/return/qrcode/', {id_list: indexList}).then(res => {
       commit(SET_QRINFO, res.data)
-      Router.push('/bookshelf/paying')
+      Router.push('/bookshelf/backing')
     })
   },
   reNewRenting ({ commit }, id) {
@@ -68,7 +66,7 @@ export default {
     })
   },
   addFavorite ({ commit }, isbn13) {
-    Vue.http.post('/book/starbook/', { isbn13 }).then(res => {
+    Vue.http.post('/book/starbook/', { isbn13: isbn13 }).then(res => {
       res = res.data
       if (res.error_code === 0) {
         commit(SET_ERRORMSG, '加入成功')
@@ -120,6 +118,12 @@ export default {
       commit(SET_ERRORMSG, '预约成功')
     }).catch(err => commit(SET_ERRORMSG, err))
   },
+  getOrderQR ({ commit, state }, indexList) {
+    Vue.http.post('/library/borrow/qrcode/', {id_list: indexList}).then(res => {
+      commit(SET_QRINFO, res.data)
+      Router.push('/bookshelf/paying')
+    })
+  },
   getReadPlan ({ commit }) {
     Vue.http.get('/book/readplan/').then(res => {
       commit(SET_READPLAN, res.data)
@@ -136,5 +140,8 @@ export default {
       store.dispatch('getReadPlan')
       commit(SET_ERRORMSG, '添加成功')
     }).catch(err => commit(SET_ERRORMSG, err))
+  },
+  setCurrentTab ({ commit }, tab) {
+    commit(SET_CURRENTTAB, tab)
   }
 }

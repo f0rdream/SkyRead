@@ -15,16 +15,30 @@
       <cell title="手机信息" :is-link="true" :link="'/person/phone'">
         <span>{{ userInfo.phone_number }}</span>
       </cell>
-      <cell title="绑定信息"></cell>
+      <!-- <cell title="绑定信息"></cell> -->
     </group>
-    <group class="about-part">
-      <cell title="关于我们"></cell>
-    </group>
+    <div class="setting-part">
+      <div class="cell-item" :class="isSpread ? 'vux-1px-tb' : 'vux-1px-t'">
+        <span class="label-text">发现</span>
+        <span class="label-btn">{{ expSpread ? '收起' : '展开'}}</span>
+      </div>
+      <div class="cell-addon">
+        <div class="app-item" @click="$router.push('/person/related')">
+          <img class="app-img" src="/static/bottom/home.png">
+          <p class="app-title">相似用户</p>
+        </div>
+        <div class="app-item" @click="$router.push('/person/nearby')">
+          <img class="app-img" src="/static/bottom/home.png">
+          <p class="app-title">附近的书</p>
+        </div>
+      </div>
+    </div>
     <bottom-bar :activeTab="3" slot="bottom"></bottom-bar>
   </view-box>
 </template>
 <script>
 import { XHeader, Group, Cell, XSwitch, ViewBox } from 'vux'
+import { mapState } from 'vuex'
 import ClickableList from '@/components/ClickableList'
 import BottomBar from '@/components/BottomBar'
 
@@ -40,41 +54,30 @@ export default {
   },
   data () {
     return {
-      userInfo: {
-        nickname: '',
-        headimgurl: '',
-        phone_number: '',
-        email: '',
-        have_phone: 0
-      },
-      recommend: true,
-      orderRemind: true,
       backRemind: true,
-      books: ['1', '1', '1'],
-      historyList: []
+      historyList: [],
+      expSpread: true
     }
   },
+  computed: {
+    ...mapState({
+      userInfo: 'accountsInfo'
+    })
+  },
   mounted () {
-    this.getAccount()
     this.getHistory()
   },
   methods: {
-    getAccount () {
-      this.$http.get('/accounts/').then((res) => {
-        this.userInfo = res.data
-      })
-    },
     getHistory () {
       this.$http.get('/library/readed/').then(res => {
         this.historyList = res.data
-      })
+      }).catch(err => console.log(err))
     }
   }
 }
 </script>
 <style scoped>
 .app-wrapper {
-  height: 100%;
   background-color: #fbfbfb;
 }
 .avatar-part {
@@ -86,5 +89,36 @@ export default {
   height: 1rem;
   width: 1rem;
   border-radius: 50% 50%;
+}
+.cell-item {
+  display: flex;
+  justify-content: space-between;
+  margin-top: .15rem;
+  padding: 8px 15px;
+  background-color: #fff;
+}
+.cell-item .label-btn {
+  color: #858585;
+  font-size: 12px;
+  line-height: 27px;
+}
+.cell-addon {
+  display: flex;
+  flex-direction: row;
+}
+.app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 25%;
+  margin: 10px 10px;
+}
+.app-img {
+  width: 50%;
+}
+.app-title {
+  font-size: 14px;
+  color: #333;
 }
 </style>
