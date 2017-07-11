@@ -19,6 +19,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 from library.models import BorrowItem,SuccessOrderItem,WaitOrderItem
 from models import Picture
+from send_message import send_borrow_message,send_back_wechat
 
 def test_perm(request):
     user = request.user
@@ -575,3 +576,27 @@ def plant_home(request):
         "username":request.user.username,
     }
     return render(request, "newadmin/plantform_home.html", reply)
+
+
+def send_message(request):
+    return render(request,"newadmin/send_message.html")
+
+
+def backmsg(request):
+    if request.method=='POST':
+        phone = request.POST['phone']
+        name = request.POST['name']
+        time = request.POST['time']
+        send_borrow_message(phone,name,time)
+        return render(request, "newadmin/send_message.html")
+    return render(request, "newadmin/send_message.html")
+
+
+def back_wechat(request):
+    if request.method=='POST':
+        openid = request.POST['openid']
+        name = request.POST['name']
+        time = request.POST['time']
+        send_back_wechat(openid,name,time)
+        return render(request, "newadmin/send_message.html")
+    return render(request, "newadmin/send_message.html")

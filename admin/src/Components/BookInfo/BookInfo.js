@@ -9,7 +9,12 @@ export default class BookInfo extends React.Component {
     super(props)
     this.state = {
       pageType: this.props.navigation.state.params.type,
+<<<<<<< HEAD
       books: this.props.navigation.state.params.booksData
+=======
+      books: this.props.navigation.state.params.booksData.bookinfo,
+      price: this.props.navigation.state.params.booksData.price
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
     }
   }
 
@@ -18,7 +23,11 @@ export default class BookInfo extends React.Component {
   //   this.setState({pageType: type})
   // }
 
+<<<<<<< HEAD
   // async function getBookInfo (type) {
+=======
+  // async getBookInfo (type) {
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
   //   let url
   //   switch (type) {
   //     case 'borrow':
@@ -56,6 +65,7 @@ export default class BookInfo extends React.Component {
 
 
   render () {
+<<<<<<< HEAD
     if (this.state.pageType === 'borrow') {
       let booksDom = []
       for (let i in this.state.books.bookinfo) {
@@ -76,6 +86,17 @@ export default class BookInfo extends React.Component {
             <View style={styles.confirmPart}>
               <ConfirmBtn type={this.state.pageType} pay_id={this.props.pay_id}/>
             </View>
+=======
+    let booksDom = []
+    for (let i in this.state.books) {
+      booksDom.push(<InfoPart book={this.state.books[i]}/>)
+    }
+    return (
+      <View style={styles.container}>
+        <View style={styles.cardContainer} elevation={3}>
+          <View style={styles.titlePart}>
+            <Text style={styles.titleText}>账单明细</Text>
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
           </View>
         </View>
       )
@@ -93,6 +114,7 @@ export default class BookInfo extends React.Component {
               <ConfirmBtn type={this.state.pageType} order_id={this.props.order_id}/>
             </View>
           </View>
+<<<<<<< HEAD
         </View>
       )
     } else if (this.state.pageType === 'return') {
@@ -112,6 +134,10 @@ export default class BookInfo extends React.Component {
             <View style={styles.confirmPart}>
               <ConfirmBtn type={this.state.pageType} id_list={this.props.id_list} return_id={this.return_id}/>
             </View>
+=======
+          <View style={styles.confirmPart}>
+            <ConfirmBtn type={this.state.pageType}/>
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
           </View>
         </View>
       )
@@ -152,6 +178,7 @@ class InfoPart extends React.Component {
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>归还时间</Text>
             <Text style={styles.rightRight}>{book.return_time}</Text>
+<<<<<<< HEAD
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>借书人</Text>
@@ -186,6 +213,8 @@ class InfoPartOrder extends React.Component {
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>书籍编号</Text>
             <Text style={styles.rightRight}>{book.book_id}</Text>
+=======
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>借书人</Text>
@@ -220,6 +249,7 @@ class ConfirmBtn extends React.Component {
   constructor (props) {
     super(props)
   }
+<<<<<<< HEAD
   confirm = () => {
     if (this.props.type === 'borrow') {
       async function getIt() {
@@ -345,6 +375,9 @@ class ConfirmBtn extends React.Component {
       getIt()
     }
   }
+=======
+
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
 
   render () {
     return (

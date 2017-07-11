@@ -19,11 +19,17 @@ export default class Scan extends React.Component {
 
   getQR = (data) => {
     let qrResult = this.convertData(data.data)
+<<<<<<< HEAD
     if (qrResult.id) {
       qrResult.id_list = qrResult.id.split('b')
       qrResult.id_list.splice(0,1)
       delete qrResult.id
     }
+=======
+    qrResult.id_list = qrResult.id.split('b')
+    qrResult.id_list.splice(0,1)
+    delete qrResult.id
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
     if (!this.state.stop) {
       this.getBookInfo(qrResult)
     }
@@ -116,6 +122,42 @@ export default class Scan extends React.Component {
         console.log('get Type err')
         return
     }
+<<<<<<< HEAD
+=======
+    try {
+      let response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(form)
+      })
+      console.log(JSON.stringify(form));
+      let res  = await response.json()
+      console.log(res);
+      if (response.status >= 200 && response.status < 400) {
+        this.setState({stop: true})
+        this.props.navigation.navigate('BookScreen', { booksData: res, type: type})
+      } else {
+        console.log('Toast before')
+        Toast.show({
+          supportedOrientations: ['portrait','landscape'],
+          text: res,
+          position: 'bottom',
+          buttonText: 'Okay'
+        })
+      }
+    } catch(err) {
+      Toast.show({
+        supportedOrientations: ['portrait','landscape'],
+        text: err,
+        position: 'bottom',
+        buttonText: 'Okay'
+      })
+    }
+>>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
   }
 
   convertData = (queryString) => {
