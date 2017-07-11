@@ -74,6 +74,7 @@ export default {
   border-radius: 8px;
   font-size: 14px;
   padding: 15px 20px;
+  resize: none;
 }
 .comment {
   background-color: #fff;

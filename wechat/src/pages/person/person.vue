@@ -24,11 +24,11 @@
       </div>
       <div class="cell-addon">
         <div class="app-item" @click="$router.push('/person/related')">
-          <img class="app-img" src="/static/bottom/home.png">
+          <img class="app-img" src="/static/others/similarity.png">
           <p class="app-title">相似用户</p>
         </div>
         <div class="app-item" @click="$router.push('/person/nearby')">
-          <img class="app-img" src="/static/bottom/home.png">
+          <img class="app-img" src="/static/others/nearby.png">
           <p class="app-title">附近的书</p>
         </div>
       </div>

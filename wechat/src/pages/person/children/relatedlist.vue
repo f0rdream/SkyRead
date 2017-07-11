@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="title-container">
     <div class="title">
-      <p class="title-string">你附近的书</p>
+      <p class="title-string">{{person}} 的书</p>
     </div>
     <list-item v-for="item in itemList"  :itemInfo="item" :key="item.isbn13"></list-item>
   </div>
@@ -15,7 +15,9 @@ export default {
   },
   data () {
     return {
-      itemList: []
+      itemList: [],
+      person: this.$route.params.item,
+      index: this.$route.params.index
     }
   },
   mounted () {
@@ -23,8 +25,7 @@ export default {
   },
   methods: {
     getList () {
-      let num = Math.ceil(Math.random() * 10) + 5
-      this.$http.get(`/book/guide/3/${num}`).then(res => {
+      this.$http.get(`/list/user_like/${this.index}/`).then(res => {
         this.itemList = res.data
       }).catch(err => console.log(err))
     }

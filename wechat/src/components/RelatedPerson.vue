@@ -3,7 +3,7 @@
     <div class="title-box">
       <div class="left-part">
         <span class="title">
-          猜你喜欢
+          相似用户
         </span>
       </div>
       <div class="right-part">
@@ -17,7 +17,7 @@
     </div>
     <div class="viewer-block">
       <div v-for="(item, index) in currentItems" :key="item.isbn13" class="viewer-item">
-        <img src="/static/head/1.png" class="item-img">
+        <img :src="`/static/head/${index + 1 + flag * 3}.png`" class="item-img" @click="personClick(item, index + 1 + flag * 3)">
         <!-- <img :src="getImg(index)" class="item-img" @click="$router.push(`/relatedperson/${index}/${item}`)"> -->
         <p class="item-title">{{ item }}</p>
       </div>
@@ -45,16 +45,18 @@ export default {
       }).catch(err => console.warn('Err: ' + err))
     },
     switchItem () {
-      const amount = 4
+      const amount = 3
       const flagMax = parseInt(this.totalItems.length / amount)
       if (this.flag < flagMax - 1) {
         this.flag += 1
       } else {
         this.flag = 0
       }
-      this.currentItems = this.totalItems.slice(this.flag * amount, this.flag * amount + 6)
+      this.currentItems = this.totalItems.slice(this.flag * amount, (this.flag + 1) * amount)
     },
-    getImg (index) {}
+    personClick (item, index) {
+      this.$router.push(`/person/related/${index}/${item}`)
+    }
   }
 }
 </script>
