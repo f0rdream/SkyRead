@@ -18,11 +18,11 @@
       <!-- <cell title="绑定信息"></cell> -->
     </group>
     <div class="setting-part">
-      <div class="cell-item" :class="isSpread ? 'vux-1px-tb' : 'vux-1px-t'">
+      <div class="cell-item" :class="isSettingSpread ? 'vux-1px-t' : 'vux-1px-tb'">
         <span class="label-text">发现</span>
-        <span class="label-btn">{{ expSpread ? '收起' : '展开'}}</span>
+        <span class="label-btn" @click="isSettingSpread = !isSettingSpread">{{ isSettingSpread ? '收起' : '展开'}}</span>
       </div>
-      <div class="cell-addon">
+      <div class="cell-addon" v-show="isSettingSpread">
         <div class="app-item" @click="$router.push('/person/related')">
           <img class="app-img" src="/static/others/similarity.png">
           <p class="app-title">相似用户</p>
@@ -56,7 +56,7 @@ export default {
     return {
       backRemind: true,
       historyList: [],
-      expSpread: true
+      isSettingSpread: true
     }
   },
   computed: {
