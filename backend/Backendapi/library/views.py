@@ -491,6 +491,8 @@ class FinishReturnView(APIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = ReturnItemSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
 
     def post(self,request):
         user = request.user

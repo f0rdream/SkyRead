@@ -71,3 +71,4 @@ def send_back_wechat(openid,name,time):
         print "success"
     else:
         print "fail"
+
