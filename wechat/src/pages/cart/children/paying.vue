@@ -49,7 +49,7 @@ export default {
         setTimeout(() => {
           this.getConfirm()
         }, 500)
-        console.log(err)
+        console.log(err.response.data)
       })
     },
     pay () {
@@ -67,7 +67,7 @@ export default {
             text: '金额不足'
           })
         }
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     }
   }
 }

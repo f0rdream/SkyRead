@@ -57,7 +57,7 @@ export default {
         for (let item of res.data) {
           this.imgList.push({url: `/home/bookdetail/${item.isbn13}`, img: item.picture, title: item.title})
         }
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     getToCate (key) {
       if (key < 15) {

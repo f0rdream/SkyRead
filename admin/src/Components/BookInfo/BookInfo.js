@@ -9,13 +9,16 @@ export default class BookInfo extends React.Component {
     super(props)
     this.state = {
       pageType: this.props.navigation.state.params.type,
-<<<<<<< HEAD
-      books: this.props.navigation.state.params.booksData
-=======
-      books: this.props.navigation.state.params.booksData.bookinfo,
-      price: this.props.navigation.state.params.booksData.price
->>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
+      books: this.props.navigation.state.params.booksData,
+      toast: {
+        show: false,
+        word: ''
+      }
     }
+  }
+
+  setToast = (obj) => {
+    this.setState(toast, obj)
   }
 
   // getTypeInfo = () => {
@@ -23,11 +26,7 @@ export default class BookInfo extends React.Component {
   //   this.setState({pageType: type})
   // }
 
-<<<<<<< HEAD
   // async function getBookInfo (type) {
-=======
-  // async getBookInfo (type) {
->>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
   //   let url
   //   switch (type) {
   //     case 'borrow':
@@ -65,14 +64,14 @@ export default class BookInfo extends React.Component {
 
 
   render () {
-<<<<<<< HEAD
+
     if (this.state.pageType === 'borrow') {
       let booksDom = []
       for (let i in this.state.books.bookinfo) {
-        booksDom.push(<InfoPart book={this.state.books.bookinfo[i]}/>)
+        booksDom.push(<InfoPart book={this.state.books.bookinfo[i]} key={this.state.books.bookinfo[i].id}/>)
       }
       return (
-        <View style={styles.container}>
+        <Container>
           <View style={styles.cardContainer} elevation={3}>
             <View style={styles.titlePart}>
               <Text style={styles.titleText}>书籍明细</Text>
@@ -84,25 +83,25 @@ export default class BookInfo extends React.Component {
               <PayPart price={this.state.books.price}/>
             </View>
             <View style={styles.confirmPart}>
-              <ConfirmBtn type={this.state.pageType} pay_id={this.props.pay_id}/>
+              <ConfirmBtn type={this.state.pageType} pay_id={this.props.navigation.state.params.pay_id}/>
             </View>
-=======
-    let booksDom = []
-    for (let i in this.state.books) {
-      booksDom.push(<InfoPart book={this.state.books[i]}/>)
-    }
-    return (
-      <View style={styles.container}>
-        <View style={styles.cardContainer} elevation={3}>
-          <View style={styles.titlePart}>
-            <Text style={styles.titleText}>账单明细</Text>
->>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
+            <View>
+              <Toast
+                showToast={this.state.toast.show}
+                buttonText="Okay"
+                buttonPress={()=> this.setState({
+                  showToast: !this.state.showToast
+                })}
+                position="bottom">
+                <Text>{this.state.toast.word}</Text>
+              </Toast>
+            </View>
           </View>
-        </View>
+        </Container>
       )
     } else if (this.state.pageType === 'order') {
       return (
-        <View style={styles.container}>
+        <Container>
           <View style={styles.cardContainer} elevation={3}>
             <View style={styles.titlePart}>
               <Text style={styles.titleText}>预定书籍</Text>
@@ -111,19 +110,19 @@ export default class BookInfo extends React.Component {
               <InfoPartOrder book={this.state.books}/>
             </View>
             <View style={styles.confirmPart}>
-              <ConfirmBtn type={this.state.pageType} order_id={this.props.order_id}/>
+              <ConfirmBtn type={this.state.pageType} order_id={this.state.books.order_id}/>
             </View>
           </View>
-<<<<<<< HEAD
-        </View>
+        </Container>
       )
     } else if (this.state.pageType === 'return') {
       let booksDom = []
       for (let i in this.state.books) {
-        booksDom.push(<InfoPart book={this.state.books.bookinfo[i]}/>)
+        booksDom.push(<InfoPart book={this.state.books[i]} key={this.state.books[i].id}/>)
       }
+      console.log('BOok dom' + booksDom)
       return (
-        <View style={styles.container}>
+        <Container>
           <View style={styles.cardContainer} elevation={3}>
             <View style={styles.titlePart}>
               <Text style={styles.titleText}>书籍明细</Text>
@@ -132,14 +131,10 @@ export default class BookInfo extends React.Component {
               {booksDom}
             </View>
             <View style={styles.confirmPart}>
-              <ConfirmBtn type={this.state.pageType} id_list={this.props.id_list} return_id={this.return_id}/>
+              <ConfirmBtn type={this.state.pageType} id_list={this.props.navigation.state.params.id_list} return_id={this.props.navigation.state.params.return_id}/>
             </View>
-=======
-          <View style={styles.confirmPart}>
-            <ConfirmBtn type={this.state.pageType}/>
->>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
           </View>
-        </View>
+        </Container>
       )
     } else {
       return (<View></View>)
@@ -178,7 +173,6 @@ class InfoPart extends React.Component {
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>归还时间</Text>
             <Text style={styles.rightRight}>{book.return_time}</Text>
-<<<<<<< HEAD
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>借书人</Text>
@@ -213,8 +207,7 @@ class InfoPartOrder extends React.Component {
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>书籍编号</Text>
             <Text style={styles.rightRight}>{book.book_id}</Text>
-=======
->>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
+
           </View>
           <View style={styles.rightRow}>
             <Text style={styles.rightLeft}>借书人</Text>
@@ -249,12 +242,12 @@ class ConfirmBtn extends React.Component {
   constructor (props) {
     super(props)
   }
-<<<<<<< HEAD
   confirm = () => {
+    let btnThis = this
     if (this.props.type === 'borrow') {
       async function getIt() {
         try {
-          let response = await fetch(confirmBorrow + this.props.pay_id, {
+          let response = await fetch(confirmBorrow + btnThis.props.pay_id, {
             method: 'GET',
             headers: {
               'Accept': 'application/json',
@@ -290,6 +283,7 @@ class ConfirmBtn extends React.Component {
       }
       getIt()
     } else if (this.props.type === 'return') {
+      let btnThis = this
       let form = {id_list: this.props.id_list, return_id: this.props.return_id}
       async function getIt () {
         try {
@@ -302,29 +296,32 @@ class ConfirmBtn extends React.Component {
             credentials: 'include',
             body: JSON.stringify(form)
           })
-          console.log(JSON.stringify(form));
           let res  = await response.json()
           console.log(res);
           if (response.status >= 200 && response.status < 400) {
+            // btnThis.setState(toast, {show: true, word: '确认成功'})
             Toast.show({
               supportedOrientations: ['portrait','landscape'],
-              text: 确认成功,
+              text: '确认成功',
               position: 'bottom',
               buttonText: 'Okay'
             })
           } else {
             console.log('Toast before')
+            // btnThis.setState(toast, {show: true, word: res})
             Toast.show({
               supportedOrientations: ['portrait','landscape'],
-              text: res,
+              text: '错误',
               position: 'bottom',
               buttonText: 'Okay'
             })
           }
         } catch(err) {
+          console.log(err)
+          // btnThis.setState(toast, {show: true, word: err})
           Toast.show({
             supportedOrientations: ['portrait','landscape'],
-            text: err,
+            text: '错误',
             position: 'bottom',
             buttonText: 'Okay'
           })
@@ -332,6 +329,7 @@ class ConfirmBtn extends React.Component {
       }
       getIt()
     } else if (this.props.type = 'order') {
+      let btnThis = this
       let form = { order_id: this.props.order_id}
       async function getIt () {
         try {
@@ -375,15 +373,12 @@ class ConfirmBtn extends React.Component {
       getIt()
     }
   }
-=======
-
->>>>>>> 285cf978eb7c27095d002444ccfeebea90b0e934
 
   render () {
     return (
       <View style={styles.confirmContainer}>
-        <Button info rounded>
-          <Text style={styles.confirmText} onClick={this.confirm}>确认信息</Text>
+        <Button info rounded onPress={this.confirm}>
+          <Text style={styles.confirmText}>确认信息</Text>
         </Button>
         {/* <TouchableOpacity style={styles.confirmBtn}>
           <Text style={styles.confirmText}>确定</Text>

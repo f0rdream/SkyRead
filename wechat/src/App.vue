@@ -42,7 +42,8 @@ export default {
   watch: {
     errorMsg (newOne, oldOne) {
       this.$vux.toast.show({
-        text: newOne
+        text: newOne.text,
+        type: newOne.type
       })
     }
   },

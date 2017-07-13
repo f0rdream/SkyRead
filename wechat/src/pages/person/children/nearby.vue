@@ -26,7 +26,7 @@ export default {
       let num = Math.ceil(Math.random() * 10) + 5
       this.$http.get(`/book/guide/3/${num}`).then(res => {
         this.itemList = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     }
   }
 }

@@ -27,7 +27,7 @@ export default {
     getList () {
       this.$http.get(`/list/user_like/${this.index}/`).then(res => {
         this.itemList = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     }
   }
 }

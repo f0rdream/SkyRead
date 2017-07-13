@@ -78,11 +78,9 @@ export default {
           qrResult = {book_id: qrQuery.id, isbn13: qrQuery.isbn13} // 当needResult 为 1 时，扫码返回的结果
           vueThis.$http.post('/library/borrow/', qrResult).then(res => {
             vueThis.getScanedList()
+            vueThis.setErrMsg({text: '扫码成功'})
           }).catch(err => {
-            this.$vux.alert.show({
-              title: 'Error',
-              content: err
-            })
+            vueThis.setErrMsg({text: err.response.data, type: 'cancel'})
           })
         }
       })
@@ -105,7 +103,8 @@ export default {
       }
     },
     ...mapActions([
-      'getScanedList'
+      'getScanedList',
+      'setErrMsg'
     ])
   }
 }
