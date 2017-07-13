@@ -1,8 +1,8 @@
 import { SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, DEL_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, ADD_FAVROITES, SET_ERRORMSG, SET_ORDEREDCART, SET_READPLAN, SET_ACCOUNTSINFO, SET_HAVEPHONE, SET_CURRENTTAB } from './mutation-types'
 
 export default {
-  [SET_ERRORMSG] (state, msg) {
-    state.errorMsg = msg
+  [SET_ERRORMSG] (state, payload) {
+    state.errorMsg = {...{type: 'success'}, ...payload}
   },
   [SET_WECHATSIGN] (state, sign) {
     state.wechatSign = sign

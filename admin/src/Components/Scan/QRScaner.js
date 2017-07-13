@@ -1,4 +1,5 @@
 import React from 'react'
+import { Container, Toast } from 'native-base'
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, Image } from 'react-native'
 import Camera from 'react-native-camera'
 
@@ -35,17 +36,19 @@ export default class QRScaner extends React.Component {
     }
 
     return (
-      <Camera
-        ref={(cam) => {this.camera = cam}}
-        style={styles.camera}
-        aspect={Camera.constants.Aspect.fit}
-        onBarCodeRead={this._onQRRead}
-        >
-        <View style={styles.rectangleContainer}>
-          <View style={styles.rectangle}/>
-        </View>
-        { cancelButton }
-      </Camera>
+      <Container>
+        <Camera
+          ref={(cam) => {this.camera = cam}}
+          style={styles.camera}
+          aspect={Camera.constants.Aspect.fit}
+          onBarCodeRead={this._onQRRead}
+          >
+          <View style={styles.rectangleContainer}>
+            <View style={styles.rectangle}/>
+          </View>
+          { cancelButton }
+        </Camera>
+      </Container>
     )
   }
 }

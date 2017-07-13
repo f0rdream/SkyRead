@@ -18,17 +18,17 @@
       <!-- <cell title="绑定信息"></cell> -->
     </group>
     <div class="setting-part">
-      <div class="cell-item" :class="isSpread ? 'vux-1px-tb' : 'vux-1px-t'">
+      <div class="cell-item" :class="isSettingSpread ? 'vux-1px-t' : 'vux-1px-tb'">
         <span class="label-text">发现</span>
-        <span class="label-btn">{{ expSpread ? '收起' : '展开'}}</span>
+        <span class="label-btn" @click="isSettingSpread = !isSettingSpread">{{ isSettingSpread ? '收起' : '展开'}}</span>
       </div>
-      <div class="cell-addon">
+      <div class="cell-addon" v-show="isSettingSpread">
         <div class="app-item" @click="$router.push('/person/related')">
-          <img class="app-img" src="/static/bottom/home.png">
+          <img class="app-img" src="/static/others/similarity.png">
           <p class="app-title">相似用户</p>
         </div>
         <div class="app-item" @click="$router.push('/person/nearby')">
-          <img class="app-img" src="/static/bottom/home.png">
+          <img class="app-img" src="/static/others/nearby.png">
           <p class="app-title">附近的书</p>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default {
     return {
       backRemind: true,
       historyList: [],
-      expSpread: true
+      isSettingSpread: true
     }
   },
   computed: {
@@ -71,7 +71,7 @@ export default {
     getHistory () {
       this.$http.get('/library/readed/').then(res => {
         this.historyList = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     }
   }
 }

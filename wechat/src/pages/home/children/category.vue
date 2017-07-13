@@ -3,7 +3,7 @@
     <div class="title">
       <p class="title-string">{{ bookTypes[typeId].type }}</p>
     </div>
-    <list-item v-for="item in typeList"  :itemInfo="item"></list-item>
+    <list-item v-for="item in typeList"  :itemInfo="item" :key="item.isbn13"></list-item>
     <infinite-loading :on-infinite="onInfinite" ref="infiniteLoading"></infinite-loading>
   </div>
 </template>

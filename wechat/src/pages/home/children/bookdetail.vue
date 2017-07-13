@@ -105,7 +105,7 @@ export default {
         this.bookDetail.imgSrc = 'https://img3.doubanio.com/lpic/' + res.data.img_id
         this.getStoreInfo()
       }).catch((err) => {
-        console.log(err)
+        console.log(err.response.data)
       })
     },
     comment () {
@@ -117,7 +117,7 @@ export default {
     getStoreInfo () {
       this.$http.get(`/book/collection/${this.bookDetail.isbn13}`).then(res => {
         this.storeInfo = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     orderBook (id, isbn13, state) {
       if (state === '在架上') {
@@ -127,7 +127,7 @@ export default {
           this.$vux.toast.show({
             text: '图书尚未归还，已加入预定栏'
           })
-        }).catch(err => console.log(err))
+        }).catch(err => console.log(err.response.data))
       }
     }
   }

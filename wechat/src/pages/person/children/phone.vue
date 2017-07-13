@@ -45,13 +45,16 @@ export default {
           })
         } else {
           this.$vux.toast.show({
-            text: res.data.error_code
+            text: '发送失败，请稍后再试'
           })
         }
       })
     },
     bindPhone () {
-      this.$http.post('accounts/phone/', {phone_num: this.phoneNum, captcha: this.captcha}).then(res => {
+      this.$http.post('accounts/phone/', {phone_number: this.phoneNum, captcha: this.captcha}, {
+        xsrfCookieName: 'csrftoken',
+        xsrfHeaderName: 'X-CSRFToken'
+      }).then(res => {
         let errorCode = res.data.error_code
         if (errorCode === 1) {
           this.$vux.toast.show({
@@ -66,6 +69,10 @@ export default {
             text: '绑定成功'
           })
         }
+      }).catch(err => {
+        this.$vux.toast.show({
+          text: err
+        })
       })
     },
     setTimer () {

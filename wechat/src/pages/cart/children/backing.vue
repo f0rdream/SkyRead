@@ -42,7 +42,7 @@ export default {
         setTimeout(() => {
           this.getConfirm()
         }, 500)
-        console.log(err)
+        console.log(err.response.data)
       })
     }
   }

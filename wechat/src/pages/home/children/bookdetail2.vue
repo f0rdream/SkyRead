@@ -98,7 +98,7 @@ export default {
         this.bookDetail = res.data
         this.bookDetail.imgSrc = 'https://img3.doubanio.com/lpic/' + res.data.img_id
       }).catch((err) => {
-        console.log(err)
+        console.log(err.response.data)
       })
     }
   }

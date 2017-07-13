@@ -55,11 +55,11 @@ export default {
       // let end_time = timeJS2PY(this.endTime)
       let form = {isbn13: this.checkedBook[0], begin_time: timeJS2PY(this.beginTime), end_time: timeJS2PY(this.endTime)}
       this.$http.post('/book/readplan/', form).then(res => {
-        this.setErrMsg('信息更新成功')
+        this.setErrMsg({text: '信息更新成功'})
         setTimeout(() => {
           this.$router.go(-1)
         }, 2000)
-      }).catch(err => this.setErrMsg(err))
+      }).catch(err => this.setErrMsg({text: err.response.data, type: 'cancel'}))
     }
   }
 }

@@ -10,9 +10,9 @@
 	"dependencies": {
 		"axios": "^0.16.2",
 		"eslint-plugin-jsx-a11y": "^5.0.3",
-		"native-base": "^2.1.5",
+		"native-base": "^2.2.1",
 		"react": "16.0.0-alpha.12",
-		"react-native": "^0.45.1",
+		"react-native": "^0.46.1",
 		"react-native-animatable": "^1.2.2",
 		"react-native-camera": "0.6",
 		"react-native-cookies": "^3.1.0",

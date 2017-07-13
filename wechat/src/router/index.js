@@ -4,6 +4,9 @@ import Router from 'vue-router'
 import person from '../pages/person/person'
 import phonepage from '../pages/person/children/phone'
 import notfound from '../pages/404/404'
+import related from '../pages/person/children/related'
+import nearby from '../pages/person/children/nearby'
+import relatedlist from '../pages/person/children/relatedlist'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
@@ -22,10 +25,10 @@ import readplan from '../pages/cart/children/readplan'
 import addplan from '../pages/cart/children/addplan'
 import ordered from '../pages/cart/children/ordered'
 import ordertime from '../pages/cart/children/ordertime'
+import ordering from '../pages/cart/children/ordering'
 
 import SearchPage from '../pages/search/searchpage'
 import SearchResult from '../pages/search/searchresult'
-import RelatedPerson from '../pages/home/children/relatedperson.vue'
 
 Vue.use(Router)
 
@@ -101,6 +104,10 @@ export default new Router({
         {
           path: 'ordertime/:bookId/:isbn13',
           component: ordertime
+        },
+        {
+          path: 'ordering',
+          component: ordering
         }
       ]
     },
@@ -113,6 +120,18 @@ export default new Router({
       component: phonepage
     },
     {
+      path: '/person/nearby',
+      component: nearby
+    },
+    {
+      path: '/person/related',
+      component: related
+    },
+    {
+      path: '/person/related/:index/:item',
+      component: relatedlist
+    },
+    {
       path: '/bookdetail',
       component: bookdetail
     },
@@ -123,10 +142,6 @@ export default new Router({
     {
       path: '/search/:keyword',
       component: SearchResult
-    },
-    {
-      path: '/relatedperson/:personIndex/:personName',
-      component: RelatedPerson
     },
     {
       path: '/addplan',

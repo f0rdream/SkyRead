@@ -42,18 +42,18 @@ export default {
     getDouban () {
       this.$http.get(`/douban/comments/${this.$route.params.isbn13}/`).then(res => {
         this.doubanComment = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     getNormal () {
       this.$http.get(`/book/comments/${this.$route.params.isbn13}/`).then(res => {
         this.normalComment = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     postComment () {
       this.$http.post(`/book/comments/${this.$route.params.isbn13}/`, {content: this.commentString}).then(res => {
         this.normalComment = res.data
         this.getNormal()
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     }
   }
 }
@@ -74,6 +74,7 @@ export default {
   border-radius: 8px;
   font-size: 14px;
   padding: 15px 20px;
+  resize: none;
 }
 .comment {
   background-color: #fff;

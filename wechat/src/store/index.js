@@ -8,7 +8,7 @@ import '../config/ajax'
 Vue.use(Vuex)
 
 const state = {
-  errorMsg: '',
+  errorMsg: {text: '', type: ''},
   wechatSign: '',
   favorite: [],
   scanedCart: [],
