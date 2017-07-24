@@ -73,15 +73,8 @@ export default {
         needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
         scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
         success: function (res) {
-          let qrResult
-          let qrQuery = querystring.parse(res.resultStr)
-          qrResult = {book_id: qrQuery.id, isbn13: qrQuery.isbn13} // 当needResult 为 1 时，扫码返回的结果
-          vueThis.$http.post('/library/borrow/', qrResult).then(res => {
-            vueThis.getScanedList()
-            vueThis.setErrMsg({text: '扫码成功'})
-          }).catch(err => {
-            vueThis.setErrMsg({text: err.response.data, type: 'cancel'})
-          })
+          let qrObj = querystring.parse(res.resultStr)
+          vueThis.addScanedList(qrObj)
         }
       })
     },
@@ -104,6 +97,7 @@ export default {
     },
     ...mapActions([
       'getScanedList',
+      'addScanedList',
       'setErrMsg'
     ])
   }

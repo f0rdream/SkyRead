@@ -8,6 +8,7 @@ import '../config/ajax'
 Vue.use(Vuex)
 
 const state = {
+  scanedMax: 2,     // Define the max amount in the scanedCart
   errorMsg: {text: '', type: ''},
   wechatSign: '',
   favorite: [],
