@@ -119,9 +119,11 @@ def wexin(request):
             r_xml = reply.render()
             return HttpResponse(r_xml)
 
+
 @csrf_exempt
 def auth(request):
     return HttpResponse('认证页面')
+
 
 @csrf_exempt
 def redict(request):
