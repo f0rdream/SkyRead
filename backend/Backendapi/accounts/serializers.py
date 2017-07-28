@@ -25,7 +25,7 @@ class UserProfileDetailSerializer(ModelSerializer):
     real_name = SerializerMethodField()
     message_info = SerializerMethodField()
     money = SerializerMethodField()
-
+    recommend_times = SerializerMethodField()
     class Meta:
         model = WeChatUser
         fields = [
