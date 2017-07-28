@@ -102,6 +102,16 @@ class UserProfileDetailSerializer(ModelSerializer):
         except:
             return -1
 
+    def get_recommend_times(self,obj):
+        openid = obj.openid
+        try:
+            user =User.objects.get(username=openid)
+            phone_user = PhoneUser.objects.get(user=user)
+            money = phone_user.recommend_times
+            return money
+        except:
+            return None
+
 class PhoneUserCreateSerializer(ModelSerializer):
     """
     用户手机绑定序列化器
