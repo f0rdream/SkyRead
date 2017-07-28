@@ -25,6 +25,7 @@ class UserProfileDetailSerializer(ModelSerializer):
     real_name = SerializerMethodField()
     message_info = SerializerMethodField()
     money = SerializerMethodField()
+
     class Meta:
         model = WeChatUser
         fields = [
@@ -38,6 +39,7 @@ class UserProfileDetailSerializer(ModelSerializer):
             'have_phone',
             'money',
             'message_info',
+            'recommend_times',
         ]
 
     def get_message_info(self,obj):
@@ -140,8 +142,20 @@ class SendMessageSerializer(serializers.Serializer):
     发送验证码序列化器,暂时只提供注册
     """
     phone_number = serializers.CharField()
+
     def validate(self, data):
         phone_number = data.get('phone_number')
         if not phone_number:
             serializers.ValidationError('lack phone number')
         return data
+
+
+class ChangeTimesSerializer(serializers.Serializer):
+    """
+    更改推荐频率
+    """
+    recommend_times = serializers.IntegerField()
+    def validate(self, data):
+        recommend_times = data.get('recommend_times')
+        if not recommend_times:
+            serializers.ValidationError('lack recommend_times')

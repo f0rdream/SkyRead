@@ -4,7 +4,8 @@ from django.shortcuts import render
 from serializers import (UserProfileDetailSerializer,
                         SendMessageSerializer,
                         CheckAPISerializer,
-                        PhoneUserCreateSerializer)
+                        PhoneUserCreateSerializer,
+                         ChangeTimesSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView
 from rest_framework.authentication import SessionAuthentication
@@ -20,6 +21,8 @@ from rest_framework.decorators import api_view
 from .models import WeChatUser,PhoneUser
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
+from library.permissions import have_phone_register
+
 
 class UserProfileDetailAPIView(APIView):
     """
@@ -161,6 +164,26 @@ class ReturnMessageOpenOrClose(APIView):
             phone_user = PhoneUser.objects.get(user=user)
             phone_user.return_message = True
             phone_user.save()
-            return Response(get_reply(0, 'success'))
+            return Response(get_reply(0, 'success'),HTTP_200_OK)
         else:
-            return Response(get_reply(113,'fail'),HTTP_400_BAD_REQUEST  )
+            return Response(get_reply(113,'fail'),HTTP_400_BAD_REQUEST)
+
+
+class ChangeTimeView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangeTimesSerializer
+
+    def post(self,request):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        recommend_times = serializer.validated_data['recommend_times']
+        try:
+            phone_user = PhoneUser.objects.get(user=request.user)
+            phone_user.recommend_times = recommend_times
+            phone_user.save()
+            return Response(get_reply(0,'success'),HTTP_200_OK)
+        except:
+            return Response(get_reply(150,'fail to change time'),HTTP_400_BAD_REQUEST)

@@ -25,6 +25,7 @@ class PhoneUser(models.Model):
     money = models.IntegerField(default=1000000)
     return_message = models.BooleanField(default=True)
     order_message = models.BooleanField(default=True)
+    recommend_times = models.IntegerField(default=1)
 
     def __unicode__(self):
             return self.phone_number
