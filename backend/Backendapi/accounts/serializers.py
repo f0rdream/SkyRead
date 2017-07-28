@@ -169,3 +169,4 @@ class ChangeTimesSerializer(serializers.Serializer):
         recommend_times = data.get('recommend_times')
         if not recommend_times:
             serializers.ValidationError('lack recommend_times')
+        return data
