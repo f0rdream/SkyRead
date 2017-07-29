@@ -100,7 +100,7 @@ DATABASES = {
         'HOST': 'tdsql-axy3u6tl.sh.cdb.myqcloud.com',
         'PORT': 92,
         'NAME': 'skyread',
-        'USER': 'skyread',
+        'USER': 'wangyang',
         'PASSWORD': 'skyread@614',
         'CHARSET': 'utf8'
     }
