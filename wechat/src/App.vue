@@ -11,7 +11,6 @@
 import { mapActions, mapState } from 'vuex'
 import { Alert } from 'vux'
 import './style/common.css'
-
 export default {
   name: 'app',
   components: {
@@ -19,7 +18,8 @@ export default {
   },
   data () {
     return {
-      wxSign: {}
+      wxSign: {},
+      location: {}
     }
   },
   mounted () {
@@ -68,7 +68,7 @@ export default {
           timestamp: this.wxSign.timestamp,
           nonceStr: this.wxSign.nonceStr,
           signature: this.wxSign.signature,
-          jsApiList: ['scanQRCode']
+          jsApiList: ['scanQRCode', 'getLocation']
         })
         this.$wechat.ready(function () {
           console.log('wechatOk')
@@ -80,6 +80,19 @@ export default {
     alertHide () {
       // console.log('hide')
       this.$router.push('/person/phone')
+    },
+    getLocation () {
+      this.$wechat.getLocation({
+        type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+        success: function (res) {
+          var latitude = res.latitude // 纬度，浮点数，范围为90 ~ -90
+          var longitude = res.longitude // 经度，浮点数，范围为180 ~ -180。
+          var speed = res.speed // 速度，以米/每秒计
+          var accuracy = res.accuracy // 位置精度
+          this.location = {latitude, longitude, speed, accuracy}
+          alert(this.location)
+        }
+      })
     }
   }
 }

@@ -7,6 +7,7 @@ import notfound from '../pages/404/404'
 import related from '../pages/person/children/related'
 import nearby from '../pages/person/children/nearby'
 import relatedlist from '../pages/person/children/relatedlist'
+import bmap from '../pages/person/children/map'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
@@ -130,6 +131,10 @@ export default new Router({
     {
       path: '/person/related/:index/:item',
       component: relatedlist
+    },
+    {
+      path: '/person/map',
+      component: bmap
     },
     {
       path: '/bookdetail',

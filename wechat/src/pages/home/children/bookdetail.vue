@@ -37,7 +37,7 @@
           <span>书籍简介</span>
           <img class="more-icon" :src="isIndexMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isIndexMuch = !isIndexMuch"></img>
         </p>
-        <div v-html="bookDetail.catalog" v-show="!isIndexMuch" class="part-body"></div>
+        <pre v-html="bookDetail.catalog" v-show="!isIndexMuch" class="part-body"></pre>
       </div>
     </div>
     <div class="store-box">
