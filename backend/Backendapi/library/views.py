@@ -371,6 +371,7 @@ class ReturnItemDetailDeleteView(APIView):
     """
     permission_classes = [IsAuthenticated]
     content = {}
+
     def get(self,request,pk):
         if not have_phone_register(user=request.user):
             reply = get_reply(17,'not register with phone')
