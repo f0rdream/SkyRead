@@ -20,55 +20,62 @@
         <div class="book-opt">
           <div class="left"></div>
           <div class="right">
-            <a class="i-btn-blank" @click="clickFavor"><img src="/static/others/collect.png" class="i-btn-icon">收藏</a>
-            <a class="i-btn-blank" @click="comment"><img src="/static/others/comment.png" class="i-btn-icon">评论</a>
+            <tab bar-active-color="#2bc6b9" active-color="#2bc6b9" v-model="selectedIndex">
+              <tab-item>简介</tab-item>
+              <tab-item>书评</tab-item>
+              <tab-item>试读</tab-item>
+            </tab>
+            <!-- <a class="i-btn-blank" @click="clickFavor"><img src="/static/others/collect.png" class="i-btn-icon">收藏</a>
+            <a class="i-btn-blank" @click="comment"><img src="/static/others/comment.png" class="i-btn-icon">评论</a> -->
           </div>
         </div>
       </div>
-      <div class="book-description book-part">
-        <p class="part-title">
-          <span>内容简介</span>
-          <img class="more-icon" :src="isContentMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isContentMuch = !isContentMuch"></img>
-        </p>
-        <p class="part-body" v-show="!isContentMuch">{{ bookDetail.summary }}</p>
+      <div class="detail-part">
+        <div class="book-description part-main" v-if="selectedIndex === 0">
+          <div class="description-context-box">
+            <div class="description-context " v-show="!isContentMuch">{{ bookDetail.summary }}</div>
+          </div>
+          <div class="store-box">
+            <p class="part-title">
+              <span>馆藏信息</span>
+              <img class="more-icon" :src="isTableMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isTableMuch = !isTableMuch"></img>
+            </p>
+            <table class="store-table" v-show="!isTableMuch">
+              <tr class="table-head">
+                <th>书籍定位</th>
+                <th>状态</th>
+                <th>应还日期</th>
+                <th>预订</th>
+              </tr>
+              <tr class="table-item" v-for="item in storeInfo">
+                <td>{{ item.location }}</td>
+                <td>{{ item.state }}</td>
+                <td>{{ item.back_time }}</td>
+                <td><a class="info-link" @click="orderBook(item.id, item.isbn13, item.state)">预定</a></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="book-review part-main" v-if="selectedIndex === 1">
+          <div class="review-detail" v-for="item in reviewList" @click="$router.replace('/home/reviewdetail/review.isbn13')">
+            <div class="review-title">{{item.title}}</div>
+            <!-- <div class="review-author">{{item.author}}</div> -->
+          </div>
+        </div>
+        <div class="book-trail part-main" v-if="selectedIndex === 2"></div>
       </div>
-      <div class="book-index book-part">
-        <p class="part-title">
-          <span>书籍简介</span>
-          <img class="more-icon" :src="isIndexMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isIndexMuch = !isIndexMuch"></img>
-        </p>
-        <pre v-html="bookDetail.catalog" v-show="!isIndexMuch" class="part-body"></pre>
-      </div>
-    </div>
-    <div class="store-box">
-      <p class="part-title">
-        <span>馆藏信息</span>
-        <img class="more-icon" :src="isTableMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isTableMuch = !isTableMuch"></img>
-      </p>
-      <table class="store-table" v-show="!isTableMuch">
-        <tr class="table-head">
-          <th>书籍定位</th>
-          <th>状态</th>
-          <th>应还日期</th>
-          <th>预订</th>
-        </tr>
-        <tr class="table-item" v-for="item in storeInfo">
-          <td>{{ item.location }}</td>
-          <td>{{ item.state }}</td>
-          <td>{{ item.back_time }}</td>
-          <td><a class="info-link" @click="orderBook(item.id, item.isbn13, item.state)">预定</a></td>
-        </tr>
-      </table>
     </div>
   </div>
 </template>
 
 <script>
-import { XImg } from 'vux'
+import { XImg, Tab, TabItem } from 'vux'
 import { mapActions } from 'vuex'
 export default {
   components: {
-    XImg
+    XImg,
+    Tab,
+    TabItem
   },
   data () {
     return {
@@ -77,7 +84,9 @@ export default {
       isContentMuch: false,
       isIndexMuch: true,
       isTableMuch: true,
-      storeInfo: {}
+      storeInfo: {},
+      selectedIndex: 0,
+      reviewList: [1, 1]
     }
   },
   mounted () {
@@ -129,6 +138,13 @@ export default {
           })
         }).catch(err => console.log(err.response.data))
       }
+    },
+    getReview () {
+      this.get(`/douban/reviews/${this.bookdetail.isbn13}`).then(res => {
+        this.reviewList = res.data
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
 }
@@ -157,9 +173,13 @@ export default {
 
 .right {
   font-size: 11px;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   padding: 0 0.10rem;
   overflow: hidden;
+}
+.book-opt .right {
+  flex: 1 1 auto;
+  padding: 0 0;
 }
 .book-part {
   position: relative;
@@ -195,8 +215,6 @@ export default {
 }
 
 .detail-box .store-box {
-  margin: .15rem 0;
-  padding: .08rem .15rem;
   background-color: #fff;
 }
 .store-table {
@@ -233,18 +251,7 @@ export default {
 }
 .book-opt {
   display: flex;
-  padding: .05rem .15rem ;
   background-color: #fff;
-}
-
-.book-opt .i-btn-blank {
-  margin: 0 5px;
-  vertical-align: center;
-}
-.i-btn-icon {
-  height: 12px;
-  vertical-align: center;
-  padding-right: 4px;
 }
 .part-title {
   color: #2bc2c3;
@@ -255,4 +262,14 @@ export default {
   height: 14px;
   padding-right: 10px;
 }
+.part-main {
+  margin: .15rem 0;
+  padding: .08rem .15rem;
+}
+.description-context {
+  padding: .08rem;
+  font-size: 12px;
+  overflow: hidden;
+}
+
 </style>

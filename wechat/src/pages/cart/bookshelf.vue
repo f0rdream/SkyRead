@@ -28,6 +28,7 @@ export default {
     BottomBar
   },
   computed: {
+    // TODO 可维护的index链接及列表
     selectedIndex: {
       get () {
         return this.$store.state.currentTab
