@@ -26,10 +26,10 @@ headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,imag
            }
 
 conn = MySQLdb.Connect(
-    host = '593befbd766f4.sh.cdb.myqcloud.com',
-    port = 17715,
-    user = 'cdb_outerroot',
-    passwd = 'skyread614',
+    host = 'tdsql-axy3u6tl.sh.cdb.myqcloud.com',
+    port = 92,
+    user = 'wangyang',
+    passwd = 'skyread@614',
     db = 'skyread',
     charset = 'utf8'
 )
@@ -213,10 +213,10 @@ def parser(html,book_url):
         conn.ping()
     except:
         conn = MySQLdb.Connect(
-            host='593befbd766f4.sh.cdb.myqcloud.com',
-            port=17715,
-            user='cdb_outerroot',
-            passwd='skyread614',
+            host='tdsql-axy3u6tl.sh.cdb.myqcloud.com',
+            port=92,
+            user='wangyang',
+            passwd='skyread@614',
             db='skyread',
             charset='utf8'
         )
