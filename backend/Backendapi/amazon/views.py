@@ -27,6 +27,7 @@ from rest_framework.status import (
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
 
+
 class CommentView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request,isbn13):
@@ -41,8 +42,10 @@ class CommentView(APIView):
             reply['msg'] = 'not found'
             return Response(reply, HTTP_404_NOT_FOUND)
 
+
 class InfoView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self,request,isbn13):
         queryset = AmazonInfo.objects.filter(isbn13=isbn13)
         if queryset:
