@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyRead后台管理</title>
+    <!-- BOOTSTRAP STYLES-->
+    <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet" />
+       <!--CUSTOM BASIC STYLES-->
+    <link href="{% static 'assets/css/basic.css'%}" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="{% static 'assets/css/custom.css'%}" rel="stylesheet" />
+    <!-- 引入 ECharts 文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.2/echarts.min.js"></script>
+    <!-- GOOGLE FONTS-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">SkyRead 微读伴侣</a>
+            </div>
+        </nav>
+        <!-- /. NAV TOP  -->
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+                    <li>
+                        <div class="user-img-div">
+                            <img src="{% static 'assets/img/user.png'%}" class="img-thumbnail" />
+                            <a class="inner-text">&nbsp;&nbsp;&nbsp;姓名:{{username}}</a>
+                                <br>
+                                <br>
+                                 <a href="{%url 'web_logout' %}">
+                                 <button type="button" class="btn btn-success">
+                                     退出
+                                 </button>
+                                     </a>
+                            </div>
+
+                    </li>
+                    <li>
+                        <a class="active-menu" href="{%url 'adminer_home'%}"><i class="fa fa-desktop "></i>管理员</a>
+                    </li>
+                     <li>
+                        <a href="{%url 'user_home'%}"><i class="fa fa-yelp "></i>用户管理</a>
+                    </li>
+                    <li>
+                        <a href="{%url 'book_home'%}"><i class="fa fa-flash "></i>书籍管理</a>
+                    </li>
+                     <li>
+                        <a href="{%url 'plant_home'%}"><i class="fa fa-coffee"></i>平台管理</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </nav>
+        <!-- /. NAV SIDE  -->
+        <div id="page-wrapper">
+            <div id="page-inner">
+                <div id="main" style="width: 600px;height:400px;"></div>
+                 <div class="panel panel-success">
+                        <div class="panel-heading">
+                            借出操作统计
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                           <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>索书号</th>
+                                            <th>馆藏位置</th>
+                                            <th>借书时间</th>
+                                            <th>约定归还时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for record in borrow_record %}
+                                    <tr>
+                                        <td>{{record.borrow_item.isbn13}}</td>
+                                        <td>{{record.borrow_item.book_id}}</td>
+                                        <td>{{record.borrow_item.find_id}}</td>
+                                        <td>{{record.borrow_item.location}}</td>
+                                        <td>{{record.borrow_item.borrow_time}}</td>
+                                        <td>{{record.borrow_item.return_time}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            归还操作统计
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>索书号</th>
+                                            <th>馆藏位置</th>
+                                            <th>借书时间</th>
+                                            <th>约定归还时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                     {% for record in return_record %}
+                                    <tr>
+                                        <td>{{record.borrow_item.isbn13}}</td>
+                                        <td>{{record.borrow_item.book_id}}</td>
+                                        <td>{{record.borrow_item.find_id}}</td>
+                                        <td>{{record.borrow_item.location}}</td>
+                                        <td>{{record.borrow_item.borrow_time}}</td>
+                                        <td>{{record.borrow_item.return_time}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                 <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            订阅取书操作统计
+                        </div>
+                        <div class="panel-body">
+                           <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>13位isbn</th>
+                                            <th>书籍编号</th>
+                                            <th>书籍标题</th>
+                                            <th>约定取书时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for record in order_record %}
+                                    <tr>
+                                        <td>{{record.order_item.isbn13}}</td>
+                                        <td>{{record.order_item.book_id}}</td>
+                                        <td>{{record.order_item.title}}</td>
+                                        <td>{{record.order_item.order_time|date:"Y-m-d H:i:s"}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <!-- /. PAGE INNER  -->
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+    </div>
+    <!-- /. WRAPPER  -->
+
+    <div id="footer-sec">
+        &copy; Skyread- Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">出品</a>
+    </div>
+    <!-- /. FOOTER  -->
+    <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+    <!-- JQUERY SCRIPTS -->
+    <script src="assets/js/jquery-1.10.2.js"></script>
+    <!-- BOOTSTRAP SCRIPTS -->
+    <script src="assets/js/bootstrap.js"></script>
+    <!-- METISMENU SCRIPTS -->
+    <script src="assets/js/jquery.metisMenu.js"></script>
+       <!-- CUSTOM SCRIPTS -->
+    <script src="assets/js/custom.js"></script>
+    <script type="text/javascript">
+        // // 基于准备好的dom，初始化echarts实例
+        // var myChart = echarts.init(document.getElementById('main'));
+
+        // // 指定图表的配置项和数据
+        // var option = {
+        //     title: {
+        //         text: '操作总览'
+        //     },
+        //     tooltip: {},
+        //     legend: {
+        //         data:['借阅','归还','订阅取书']
+        //     },
+        //     xAxis: {
+        //         data: ["所有操作"]
+        //     },
+        //     yAxis: {},
+        //     series: [
+        //     {
+        //         name: '借阅',
+        //         type: 'bar',
+        //         data: [{{borrow_sum}}]
+        //     },
+        //     {
+        //         name: '归还',
+        //         type: 'bar',
+        //         data: [{{return_sum}}]
+        //     },
+        //     {
+        //         name: '订阅取书',
+        //         type: 'bar',
+        //         data:  [{{order_sum}}]
+        //     }]
+        // };
+
+        // // 使用刚指定的配置项和数据显示图表。
+        // myChart.setOption(option);
+    </script>
+
+
+</body>
+</html>

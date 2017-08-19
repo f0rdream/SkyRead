@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block mainbrand %}
+<a class="navbar-brand" href="#">用户详情</a>
+{% endblock %}
+{% block mainbody %}
+<div class="row">
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-header card-chart" data-background-color="orange">
+              <div class="c-chart" id="operationsChart" style="width: 600px;height:400px;"></div>
+            </div>
+            <div class="card-content">
+              <h4 class="title">操作总览</h4>
+            </div>
+          </div>
+      </div>  
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <h4 class="title">用户列表</h4>
+                <p class="category">关注公众号的用户</p>
+            </div>
+            <div class="card-content table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>昵称</th>
+                            <th>{{wechat_user.nickname}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>性别</td>
+                            {% if wechat_user.sex == 1%}
+                            <td>男</td>
+                            {%else%}
+                            <td>女</td>
+                            {%endif%}
+                        </tr>
+                        <tr>
+                            <td>省份</td>
+                            <td>{{wechat_user.province}}</td>
+                        </tr>
+                        <tr>
+                            <td>城市</td>
+                            <td>{{wechat_user.city}}</td>
+                        </tr>
+                        <tr>
+                            <td>正在订阅</td>
+                            <td>{{borrow_sum}} 本</td>
+                        </tr>
+                        <tr>
+                            <td>已经归还</td>
+                            <td>{{return_sum}} 本</td>
+                        </tr>
+                        <tr>
+                            <td>成功归还</td>
+                            <td>{{order_success_sum}} 本</td>
+                        </tr>
+                        <tr>
+                            <td>等待归还的订阅</td>
+                            <td>{{order_wait_sum}} 本</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <h4 class="title">用户列表</h4>
+        <p class="category">关注公众号的用户</p>
+    </div>
+    <div class="card-content table-responsive">
+        <table class="table table-hover">
+            <thead>
+                    <tr>
+                            <th>昵称</th>
+                            <th>{{wechat_user.nickname}}</th>
+                        </tr>
+            </thead>
+            <tbody>
+              {% for user in wechat_users %}
+              <tr>
+                <td>{{forloop.counter}}</td>
+
+                <td>{{user.openid}}</td>
+                <td>{{user.nickname}}</td>
+                {% if user.sex == 1%}
+                <td>男</td>
+                {%else%}
+                <td>女</td>
+                {%endif%}
+                <td>{{user.province}}</td>
+                <td>{{user.city}}</td>
+                <td>
+                    <a href="{%url 'user_detail' user.id%}"><i class="material-icons">edit</i></a>
+                </td>
+              </tr>
+              {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% block endbody %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.2/echarts.min.js"></script>
+<script>
+    // /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
+
+    // operationsChart = {
+    //       labels: ['正在借阅','已经归还','成功订阅','等待归还的订阅'],
+    //       series: [
+    //           [{{borrow_sum}}, {{return_sum}}, {{order_success_sum}}, {{order_wait_sum}}]
+    //       ]
+    //   };
+
+    //   operationsChartOptions = {
+    //     axisX: {
+    //       showGrid: false
+    //     },
+    //     chartPadding: { top: 30, right: 0, bottom: 0, left: 0},
+    //   }
+
+    //   var dailySalesChart = new Chartist.Bar('#operationsChart', operationsChart, operationsChartOptions);
+
+    //   md.startAnimationForLineChart(dailySalesChart);
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('operationsChart'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+            },
+            color: ["rgba(255, 255, 255, 0.8)"],
+            textStyle: {
+              color: "#fff"
+            },
+            tooltip: {},
+            xAxis: {
+              data: ['正在借阅','已经归还','成功订阅','等待归还的订阅'],
+              splitLine: {
+                lineStyle: {
+                  type: 'dashed'
+                },
+                color: 'rgba(255, 255, 255, 0.2)'
+              },
+              axisLine: {
+                show: false
+              },
+              axisTick: {
+                show: false
+              }
+            },
+            yAxis: {
+              axisLine: {
+                show: false
+              },
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  type: 'dashed'
+                }
+              },
+              axisTick: {
+                show: false
+              }
+            },
+            series: [
+            {
+                type: 'bar',
+                barWidth: '40%',
+                data: [{{borrow_sum}}, {{return_sum}}, {{order_success_sum}}, {{order_wait_sum}}]
+            }
+          ]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+</script>
+{% endblock %}
