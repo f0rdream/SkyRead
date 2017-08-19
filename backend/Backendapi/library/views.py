@@ -1052,9 +1052,3 @@ class FinishGiveOrderItemView(APIView):
         order_item.be_out = True
         order_item.save()
         return Response(get_reply(0,'success'))
-
-
-
-
-
-
