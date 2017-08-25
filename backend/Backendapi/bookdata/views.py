@@ -28,7 +28,7 @@ from rest_framework.response import Response
 from history.models import SearchHistory
 from l_lib.function import get_reply
 from models import Comment,BrowsedBook
-from function import entry
+from function import entry, book_price
 
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
@@ -266,6 +266,7 @@ class StarBookDetailView(APIView):
 
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,pk):
         if not have_phone_register(user=request.user):
             reply = get_reply(17,'not register with phone')
@@ -324,6 +325,7 @@ class CommentView(APIView):
                                          user=user)
         comment.save()
         return Response(serializer.data,HTTP_200_OK)
+
     def get(self,request,isbn13):
         queryset = Comment.objects.filter(isbn13=isbn13)
         serializer = CommentDetailSerializer(queryset,many=True,data=request.data)
@@ -389,3 +391,17 @@ class ReadPlanDetailView(APIView):
             return response
 
 
+class BookPriceView(APIView):
+    """
+    购书比价:8.25不含链接
+    """
+    permission_classes = [AllowAny]
+
+    def get(self,request):
+        isbn13 = request.GET.get("isbn13")
+        try:
+            reply = book_price(isbn13)
+            return Response(reply,HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)

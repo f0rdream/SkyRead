@@ -1,6 +1,8 @@
 from django.conf.urls import url,include
 from .views import (BookInfoView,Serach,ReferBookView,HoldingView,GuideBookView,
-                    StarBookView,StarBookDetailView,CommentView,ReadPlanView,ReadPlanDetailView)
+                    StarBookView,StarBookDetailView,CommentView,ReadPlanView,ReadPlanDetailView,
+                    BookPriceView
+                    )
 urlpatterns = [
     url(r'^isbn/(?P<isbn13>\d+)$',BookInfoView.as_view(),name='book'),
     url(r'^search/$',Serach.as_view()),
@@ -12,6 +14,7 @@ urlpatterns = [
     url(r'^starbook/(?P<pk>\d+)$',StarBookDetailView.as_view(),name='star_detail'),
     url(r'^readplan/$',ReadPlanView.as_view(),name='read_plan'),
     url(r'^readplan/(?P<pk>\d+)$',ReadPlanDetailView.as_view(),name='read_plan_detail'),
+    url(r'^price/$', BookPriceView.as_view(), name='price')
     # database
     # url(r'^')
 ]
