@@ -1,14 +1,12 @@
 # coding:utf-8
-import requests
-from django.shortcuts import render
 from serializers import (UserProfileDetailSerializer,
-                        SendMessageSerializer,
-                        CheckAPISerializer,
-                        PhoneUserCreateSerializer,
+                         SendMessageSerializer,
+                         CheckAPISerializer,
+                         PhoneUserCreateSerializer,
+                         FeedBackSerializer,
+                         FeedBackDetailSerializer,
                          ChangeTimesSerializer)
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListAPIView
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -17,8 +15,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .models import WeChatUser,PhoneUser
+from .models import WeChatUser,PhoneUser, FeedBack
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
 from library.permissions import have_phone_register
@@ -137,7 +134,7 @@ class OrderMessageOpenOrClose(APIView):
             phone_user = PhoneUser.objects.get(user=user)
             phone_user.order_message = False
             phone_user.save()
-            return Response(get_reply(0,'success'))
+            return Response(get_reply(0, 'success'))
         elif state == 'open':
             user = request.user
             phone_user = PhoneUser.objects.get(user=user)
@@ -145,7 +142,7 @@ class OrderMessageOpenOrClose(APIView):
             phone_user.save()
             return Response(get_reply(0, 'success'))
         else:
-            return Response(get_reply(113,'fail'),HTTP_400_BAD_REQUEST)
+            return Response(get_reply(113, 'fail'),HTTP_400_BAD_REQUEST)
 
 
 class ReturnMessageOpenOrClose(APIView):
@@ -175,7 +172,7 @@ class ChangeTimeView(APIView):
 
     def post(self,request):
         if not have_phone_register(user=request.user):
-            reply = get_reply(17,'not register with phone')
+            reply = get_reply(17, 'not register with phone')
             return Response(reply,HTTP_403_FORBIDDEN)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -187,3 +184,36 @@ class ChangeTimeView(APIView):
             return Response(get_reply(0,'success'),HTTP_200_OK)
         except:
             return Response(get_reply(150,'fail to change time'),HTTP_400_BAD_REQUEST)
+
+
+class FeedBackView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FeedBackSerializer
+
+    def post(self,request):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17, 'not register with phone')
+            return Response(reply, HTTP_403_FORBIDDEN)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        content = serializer.validated_data['content']
+        try:
+            feedback = FeedBack.objects.create(user=request.user,
+                                               content=content,
+                                               back_content=u'暂无回复')
+            feedback.save()
+            return Response(HTTP_200_OK)
+        except:
+            reply = get_reply(151, 'post feedback fail')
+            return Response(reply,HTTP_403_FORBIDDEN)
+
+    def get(self,request):
+        try:
+            queryset = FeedBack.objects.filter(user=request.user)
+            serializer = FeedBackDetailSerializer(queryset, data=request.data, many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
+

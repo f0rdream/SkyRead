@@ -31,3 +31,10 @@ class PhoneUser(models.Model):
             return self.phone_number
 
 
+class FeedBack(models.Model):
+    user = models.ForeignKey(User)
+    content = models.TextField()
+    back_state = models.IntegerField(default=0)
+    back_content = models.TextField()
+    post_time = models.DateTimeField(auto_now_add=True)
+

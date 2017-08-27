@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.contrib.auth.models import User
 
-from .models import WeChatUser,PhoneUser
+from .models import WeChatUser, PhoneUser, FeedBack
 from rest_framework.serializers import (
     SerializerMethodField,
     ModelSerializer,
@@ -13,6 +13,26 @@ from rest_framework.serializers import (
 
 from .accounts_lib.vlidators import CheckString,PhoneValid
 from rest_framework import serializers
+
+
+class FeedBackDetailSerializer(ModelSerializer):
+    """
+    用户反馈详情的序列化器
+    """
+    class Meta:
+        model = FeedBack
+        fields = '__all__'
+
+
+class FeedBackSerializer(ModelSerializer):
+    """
+    用户反馈序列化器
+    """
+    class Meta:
+        model = FeedBack
+        fields = [
+            'content'
+        ]
 
 
 class UserProfileDetailSerializer(ModelSerializer):
@@ -112,6 +132,7 @@ class UserProfileDetailSerializer(ModelSerializer):
         except:
             return None
 
+
 class PhoneUserCreateSerializer(ModelSerializer):
     """
     用户手机绑定序列化器
@@ -165,8 +186,12 @@ class ChangeTimesSerializer(serializers.Serializer):
     更改推荐频率
     """
     recommend_times = serializers.IntegerField()
+
     def validate(self, data):
         recommend_times = data.get('recommend_times')
         if not recommend_times:
             serializers.ValidationError('lack recommend_times')
         return data
+
+
+

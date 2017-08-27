@@ -19,14 +19,10 @@ from rest_framework.response import Response
 from l_lib.function import get_reply
 from django.db import connection
 # Create your views here.
-from bookdata.models import BrowsedBook,ReadPlan,StarBook
 from bookdata.models import Book
 from bookdata.serializers import ShortInto
-from library.models import BorrowItem,SuccessOrderItem,WaitOrderItem
-from recommend import book_recommend,user_recommend
-from django.core.cache import cache
-import time
-from models import UserRecommendList
+from models import UserRecommendList, UserPosition
+from .serializers import PositionPostSerializer
 
 
 class TagBookListView(APIView):
@@ -203,6 +199,36 @@ class SameUserBookDetail(APIView):
             return Response(serializer.data, HTTP_200_OK)
         else:
             return Response(get_reply(150,'no data'),HTTP_200_OK)
+
+
+class PositionView(APIView):
+    """
+    每次用户登录的时候通过这个接口提交坐标
+    """
+    permission_classes = [AllowAny]
+    serializer_class = PositionPostSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        x_point = serializer.validated_data['x_point']
+        y_point = serializer.validated_data['y_point']
+        try:
+            user_position = UserPosition.objects.get(user = request.user)
+            user_position.x_point = x_point
+            user_position.y_point = y_point
+            user_position.save()
+            return Response(HTTP_200_OK)
+        except:
+            user_position = UserPosition.objects.create(user=request.user,
+                                                        x_point = x_point,
+                                                        y_point = y_point)
+            user_position.save()
+            return Response(HTTP_200_OK)
+
+
+
+
 
 
 
