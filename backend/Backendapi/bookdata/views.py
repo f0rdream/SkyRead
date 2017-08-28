@@ -6,7 +6,7 @@ from rest_framework.permissions import (
     AllowAny,
 )
 from library.permissions import have_phone_register
-from .models import Book,Refer,Holding,StarBook, ReadPlan
+from .models import Book,Refer,Holding,StarBook, ReadPlan, ImageFile
 from .serializers import (BookInfoSerializer,
                           ShortInto,
                           SearchSerializer,
@@ -16,7 +16,8 @@ from .serializers import (BookInfoSerializer,
                           PostCommentSerializer,
                           PostReadPlanSerializer,
                           CommentDetailSerializer,
-                          ReadPlanDetailSerializer)
+                          ReadPlanDetailSerializer,
+                          Img2TextSerializer)
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -28,7 +29,7 @@ from rest_framework.response import Response
 from history.models import SearchHistory
 from l_lib.function import get_reply
 from models import Comment,BrowsedBook
-from function import entry, book_price
+from function import entry, book_price, image_to_text
 
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
@@ -405,3 +406,33 @@ class BookPriceView(APIView):
         except Exception as e:
             print e
             return Response(HTTP_404_NOT_FOUND)
+
+
+class ImageToTextView(APIView):
+    """
+    图片转换成文字
+    """
+    permission_classes = [AllowAny]
+    serializer_class = Img2TextSerializer
+
+    def post(self,request):
+        serializer =  self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        image = serializer.validated_data['image']
+        image_file = ImageFile.objects.create(image=image)
+        image_file.save()
+        file_name = image_file.image.url.split("/")[-1]
+        try:
+            result = image_to_text(file_name="./media_root/img2text/" + file_name)
+            content = ''
+            for words in result['words_result']:
+                content += words['words']
+            reply = dict()
+            reply['content'] = content
+            return Response(reply, HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+
+

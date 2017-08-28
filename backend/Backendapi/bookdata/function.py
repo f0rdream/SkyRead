@@ -10,6 +10,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import MySQLdb
 import time
+import base64
 
 global count
 global id  # 豆瓣id,用来爬评论
@@ -276,3 +277,28 @@ def book_price(book_isbn13):
     # row_list = href_script.split("\n")
     # for row in row_list:
     #     print row
+
+
+class BaiduOCR:
+    def __init__(self):
+        self.access_token = "24.08ab1f10f777a850579de1ec5c2d7f28.2592000.1506475995.282335-10044680"
+        self.ocr_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=%s" % self.access_token
+        return
+
+    # 文字识别
+    def img2text(self, filename):
+        image_file = open(filename,"rb")
+        base64_code = base64.b64encode(image_file.read())
+        image_file.close()
+        data = dict()
+        data['image'] = base64_code
+        result = requests.post(self.ocr_url, data=data,
+                               headers={'Content-Type': 'application/x-www-form-urlencoded'})
+        data_result = result.json()
+        return data_result
+
+
+def image_to_text(file_name):
+    ocr = BaiduOCR()
+    result = ocr.img2text(file_name)
+    return result

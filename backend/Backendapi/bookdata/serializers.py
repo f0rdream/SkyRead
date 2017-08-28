@@ -13,7 +13,7 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book,Refer,Holding, StarBook, Comment,ReadPlan
+from .models import Book, Refer, Holding, StarBook, Comment, ReadPlan, ImageFile
 
 
 class BookInfoSerializer(ModelSerializer):
@@ -353,3 +353,11 @@ class ReadPlanDetailSerializer(ModelSerializer):
             return title
         except:
             return "--"
+
+
+class Img2TextSerializer(ModelSerializer):
+    class Meta:
+        model = ImageFile
+        fields = [
+            'image'
+        ]

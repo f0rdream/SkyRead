@@ -97,3 +97,23 @@ class BrowsedBook(models.Model):
     """
     user = models.ForeignKey(User)
     isbn13 = models.CharField(max_length=200)
+
+
+class Note(models.Model):
+    """
+    笔记
+    """
+    user = models.ForeignKey(User)
+    content = models.TextField()
+    title = models.CharField(max_length=1000)
+    isbn13 = models.CharField(max_length=1000)
+    date = models.CharField(max_length=200)
+
+
+class ImageFile(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+    image = models.FileField(upload_to = './img2text/')
+
+    def __unicode__(self):
+        return self.image.url
+
