@@ -17,7 +17,9 @@ from .serializers import (BookInfoSerializer,
                           PostReadPlanSerializer,
                           CommentDetailSerializer,
                           ReadPlanDetailSerializer,
-                          Img2TextSerializer)
+                          Img2TextSerializer,
+                          NotePostSerializer,
+                          NoteGetSerializer)
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -28,8 +30,9 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from history.models import SearchHistory
 from l_lib.function import get_reply
-from models import Comment,BrowsedBook
+from models import Comment, BrowsedBook, Note
 from function import entry, book_price, image_to_text
+
 
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
@@ -415,8 +418,8 @@ class ImageToTextView(APIView):
     permission_classes = [AllowAny]
     serializer_class = Img2TextSerializer
 
-    def post(self,request):
-        serializer =  self.serializer_class(data=request.data)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         image = serializer.validated_data['image']
         image_file = ImageFile.objects.create(image=image)
@@ -433,6 +436,76 @@ class ImageToTextView(APIView):
         except Exception as e:
             print e
             return Response(HTTP_404_NOT_FOUND)
+
+
+class NoteView(APIView):
+    """
+    笔记,包含内容,日期,对应的书籍
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = NotePostSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        content = serializer.validated_data['content']
+        title = serializer.validated_data['title']
+        isbn13 = serializer.validated_data['isbn13']
+        import datetime
+        date = datetime.datetime.now().date()
+        note = Note.objects.create(user=user, content=content,
+                                   title=title, isbn13=isbn13,
+                                   date=date)
+        note.save()
+        return Response(serializer.data,HTTP_200_OK)
+
+    def get(self, request):
+        """
+        查看已有的笔记
+        :param request:
+        :return:
+        """
+        user = request.user
+        try:
+            queryset = Note.objects.filter(user=user)
+            serializer = NoteGetSerializer(queryset, data=request.data, many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+
+class NoteDetailView(APIView):
+    """
+    查看详情和删除笔记
+    """
+
+    def get(self, request, pk):
+        try:
+            note = Note.objects.get(user=request.user, pk=pk)
+            serializer = NoteGetSerializer(note, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+    def delete(self,request,pk):
+        try:
+            note = Note.objects.get(pk=pk)
+            note.delete()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_403_FORBIDDEN)
+
+
+
+
+
+
+
 
 
 

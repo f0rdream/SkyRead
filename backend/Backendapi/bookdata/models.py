@@ -106,7 +106,7 @@ class Note(models.Model):
     user = models.ForeignKey(User)
     content = models.TextField()
     title = models.CharField(max_length=1000)
-    isbn13 = models.CharField(max_length=1000)
+    isbn13 = models.CharField(max_length=1000, default=u"-1")
     date = models.CharField(max_length=200)
 
 

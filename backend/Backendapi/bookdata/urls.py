@@ -1,7 +1,7 @@
 from django.conf.urls import url,include
 from .views import (BookInfoView,Serach,ReferBookView,HoldingView,GuideBookView,
                     StarBookView,StarBookDetailView,CommentView,ReadPlanView,ReadPlanDetailView,
-                    BookPriceView, ImageToTextView
+                    BookPriceView, ImageToTextView, NoteView, NoteDetailView
                     )
 urlpatterns = [
     url(r'^isbn/(?P<isbn13>\d+)$',BookInfoView.as_view(),name='book'),
@@ -15,7 +15,9 @@ urlpatterns = [
     url(r'^readplan/$',ReadPlanView.as_view(),name='read_plan'),
     url(r'^readplan/(?P<pk>\d+)$',ReadPlanDetailView.as_view(),name='read_plan_detail'),
     url(r'^price/$', BookPriceView.as_view(), name='price'),
-    url(r'^img2text', ImageToTextView.as_view(), name= 'img2text'),
+    url(r'^img2text/$', ImageToTextView.as_view(), name= 'img2text'),
+    url(r'^note/$', NoteView.as_view(), name='note'),
+    url(r'^note/(?P<pk>\d+)$', NoteDetailView.as_view(), name='detail'),
     # database
     # url(r'^')
 ]

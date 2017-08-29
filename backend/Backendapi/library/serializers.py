@@ -63,7 +63,7 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'price',
         ]
 
-    def get_user(self,obj):
+    def get_user(self, obj):
         return str(obj.user.username)
 
     def get_nickname(self,obj):

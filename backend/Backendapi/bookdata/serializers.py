@@ -13,7 +13,7 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book, Refer, Holding, StarBook, Comment, ReadPlan, ImageFile
+from .models import Book, Refer, Holding, StarBook, Comment, ReadPlan, ImageFile, Note
 
 
 class BookInfoSerializer(ModelSerializer):
@@ -361,3 +361,42 @@ class Img2TextSerializer(ModelSerializer):
         fields = [
             'image'
         ]
+
+
+class NotePostSerializer(ModelSerializer):
+    """
+    创建新的笔记
+    """
+    class Meta:
+        model = Note
+        fields = [
+            'content',
+            'isbn13',
+            'title',
+        ]
+
+
+class NoteGetSerializer(ModelSerializer):
+    """
+    查看已有的笔记
+    """
+    title = SerializerMethodField()
+    content = SerializerMethodField()
+    isbn13 = SerializerMethodField()
+    date = SerializerMethodField()
+
+    class Meta:
+        model = Note
+        exclude = ['user']
+
+    def get_title(self,obj):
+        return obj.title
+
+    def get_content(self,obj):
+        return obj.content
+
+    def get_isbn13(self,obj):
+        return obj.isbn13
+
+    def get_date(self,obj):
+        return obj.date
