@@ -2,7 +2,7 @@ from django.conf.urls import url,include
 from .views import (BookInfoView,Serach,ReferBookView,HoldingView,GuideBookView,
                     StarBookView,StarBookDetailView,CommentView,ReadPlanView,ReadPlanDetailView,
                     BookPriceView, ImageToTextView, NoteView, NoteDetailView, NoteBookListView,
-                    PlanRecordView
+                    PlanRecordView, PlanRecordByDateView
                     )
 urlpatterns = [
     url(r'^isbn/(?P<isbn13>\d+)$',BookInfoView.as_view(),name='book'),
@@ -20,7 +20,8 @@ urlpatterns = [
     url(r'^note/$', NoteView.as_view(), name='note'),
     url(r'^note/(?P<pk>\d+)$', NoteDetailView.as_view(), name='detail'),
     url(r'^note_list/$', NoteBookListView.as_view()),
-    url(r'^record/(?P<pk>\d+)$',PlanRecordView.as_view()),
+    url(r'^record/(?P<pk>\d+)$', PlanRecordView.as_view()),
+    url(r'^record/sum/(?P<pk>\d+)$', PlanRecordByDateView.as_view())
     # database
     # url(r'^')
 ]

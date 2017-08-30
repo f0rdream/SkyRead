@@ -4,7 +4,7 @@ from .views import (UserProfileDetailAPIView,
                     CheckAPIView, SendMessageAPIView,
                     PhoneUserCreateAPIView, OrderMessageOpenOrClose,
                     ReturnMessageOpenOrClose, FeedBackView,
-                    ChangeTimeView)
+                    ChangeTimeView, AddLabelView,DeleteLabelView)
 
 urlpatterns = [
     url(r'^$', UserProfileDetailAPIView.as_view(), name='user_detail'),  # 用户基本信息
@@ -15,4 +15,6 @@ urlpatterns = [
     url(r'^order_msg/$',OrderMessageOpenOrClose.as_view(),name='order_msg'), # 开关消息
     url(r'^change_times/$',ChangeTimeView.as_view(),name='change_time'),  # 更改推荐频率
     url(r'^feedback/$', FeedBackView.as_view(), name='feedback'),  # 反馈
+    url(r'^label/$', AddLabelView.as_view()),  # 自己添加的系统分类
+    url(r'^label/(?P<pk>\d+)$', DeleteLabelView.as_view()),  # 自己添加的系统分类
 ]

@@ -38,3 +38,14 @@ class FeedBack(models.Model):
     back_content = models.TextField()
     post_time = models.DateTimeField(auto_now_add=True)
 
+
+class StarList(models.Model):
+    """
+    存储用户自建的首页分类
+    """
+    user = models.ForeignKey(User)
+    list_type = models.IntegerField(default=0)  # 0为label,1为用户书单
+    key_word = models.CharField(max_length=1000)  # 关键字
+    user_list_id = models.IntegerField(default=-1)
+
+
