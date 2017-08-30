@@ -1,26 +1,26 @@
 <template lang="html">
   <baidu-map ak="QwNC9WunLAY2cGx4DCxzwLuXypwOWzLv" @ready="getMap">
     <bm-view class="map"></bm-view>
-    <bm-transit :start="start" :end="end" :auto-viewport="true" :location="location"></bm-transit>
+    <bm-walking :start="start" :end="end" :auto-viewport="true"></bm-walking>
   </baidu-map>
 </template>
 
 <script>
-import { BaiduMap, BmTransit, BmView } from 'vue-baidu-map'
+import { BaiduMap, BmTransit, BmView, BmWalking } from 'vue-baidu-map'
 export default {
   components: {
     BaiduMap,
     BmTransit,
-    BmView
+    BmView,
+    BmWalking
   },
   data () {
     return {
-      // start: {lng: 114, lat: 30},
+      start: {lng: 114, lat: 30},
       // end: {lng: 114.369348, lat: 30.541621},
       // location: '北京'
-      start: {lng: 0, lat: 0},
-      end: {lng: 0, lat: 0},
-      location: '北京'
+      // start: {lng: 0, lat: 0},
+      // end: {lng: 0, lat: 0},
     }
   },
   methods: {
@@ -33,8 +33,8 @@ export default {
       //   }
       // })
       console.log(BMap, map)
-      this.start = "{lng: 114.365415, lat: 30.535169}"
-      this.end = "{lng: '114.365415', lat: '30.535169'}"
+      this.start = {lng: 114.365415, lat: 30.535169}
+      this.end = {lng: 114.369348, lat: 30.541621}
       this.location = '武汉'
     }
   }
@@ -44,6 +44,6 @@ export default {
 <style lang="css" scoped>
 .map {
   width: 100%;
-  height: 300px;
+  height: 4rem;
 }
 </style>

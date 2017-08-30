@@ -67,6 +67,10 @@ p.body-info {
   height: 56px;
 }
 
+.book-opt .right .vux-tab {
+  background-color: #f1f2f7;
+}
+
 /* Button */
 
 .i-btn {
@@ -138,4 +142,34 @@ p.body-info {
   border-color: #fff;
   color: #fff;
   background-color: #2bcaab;
+}
+
+.i-ellipsis {
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.i-select {
+  display: inline-block;
+  max-width: 100%;
+  background: #fff url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' v…'0 0 4 5'%3E%3Cpath fill='%23333' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E) no-repeat right .75rem center;
+  background-size: 8px 10px;
+  border: 1px solid rgba(0,0,0,.15);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.i-select>select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+i-custom-select {
+
 }

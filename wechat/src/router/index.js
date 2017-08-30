@@ -8,6 +8,7 @@ import related from '../pages/person/children/related'
 import nearby from '../pages/person/children/nearby'
 import relatedlist from '../pages/person/children/relatedlist'
 import bmap from '../pages/person/children/map'
+import feedback from '../pages/person/children/feedback'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
@@ -151,6 +152,10 @@ export default new Router({
     {
       path: '/addplan',
       component: addplan
+    },
+    {
+      path: '/feedback',
+      component: feedback
     }
   ]
 })
