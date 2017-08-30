@@ -6,7 +6,7 @@ from serializers import (UserProfileDetailSerializer,
                          FeedBackSerializer,
                          FeedBackDetailSerializer,
                          ChangeTimesSerializer,
-                         AddLabelSerializer)
+                         AddLabelSerializer,LabelSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -218,20 +218,49 @@ class FeedBackView(APIView):
             return Response(HTTP_404_NOT_FOUND)
 
 
-# class AddLabelView(APIView):
-#     """
-#     收藏某个标签到首页
-#     """
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = AddLabelSerializer
-#
-#     def post(self,request):
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         key_word = serializer.validated_data['label_name']
-#         try:
-#             star_list = StarList.objects.create(user=request.user,
-#                                                 )
+class AddLabelView(APIView):
+    """
+    收藏某个标签到首页
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = AddLabelSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        key_word = serializer.validated_data['label_name']
+        try:
+            star_list = StarList.objects.create(user=request.user,
+                                                list_type=0,
+                                                key_word=key_word)
+            star_list.save()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_403_FORBIDDEN)
+
+    def get(self,request):
+        queryset = StarList.objects.filter(user=request.user,list_type=0)
+        serializer = LabelSerializer(queryset, data=request.data,many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data,HTTP_200_OK)
+
+
+class DeleteLabelView(APIView):
+    """
+    删除标签
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self,request,pk):
+        try:
+            star_list = StarList.objects.get(pk=pk)
+            star_list.delete()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_403_FORBIDDEN)
+
+
+
 
 
 

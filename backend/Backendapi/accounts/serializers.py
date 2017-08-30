@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.contrib.auth.models import User
 
-from .models import WeChatUser, PhoneUser, FeedBack
+from .models import WeChatUser, PhoneUser, FeedBack, StarList
 from rest_framework.serializers import (
     SerializerMethodField,
     ModelSerializer,
@@ -199,6 +199,15 @@ class AddLabelSerializer(serializers.Serializer):
     添加标签到首页
     """
     label_name = serializers.CharField(max_length=1000)
+
+
+class LabelSerializer(ModelSerializer):
+    """
+    查看自己添加的首页分类：标签
+    """
+    class Meta:
+        model = StarList
+        exclude = ['user_list_id', 'user', 'list_type']
 
 
 
