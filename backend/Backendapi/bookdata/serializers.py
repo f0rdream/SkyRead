@@ -427,7 +427,10 @@ class RecordPostSerializer(ModelSerializer):
 
 
 class RecordGetSerializer(ModelSerializer):
+    plan_for = SerializerMethodField()
+
     class Meta:
         model = PlanRecord
         fields = "__all__"
-
+    def get_plan_for(self,obj):
+        return obj.plan_for.id

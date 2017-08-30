@@ -5,7 +5,8 @@ from serializers import (UserProfileDetailSerializer,
                          PhoneUserCreateSerializer,
                          FeedBackSerializer,
                          FeedBackDetailSerializer,
-                         ChangeTimesSerializer)
+                         ChangeTimesSerializer,
+                         AddLabelSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -15,7 +16,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .models import WeChatUser,PhoneUser, FeedBack
+from .models import WeChatUser,PhoneUser, FeedBack, StarList
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
 from library.permissions import have_phone_register
@@ -215,5 +216,23 @@ class FeedBackView(APIView):
             return Response(serializer.data, HTTP_200_OK)
         except:
             return Response(HTTP_404_NOT_FOUND)
+
+
+# class AddLabelView(APIView):
+#     """
+#     收藏某个标签到首页
+#     """
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = AddLabelSerializer
+#
+#     def post(self,request):
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         key_word = serializer.validated_data['label_name']
+#         try:
+#             star_list = StarList.objects.create(user=request.user,
+#                                                 )
+
+
 
 

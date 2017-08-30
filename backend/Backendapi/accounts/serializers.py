@@ -194,4 +194,11 @@ class ChangeTimesSerializer(serializers.Serializer):
         return data
 
 
+class AddLabelSerializer(serializers.Serializer):
+    """
+    添加标签到首页
+    """
+    label_name = serializers.CharField(max_length=1000)
+
+
 

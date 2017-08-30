@@ -576,18 +576,44 @@ class PlanRecordView(APIView):
 
     def get(self, request,pk):
         """
-        获得打卡的详情
+        获得某个阅读计划打卡的详情
         """
-        record_date = request.GET.get("date")
-        try:
-            read_plan = ReadPlan.objects.get(pk=pk)
-            record = PlanRecord.objects.get(read_plan=read_plan,record_date=record_date)
-            serializer = RecordGetSerializer(record,data=request.data)
-            serializer.is_valid(raise_exception=True)
-            return Response(serializer.data,HTTP_200_OK)
-        except:
-            return Response(HTTP_404_NOT_FOUND)
+        date = request.GET.get("date")
+        if date:
+            try:
+                read_plan = ReadPlan.objects.get(pk=pk)
+                record = PlanRecord.objects.get(plan_for=read_plan, record_date=date)
+                serializer = RecordGetSerializer(record, data=request.data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data, HTTP_200_OK)
+            except Exception as e:
+                print e
+                return Response(HTTP_404_NOT_FOUND)
 
+        else:
+            try:
+                read_plan = ReadPlan.objects.get(pk=pk)
+                record = PlanRecord.objects.filter(plan_for=read_plan)
+                serializer = RecordGetSerializer(record, data=request.data, many=True)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data,HTTP_200_OK)
+            except Exception as e:
+                print e
+                return Response(HTTP_404_NOT_FOUND)
+
+
+class PlanRecordByDateView(APIView):
+    """
+    显示哪些日期有打卡记录
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        date_list = list()
+        record_queryset = PlanRecord.objects.filter(plan_for_id=pk)
+        for record in record_queryset:
+            date_list.append(record.record_date)
+        return Response(date_list,HTTP_200_OK)
 
 
 
