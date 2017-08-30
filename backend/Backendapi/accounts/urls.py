@@ -1,9 +1,9 @@
 # coding:utf-8
 from django.conf.urls import url,include
 from .views import (UserProfileDetailAPIView,
-                    CheckAPIView,SendMessageAPIView,
-                    PhoneUserCreateAPIView,OrderMessageOpenOrClose,
-                    ReturnMessageOpenOrClose,
+                    CheckAPIView, SendMessageAPIView,
+                    PhoneUserCreateAPIView, OrderMessageOpenOrClose,
+                    ReturnMessageOpenOrClose, FeedBackView,
                     ChangeTimeView)
 
 urlpatterns = [
@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^return_msg/$',ReturnMessageOpenOrClose.as_view(),name='return_msg'), # 开关消息
     url(r'^order_msg/$',OrderMessageOpenOrClose.as_view(),name='order_msg'), # 开关消息
     url(r'^change_times/$',ChangeTimeView.as_view(),name='change_time'),  # 更改推荐频率
+    url(r'^feedback/$', FeedBackView.as_view(), name='feedback'),  # 反馈
 ]

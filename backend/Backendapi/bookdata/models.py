@@ -87,8 +87,11 @@ class ReadPlan(models.Model):
     """
     user = models.ForeignKey(User)
     isbn13 = models.CharField(max_length=100)
-    begin_time = models.DateTimeField(max_length=100,default=None)
-    end_time = models.DateTimeField(max_length=100,default=None)
+    begin_time = models.DateTimeField(max_length=100, default=None)
+    end_time = models.DateTimeField(max_length=100, default=None)
+    sum_page = models.IntegerField(default=0)
+    now_page = models.IntegerField(default=0)
+    last_date = models.CharField(default=u'xxxx-xx-xx', max_length=200)
 
 
 class BrowsedBook(models.Model):
@@ -97,3 +100,36 @@ class BrowsedBook(models.Model):
     """
     user = models.ForeignKey(User)
     isbn13 = models.CharField(max_length=200)
+
+
+class Note(models.Model):
+    """
+    笔记
+    """
+    user = models.ForeignKey(User)
+    content = models.TextField()
+    comment = models.TextField(default="comment")
+    title = models.CharField(max_length=1000)
+    book_img_url = models.CharField(max_length=1000,default="img_url")
+    isbn13 = models.CharField(max_length=1000, default=u"-1")
+    date = models.CharField(max_length=200)
+
+
+class ImageFile(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+    image = models.FileField(upload_to = './img2text/')
+
+    def __unicode__(self):
+        return self.image.url
+
+
+class PlanRecord(models.Model):
+    """
+    打卡记录
+    """
+    plan_for = models.ForeignKey(ReadPlan)
+    last_page = models.IntegerField(default=0)
+    record_date = models.CharField(max_length=200, default=u"xxxx-xx-xx")
+    now_page = models.IntegerField(default=0)
+
+

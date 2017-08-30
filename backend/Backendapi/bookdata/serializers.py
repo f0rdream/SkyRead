@@ -13,7 +13,10 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer
     )
-from .models import Book,Refer,Holding, StarBook, Comment,ReadPlan
+from .models import (Book, Refer, Holding,
+                     StarBook, Comment,
+                     ReadPlan, ImageFile,
+                     Note, PlanRecord)
 
 
 class BookInfoSerializer(ModelSerializer):
@@ -340,6 +343,9 @@ class ReadPlanDetailSerializer(ModelSerializer):
             'isbn13',
             'begin_time',
             'end_time',
+            'sum_page',
+            'now_page',
+            'last_date'
         ]
 
     def get_isbn13(self,obj):
@@ -353,3 +359,75 @@ class ReadPlanDetailSerializer(ModelSerializer):
             return title
         except:
             return "--"
+
+
+class Img2TextSerializer(ModelSerializer):
+    class Meta:
+        model = ImageFile
+        fields = [
+            'image'
+        ]
+
+
+class NotePostSerializer(ModelSerializer):
+    """
+    创建新的笔记
+    """
+    class Meta:
+        model = Note
+        fields = [
+            'content',
+            'isbn13',
+            'title',
+            'book_img_url',
+            'comment',
+        ]
+
+
+class NoteGetSerializer(ModelSerializer):
+    """
+    查看已有的笔记
+    """
+    title = SerializerMethodField()
+    content = SerializerMethodField()
+    isbn13 = SerializerMethodField()
+    date = SerializerMethodField()
+    comment = SerializerMethodField()
+    book_img_url = SerializerMethodField()
+
+    class Meta:
+        model = Note
+        exclude = ['user']
+
+    def get_title(self,obj):
+        return obj.title
+
+    def get_content(self,obj):
+        return obj.content
+
+    def get_isbn13(self,obj):
+        return obj.isbn13
+
+    def get_date(self,obj):
+        return obj.date
+
+    def get_comment(self,obj):
+        return obj.comment
+
+    def get_book_img_url(self,obj):
+        return obj.book_img_url
+
+
+class RecordPostSerializer(ModelSerializer):
+    class Meta:
+        model = PlanRecord
+        fields = [
+            'now_page'
+        ]
+
+
+class RecordGetSerializer(ModelSerializer):
+    class Meta:
+        model = PlanRecord
+        fields = "__all__"
+

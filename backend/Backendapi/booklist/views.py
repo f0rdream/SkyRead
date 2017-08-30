@@ -1,6 +1,7 @@
 # coding:utf-8
 import MySQLdb
 
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.db.models import Q
 from rest_framework.permissions import (
@@ -19,14 +20,11 @@ from rest_framework.response import Response
 from l_lib.function import get_reply
 from django.db import connection
 # Create your views here.
-from bookdata.models import BrowsedBook,ReadPlan,StarBook
-from bookdata.models import Book
+from bookdata.models import Book, StarBook
 from bookdata.serializers import ShortInto
-from library.models import BorrowItem,SuccessOrderItem,WaitOrderItem
-from recommend import book_recommend,user_recommend
-from django.core.cache import cache
-import time
-from models import UserRecommendList
+from library.models import BorrowItem
+from models import UserRecommendList, UserPosition
+from .serializers import PositionPostSerializer
 
 
 class TagBookListView(APIView):
@@ -203,6 +201,93 @@ class SameUserBookDetail(APIView):
             return Response(serializer.data, HTTP_200_OK)
         else:
             return Response(get_reply(150,'no data'),HTTP_200_OK)
+
+
+class PositionView(APIView):
+    """
+    每次用户登录的时候通过这个接口提交坐标
+    """
+    permission_classes = [AllowAny]
+    serializer_class = PositionPostSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        x_point = serializer.validated_data['x_point']
+        y_point = serializer.validated_data['y_point']
+        try:
+            user_position = UserPosition.objects.get(user = request.user)
+            user_position.x_point = x_point
+            user_position.y_point = y_point
+            user_position.save()
+            return Response(HTTP_200_OK)
+        except:
+            user_position = UserPosition.objects.create(user=request.user,
+                                                        x_point = x_point,
+                                                        y_point = y_point)
+            user_position.save()
+            return Response(HTTP_200_OK)
+
+
+class NearByBookView(APIView):
+    """
+    附近的书接口
+    算出x,y相差小于1的,把借书栏和收藏栏的书籍推出来
+    """
+    permission_classes = [AllowAny]
+
+    def get(self,request):
+        user = request.user
+        try:
+            user_position = UserPosition.objects.get(user=user)
+            user_x_point = user_position.x_point
+            user_y_point = user_position.y_point
+            all_users = User.objects.all()
+            nearby_users = list()
+            # 找到附近的用户
+            for u in all_users:
+                if u.id == user.id:
+                    continue
+                try:
+                    u_position = UserPosition.objects.get(user=u)
+                    u_x_point = user_position.x_point
+                    u_y_point = u_position.y_point
+                    if abs(user_x_point-u_x_point) < 1 and abs(user_y_point-u_y_point) < 1:
+                        nearby_users.append(u)
+                except:
+                    continue
+            # 找到附近的用户之后,从他们的书单中抽取书籍
+            nearby_books_isbn13 = list()
+            for near_user in nearby_users:
+                try:
+                    nearby_borrow_items = BorrowItem.objects.filter(user=near_user)
+                    for item in nearby_borrow_items:
+                        nearby_books_isbn13.append(item.isbn13)
+                except Exception as e:
+                    pass
+                try:
+                    nearby_star_books = StarBook.objects.filter(user=near_user)
+                    for s in nearby_star_books:
+                        nearby_books_isbn13.append(s.book.isbn13)
+                except:
+                    pass
+            # 返回书籍信息
+            queryset = list()
+            for isbn13 in nearby_books_isbn13:
+                try:
+                    book = Book.objects.get(isbn13=isbn13)
+                    queryset.append(book)
+                except:
+                    pass
+            serializer = ShortInto(queryset[:20], many=True, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, HTTP_200_OK)
+        except Exception as e:
+            print e
+            reply = get_reply(153, "can't find position")
+            return Response(reply, HTTP_404_NOT_FOUND)
+
+
 
 
 

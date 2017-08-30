@@ -128,7 +128,7 @@ class BorrowItemView(APIView):
 
 class BorrowItemDetailDeleteView(APIView):
     """
-    借书栏的detail和delete
+    借书栏的detail和
     """
     permission_classes = [IsAuthenticated]
     content = {}
@@ -139,7 +139,7 @@ class BorrowItemDetailDeleteView(APIView):
             return Response(reply,HTTP_403_FORBIDDEN)
         user = request.user
         try:
-            borrow_item = BorrowItem.objects.get(user=user,pk=pk)
+            borrow_item = BorrowItem.objects.get(user=user, pk=pk)
 
             serializer = BorrowItemDetailSerializer(borrow_item,data=request.data)
             serializer.is_valid(raise_exception=True)

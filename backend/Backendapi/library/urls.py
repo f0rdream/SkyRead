@@ -28,7 +28,7 @@ from .views import (BorrowItemView,
                     FinishGiveOrderItemView)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
-    url(r'^borrow/(?P<pk>\d+)$',BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
+    url(r'^borrow/(?P<pk>\d+)$', BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
     url(r'^borrow/qrcode/$', ManyBorrowQrCodeView.as_view(), name='get_borrow_qrcode'),
     url(r'^borrow/verify',VarifyAddToReturnBarView.as_view(),name='add'),
     url(r'^borrow/change_bar',AddToReturnBarView.as_view(),name='change_to_return_bar'),
