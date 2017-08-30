@@ -470,9 +470,12 @@ class NoteView(APIView):
         isbn13 = serializer.validated_data['isbn13']
         import datetime
         date = datetime.datetime.now().date()
+        comment = serializer.validated_data['comment']
+        book_img_url = serializer.validated_data['book_img_url']
         note = Note.objects.create(user=user, content=content,
                                    title=title, isbn13=isbn13,
-                                   date=date)
+                                   date=date, comment=comment,
+                                   book_img_url=book_img_url)
         note.save()
         return Response(serializer.data,HTTP_200_OK)
 

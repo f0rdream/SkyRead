@@ -19,7 +19,7 @@ urlpatterns = [
     url(r'^img2text/$', ImageToTextView.as_view(), name= 'img2text'),
     url(r'^note/$', NoteView.as_view(), name='note'),
     url(r'^note/(?P<pk>\d+)$', NoteDetailView.as_view(), name='detail'),
-    url(r'^note_list/$',NoteBookListView.as_view()),
+    url(r'^note_list/$', NoteBookListView.as_view()),
     url(r'^record/(?P<pk>\d+)$',PlanRecordView.as_view()),
     # database
     # url(r'^')

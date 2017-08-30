@@ -379,6 +379,8 @@ class NotePostSerializer(ModelSerializer):
             'content',
             'isbn13',
             'title',
+            'book_img_url',
+            'comment',
         ]
 
 
@@ -390,6 +392,8 @@ class NoteGetSerializer(ModelSerializer):
     content = SerializerMethodField()
     isbn13 = SerializerMethodField()
     date = SerializerMethodField()
+    comment = SerializerMethodField()
+    book_img_url = SerializerMethodField()
 
     class Meta:
         model = Note
@@ -406,6 +410,12 @@ class NoteGetSerializer(ModelSerializer):
 
     def get_date(self,obj):
         return obj.date
+
+    def get_comment(self,obj):
+        return obj.comment
+
+    def get_book_img_url(self,obj):
+        return obj.book_img_url
 
 
 class RecordPostSerializer(ModelSerializer):

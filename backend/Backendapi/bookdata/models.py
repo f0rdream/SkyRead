@@ -108,7 +108,9 @@ class Note(models.Model):
     """
     user = models.ForeignKey(User)
     content = models.TextField()
+    comment = models.TextField(default="comment")
     title = models.CharField(max_length=1000)
+    book_img_url = models.CharField(max_length=1000,default="img_url")
     isbn13 = models.CharField(max_length=1000, default=u"-1")
     date = models.CharField(max_length=200)
 
