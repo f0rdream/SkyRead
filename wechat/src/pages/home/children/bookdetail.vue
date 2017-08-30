@@ -8,12 +8,13 @@
             <img :src="bookDetail.imgSrc" class="book-img">
           </div>
           <div class="right">
-            <p class="body-title ellipsis">{{ bookDetail.title }}</p>
-            <p class="body-info info-author">作者：<router-link v-for="item in bookDetail.author" class="info-link" :to="`/home/list/author/${item}`" :key="bookDetail.author">{{item}}, </router-link></p>
-            <p class="body-info">出版社：{{ bookDetail.publisher }}</p>
-            <p class="body-info">出版时间：{{ bookDetail.pubdate }}</p>
-            <p class="body-info">ISBN：{{ bookDetail.isbn13 }}</p>
-            <p class="body-info">豆瓣评分：{{ bookDetail.average }}</p>
+            <div class="right-container">
+              <p class="body-title ellipsis">{{ bookDetail.title }}</p>
+              <p class="body-info info-author">作者：<router-link v-for="item in bookDetail.author" class="info-link" :to="`/home/list/author/${item}`" :key="bookDetail.author">{{item}}, </router-link></p>
+              <p class="body-info">出版社：{{ bookDetail.publisher }}</p>
+              <p class="body-info">出版时间：{{ bookDetail.pubdate }}</p>
+              <p class="body-info">豆瓣评分：{{ bookDetail.average }}</p>
+            </div>
           </div>
         </div>
         <div class="book-opt">
@@ -33,8 +34,8 @@
         <div class="book-description part-main" v-if="selectedIndex === 0">
           <div class="description-context-box">
             <div class="description-context" :class="{ 'i-ellipsis': !isContentUnfold }">{{ bookDetail.summary }}</div>
-            <div class="icon-container">
-              <img class="more-icon" :src="!isContentUnfold ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isContentUnfold = !isContentUnfold"></img>
+            <div class="icon-container" @click="isContentUnfold = !isContentUnfold">
+              <img class="more-icon" :src="!isContentUnfold ? '/static/others/unfold.png' : '/static/others/fold.png'" ></img>
             </div>
             <div class="des-tags">
               <router-link v-for="item in bookDetail.tags" :to="`/home/list/tag/${item}`" :key="bookDetail.tags" class="tag-link">{{ item }}</router-link>
@@ -48,6 +49,10 @@
             <div class="opt-item" @click="comment">
               <img src="/static/others/comment.png" class="opt-icon">
               <div class="opt-text">评论</div>
+            </div>
+            <div class="opt-item" @click="price">
+              <img src="/static/others/comment.png" class="opt-icon">
+              <div class="opt-text">购书比价</div>
             </div>
           </div>
           <div class="store-box">
@@ -76,7 +81,7 @@
             </p>
             <div class="related-container">
               <div v-for="item in related" class="related-item">
-                <img :src="getImg(item.img_id)" class="item-img" @click="$router.push(`/home/bookdetail/${item.isbn13}`)">
+                <img :src="getImg(item.img_id)" class="item-img" @click="relatedClick(item.isbn13)">
                 <p class="item-title">{{ item.title }}</p>
               </div>
             </div>
@@ -88,8 +93,8 @@
             <div class="review-author">{{item.author}}</div>
             <div class="review-content-container">
               <div class="review-content" :class="{ 'i-ellipsis': !isReviewUnfold }">{{ item.content }}</div>
-              <div class="icon-container">
-                <img class="more-icon" :src="!isReviewUnfold ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isReviewUnfold = !isReviewUnfold"></img>
+              <div class="icon-container" @click="isReviewUnfold = !isReviewUnfold">
+                <img class="more-icon" :src="!isReviewUnfold ? '/static/others/unfold.png' : '/static/others/fold.png'" ></img>
               </div>
             </div>
           </div>
@@ -129,11 +134,19 @@ export default {
     this.getReview()
     this.getRelated()
   },
+  watch: {
+    '$route' (to, from) {
+      this.getBook()
+      this.getReview()
+      this.getRelated()
+    }
+  },
   methods: {
     ...mapActions({
       addFavorite: 'addFavorite'
     }),
     getBook () {
+      this.isbn13 = this.$route.params.isbn13
       this.$http.get(`book/isbn/${this.isbn13}`).then((res) => {
         let tagsMax = []
         let authorMax = []
@@ -192,6 +205,12 @@ export default {
     },
     getImg (imgId) {
       return `https://img3.doubanio.com/lpic/${imgId}`
+    },
+    relatedClick (isbn13) {
+      this.$router.push(`/home/bookdetail/${isbn13}`)
+    },
+    price () {
+      this.$router.push(`/home/price/${this.isbn13}`)
     }
   }
 }
@@ -224,6 +243,10 @@ export default {
   flex: 1 1 auto;
   padding: 0 0.10rem;
   overflow: hidden;
+}
+.right-container {
+  position: relative;
+  top: 25px;
 }
 .book-opt .right {
   flex: 1 1 auto;
@@ -285,7 +308,6 @@ export default {
   margin-top: -180px;
   color: #cecece;
   z-index: 100;
-  padding-top: 20px;
   background-color: rgba(50, 50, 50, 0.6)
 }
 
@@ -324,7 +346,7 @@ export default {
   padding: 5px 10px;
   text-decoration: none;
   border-radius: 15px;
-  font-size: 14px;
+  font-size: 12px;
 }
 .description-context-box .icon-container {
   text-align: right;

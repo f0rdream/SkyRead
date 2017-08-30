@@ -16,6 +16,7 @@ import indexpage from '../pages/home/children/indexpage'
 import category from '../pages/home/children/category'
 import list from '../pages/home/children/list'
 import comment from '../pages/home/children/comment'
+import price from '../pages/home/children/price'
 
 import bookshelf from '../pages/cart/bookshelf'
 import renting from '../pages/cart/children/renting'
@@ -67,6 +68,10 @@ export default new Router({
         {
           path: 'comment/:isbn13',
           component: comment
+        },
+        {
+          path: 'price/:isbn13',
+          component: price
         }
       ]
     },
