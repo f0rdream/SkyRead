@@ -1,6 +1,5 @@
 # coding:utf-8
 import time
-from django.db.models import Q
 from rest_framework.permissions import (
     IsAuthenticated,
     AllowAny,
@@ -19,7 +18,8 @@ from .serializers import (BookInfoSerializer,
                           ReadPlanDetailSerializer,
                           Img2TextSerializer,
                           NotePostSerializer,
-                          NoteGetSerializer)
+                          NoteGetSerializer,
+                          RecordPostSerializer,RecordGetSerializer)
 from rest_framework.views import APIView
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -30,8 +30,10 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from history.models import SearchHistory
 from l_lib.function import get_reply
-from models import Comment, BrowsedBook, Note
+from models import Comment, BrowsedBook, Note, PlanRecord
 from function import entry, book_price, image_to_text
+from library.models import BorrowItem
+
 
 
 class BookInfoView(APIView):
@@ -351,13 +353,27 @@ class ReadPlanView(APIView):
         isbn13 = serializer.validated_data['isbn13']
         begin_time = serializer.validated_data['begin_time']
         end_time = serializer.validated_data['end_time']
-        readplan = ReadPlan.objects.create(
+        # 8.30加入总页数,日期
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            pages = book.pages
+            if pages == u"('',)":
+                sum_page = 300
+            else:
+                sum_page = int(pages)
+        except:
+            sum_page = 300
+        import datetime
+        last_date = datetime.datetime.now().date()
+        read_plan = ReadPlan.objects.create(
             user=user,
             isbn13=isbn13,
             begin_time=begin_time,
-            end_time=end_time
+            end_time=end_time,
+            sum_page=sum_page,
+            last_date=last_date
         )
-        readplan.save()
+        read_plan.save()
         return Response(get_reply(0,'success'),HTTP_201_CREATED)
 
     def get(self,request):
@@ -369,7 +385,7 @@ class ReadPlanView(APIView):
 
 class ReadPlanDetailView(APIView):
     """
-    删除阅读计划
+    删除阅读计划,得到阅读计划详情,包括打卡的记录
     """
     permission_classes = [IsAuthenticated]
 
@@ -501,9 +517,73 @@ class NoteDetailView(APIView):
             return Response(HTTP_403_FORBIDDEN)
 
 
+class NoteBookListView(APIView):
+    """
+    提供可以做笔记的书籍列表
+    """
+    def get(self,request):
+        borrow_items = BorrowItem.objects.filter(user=request.user,
+                                                 in_return_bar=True,
+                                                 finish_return=False)
+        queryset = list()
+        for item in borrow_items:
+            isbn13 = item.isbn13
+            book = Book.objects.get(isbn13=isbn13)
+            queryset.append(book)
+        serializer = ShortInto(queryset, data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, HTTP_200_OK)
 
 
+class PlanRecordView(APIView):
+    """
+    提交打卡,查看打卡详情,更新打卡
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = RecordPostSerializer
 
+    def post(self, request, pk):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        now_page = serializer.validated_data['now_page']
+        try:
+            read_plan = ReadPlan.objects.get(pk=pk)
+        except:
+            return Response(HTTP_403_FORBIDDEN)
+        import datetime
+        record_date = datetime.datetime.now().date()
+        # 这里先去查找打卡记录是否存在,存在的话直接更新
+        try:
+            existed_record = PlanRecord.objects.get(plan_for=read_plan,
+                                                    record_date=record_date)
+            existed_record.now_page = now_page
+            existed_record.save()
+            read_plan.now_page = now_page
+            read_plan.last_date = record_date
+            read_plan.save()
+            return Response(HTTP_200_OK)
+        except:
+            last_page = read_plan.now_page
+            record = PlanRecord.objects.create(plan_for=read_plan,
+                                               now_page=now_page,
+                                               record_date=record_date,
+                                               last_page=last_page)
+            record.save()
+            return Response(HTTP_200_OK)
+
+    def get(self, request,pk):
+        """
+        获得打卡的详情
+        """
+        record_date = request.GET.get("date")
+        try:
+            read_plan = ReadPlan.objects.get(pk=pk)
+            record = PlanRecord.objects.get(read_plan=read_plan,record_date=record_date)
+            serializer = RecordGetSerializer(record,data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
 
 
 
