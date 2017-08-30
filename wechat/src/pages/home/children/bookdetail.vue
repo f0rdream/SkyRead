@@ -9,8 +9,7 @@
           </div>
           <div class="right">
             <p class="body-title ellipsis">{{ bookDetail.title }}</p>
-            <p class="body-info ellipsis">标签： <router-link v-for="item in bookDetail.tags" :to="`/home/list/tag/${item}`" :key="bookDetail.tags" class="info-link">{{ item }}, </router-link></p>
-            <p class="body-info ellipsis">作者：<router-link v-for="item in bookDetail.author" class="info-link" :to="`/home/list/author/${item}`" :key="bookDetail.author">{{item}}, </router-link></p>
+            <p class="body-info info-author">作者：<router-link v-for="item in bookDetail.author" class="info-link" :to="`/home/list/author/${item}`" :key="bookDetail.author">{{item}}, </router-link></p>
             <p class="body-info">出版社：{{ bookDetail.publisher }}</p>
             <p class="body-info">出版时间：{{ bookDetail.pubdate }}</p>
             <p class="body-info">ISBN：{{ bookDetail.isbn13 }}</p>
@@ -23,7 +22,7 @@
             <tab bar-active-color="#2bc6b9" active-color="#2bc6b9" v-model="selectedIndex">
               <tab-item>简介</tab-item>
               <tab-item>书评</tab-item>
-              <tab-item>试读</tab-item>
+              <tab-item>导读</tab-item>
             </tab>
             <!-- <a class="i-btn-blank" @click="clickFavor"><img src="/static/others/collect.png" class="i-btn-icon">收藏</a>
             <a class="i-btn-blank" @click="comment"><img src="/static/others/comment.png" class="i-btn-icon">评论</a> -->
@@ -33,14 +32,30 @@
       <div class="detail-part">
         <div class="book-description part-main" v-if="selectedIndex === 0">
           <div class="description-context-box">
-            <div class="description-context " v-show="!isContentMuch">{{ bookDetail.summary }}</div>
+            <div class="description-context" :class="{ 'i-ellipsis': !isContentUnfold }">{{ bookDetail.summary }}</div>
+            <div class="icon-container">
+              <img class="more-icon" :src="!isContentUnfold ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isContentUnfold = !isContentUnfold"></img>
+            </div>
+            <div class="des-tags">
+              <router-link v-for="item in bookDetail.tags" :to="`/home/list/tag/${item}`" :key="bookDetail.tags" class="tag-link">{{ item }}</router-link>
+            </div>
+          </div>
+          <div class="opt-part">
+            <div class="opt-item" @click="clickFavor">
+              <img src="/static/others/collect.png" class="opt-icon">
+              <div class="opt-text">收藏</div>
+            </div>
+            <div class="opt-item" @click="comment">
+              <img src="/static/others/comment.png" class="opt-icon">
+              <div class="opt-text">评论</div>
+            </div>
           </div>
           <div class="store-box">
-            <p class="part-title">
+            <p class="part-title" @click="isTableUnfold = !isTableUnfold">
               <span>馆藏信息</span>
-              <img class="more-icon" :src="isTableMuch ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isTableMuch = !isTableMuch"></img>
+              <img class="more-icon" :src="!isTableUnfold ? '/static/others/unfold.png' : '/static/others/fold.png'"></img>
             </p>
-            <table class="store-table" v-show="!isTableMuch">
+            <table class="store-table" v-show="isTableUnfold">
               <tr class="table-head">
                 <th>书籍定位</th>
                 <th>状态</th>
@@ -55,14 +70,33 @@
               </tr>
             </table>
           </div>
-        </div>
-        <div class="book-review part-main" v-if="selectedIndex === 1">
-          <div class="review-detail" v-for="item in reviewList" @click="$router.replace('/home/reviewdetail/review.isbn13')">
-            <div class="review-title">{{item.title}}</div>
-            <!-- <div class="review-author">{{item.author}}</div> -->
+          <div class="related">
+            <p class="part-title">
+              <span>相关书籍</span>
+            </p>
+            <div class="related-container">
+              <div v-for="item in related" class="related-item">
+                <img :src="getImg(item.img_id)" class="item-img" @click="$router.push(`/home/bookdetail/${item.isbn13}`)">
+                <p class="item-title">{{ item.title }}</p>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="book-trail part-main" v-if="selectedIndex === 2"></div>
+        <div class="book-review part-main" v-if="selectedIndex === 1">
+          <div class="review-detail" v-for="item in reviewList">
+            <div class="review-title">{{item.title}}</div>
+            <div class="review-author">{{item.author}}</div>
+            <div class="review-content-container">
+              <div class="review-content" :class="{ 'i-ellipsis': !isReviewUnfold }">{{ item.content }}</div>
+              <div class="icon-container">
+                <img class="more-icon" :src="!isReviewUnfold ? '/static/others/unfold.png' : '/static/others/fold.png'" @click="isReviewUnfold = !isReviewUnfold"></img>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="book-trail part-main" v-if="selectedIndex === 2">
+          <pre v-html="bookDetail.catalog" class="index-body"></pre>
+        </div>
       </div>
     </div>
   </div>
@@ -79,18 +113,21 @@ export default {
   },
   data () {
     return {
-      isbn13: this.$route.params.isbn13 || '9787111251217',
+      isbn13: this.$route.params.isbn13,
       bookDetail: {},
-      isContentMuch: false,
-      isIndexMuch: true,
-      isTableMuch: true,
+      isContentUnfold: false,
+      isTableUnfold: false,
+      isReviewUnfold: false,
       storeInfo: {},
       selectedIndex: 0,
-      reviewList: [1, 1]
+      reviewList: [1, 1],
+      related: []
     }
   },
   mounted () {
     this.getBook()
+    this.getReview()
+    this.getRelated()
   },
   methods: {
     ...mapActions({
@@ -140,11 +177,21 @@ export default {
       }
     },
     getReview () {
-      this.get(`/douban/reviews/${this.bookdetail.isbn13}`).then(res => {
+      this.$http.get(`/douban/reviews/${this.isbn13}`).then(res => {
         this.reviewList = res.data
       }).catch(err => {
         console.log(err)
       })
+    },
+    getRelated () {
+      this.$http.get(`/book/refer/${this.isbn13}`).then(res => {
+        this.related = res.data
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    getImg (imgId) {
+      return `https://img3.doubanio.com/lpic/${imgId}`
     }
   }
 }
@@ -152,7 +199,8 @@ export default {
 
 <style lang="css" scoped>
 .detail-box>div {
-  background-color: #fbfbfb;
+  /*Background color*/
+  background-color: #f7f6f6;
 }
 .book-body {
   display: flex;
@@ -215,7 +263,7 @@ export default {
 }
 
 .detail-box .store-box {
-  background-color: #fff;
+
 }
 .store-table {
   width: 100%;
@@ -251,7 +299,7 @@ export default {
 }
 .book-opt {
   display: flex;
-  background-color: #fff;
+  background-color: #f1f2f7;
 }
 .part-title {
   color: #2bc2c3;
@@ -262,14 +310,94 @@ export default {
   height: 14px;
   padding-right: 10px;
 }
-.part-main {
-  margin: .15rem 0;
-  padding: .08rem .15rem;
-}
+
 .description-context {
   padding: .08rem;
-  font-size: 12px;
+  font-size: 14px;
   overflow: hidden;
+}
+.tag-link {
+  display: inline-block;
+  background-color: #fff;
+  color: #707070;
+  margin: .05rem .08rem;
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 15px;
+  font-size: 14px;
+}
+.description-context-box .icon-container {
+  text-align: right;
+}
+.part-main>div {
+  background-color: #f1f2f7;
+  padding: .08rem .10rem;
+  margin-bottom: .10rem;
+}
+.part-main {
+  margin: 0 0 .10rem 0;
+  background-color: #f7f6f6;
+  color: #5c5c5c;
+}
+.body-info.info-author {
+  overflow: visible;
+  white-space: normal;
+}
+
+.opt-part {
+  display: flex;
+  flex-direction: row;
+}
+.opt-icon {
+  height: 25px;
+  width: 25px;
+}
+.opt-item {
+  padding: .08rem;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  font-size: 13px;
+  flex: 0 1 20%;
+}
+
+.index-body {
+  padding: .15rem .25rem;
+  font-size: 13px;
+}
+
+.related-container {
+  white-space: nowrap;
+  overflow: scroll;
+}
+.related-item {
+  display: inline-block;
+  width: 19%;
+  margin: .10rem;
+}
+.related-item .item-img {
+  width: 100%;
+}
+.related-item .item-title {
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* review title*/
+.review-title {
+  font-size: 15px;
+}
+.review-author {
+  font-size: 13px;
+}
+.review-content {
+  font-size: 13px;
+}
+.review-content-container .icon-container {
+  text-align: right;
 }
 
 </style>

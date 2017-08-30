@@ -6183,9 +6183,9 @@ void-elements@^2.0.0:
   version "2.0.1"
   resolved "http://registry.npm.taobao.org/void-elements/download/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
 
-vue-baidu-map@^0.11.3:
-  version "0.11.3"
-  resolved "http://registry.npm.taobao.org/vue-baidu-map/download/vue-baidu-map-0.11.3.tgz#d5cf229d2d109f0be771f841c491b9a8b647fd2e"
+vue-baidu-map@^0.12.0:
+  version "0.12.0"
+  resolved "http://registry.npm.taobao.org/vue-baidu-map/download/vue-baidu-map-0.12.0.tgz#12889d9001f263ce51afe7a5aebc2c75e99131ab"
 
 vue-hot-reload-api@^2.0.11:
   version "2.1.0"
