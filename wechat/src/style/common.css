@@ -170,6 +170,35 @@ p.body-info {
   outline: none;
   background: transparent;
 }
-i-custom-select {
+.i-icon-plus {
+  display: inline-block;
+  position: relative;
+  height: 30px;
+  width: 30px;
+}
+.i-icon-plus::before, .i-icon-plus::after {
+  display: inline-block;
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+}
+.i-icon-plus::before {
+  width: 20px;
+  height: 2px;
+}
+.i-icon-plus::after{
+  height: 20px;
+  width: 2px;
+}
 
+.i-area {
+  border: 1px solid rgba(200, 200, 200, 0.6);
+  outline: none;
+  border-radius: 8px;
+  font-size: 14px;
+  padding: 10px 15px;
+  resize: none;
 }
