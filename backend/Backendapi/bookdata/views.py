@@ -35,7 +35,6 @@ from function import entry, book_price, image_to_text
 from library.models import BorrowItem
 
 
-
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]

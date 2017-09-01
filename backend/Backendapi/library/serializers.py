@@ -61,6 +61,7 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'nickname',
             'title',
             'price',
+            'quick_return',
         ]
 
     def get_user(self, obj):
@@ -307,6 +308,8 @@ class WaitOrderItemDetailSerializer(ModelSerializer):
             return return_state
         except:
             return False
+
+
 
 class IdListSerializer(serializers.Serializer):
     """

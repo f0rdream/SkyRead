@@ -244,7 +244,7 @@ def parser(html,book_url):
 
 def book_price(book_isbn13):
     """
-    利用比价网得到各个渠道的价格和链接
+    利用比价网得到各个渠道的价格和链接,加入用标题索引
     """
     search_url = "http://www.yaobijia.com.cn/search.aspx?kwd=" + book_isbn13
     s = requests.session()
