@@ -335,6 +335,8 @@ class PostReadPlanSerializer(ModelSerializer):
 class ReadPlanDetailSerializer(ModelSerializer):
     title = SerializerMethodField()
     isbn13 = SerializerMethodField()
+    author = SerializerMethodField()
+    img_id = SerializerMethodField()
 
     class Meta:
         model = ReadPlan
@@ -360,6 +362,25 @@ class ReadPlanDetailSerializer(ModelSerializer):
             return title
         except:
             return "--"
+
+    def get_author(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            author = book.author
+            return author
+        except:
+            return "--"
+
+    def get_img_id(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            img_id = book.img_id
+            return img_id
+        except:
+            return "--"
+
 
 
 class Img2TextSerializer(ModelSerializer):

@@ -61,3 +61,6 @@ class UserCreateBookList(models.Model):
 class BookInList(models.Model):
     book_list = models.ForeignKey(UserCreateBookList)
     book = models.ForeignKey(Book)
+
+
+
