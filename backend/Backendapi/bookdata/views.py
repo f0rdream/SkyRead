@@ -388,6 +388,19 @@ class ReadPlanDetailView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    def get(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
+        user = request.user
+        try:
+            plan_item = ReadPlan.objects.get(user=user, pk=pk)
+            serializer = ReadPlanDetailSerializer(plan_item, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
     def delete(self,request,pk):
         if not have_phone_register(user=request.user):
             reply = get_reply(17,'not register with phone')

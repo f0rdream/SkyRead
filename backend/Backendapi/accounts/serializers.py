@@ -209,5 +209,8 @@ class LabelSerializer(ModelSerializer):
         model = StarList
         exclude = ['user_list_id', 'user', 'list_type']
 
-
+#
+# class BookListCreateSerializer(serializers.Serializer):
+#     title = serializers.CharField(max_length=1000)
+#     comment =
 

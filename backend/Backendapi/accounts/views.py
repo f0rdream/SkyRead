@@ -260,6 +260,16 @@ class DeleteLabelView(APIView):
             return Response(HTTP_403_FORBIDDEN)
 
 
+class CreateBookListView(APIView):
+    """
+    用户创建书单
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+
+
+
 
 
 
