@@ -334,6 +334,7 @@ class PostReadPlanSerializer(ModelSerializer):
 
 class ReadPlanDetailSerializer(ModelSerializer):
     title = SerializerMethodField()
+    isbn13 = SerializerMethodField()
 
     class Meta:
         model = ReadPlan
