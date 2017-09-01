@@ -288,6 +288,7 @@ class StarBookDetailSerializer(ModelSerializer):
         short_info.is_valid(raise_exception=True)
         return short_info.data
 
+
 class PostCommentSerializer(ModelSerializer):
     class Meta:
         model = Comment
@@ -369,8 +370,20 @@ class ReadPlanDetailSerializer(ModelSerializer):
         isbn13 = obj.isbn13
         try:
             book = Book.objects.get(isbn13=isbn13)
-            author = book.author
-            return author
+            authors = book.author
+            if authors == '' or authors == '&':
+                return None
+            else:
+                author_list = []
+                authors = authors.split('&')
+                for author in authors:
+                    if author == '':
+                        continue
+                    else:
+                        if len(author) > 15:
+                            author = author[:15]
+                        author_list.append(author)
+                return author_list
         except:
             return "--"
 
@@ -379,7 +392,10 @@ class ReadPlanDetailSerializer(ModelSerializer):
         try:
             book = Book.objects.get(isbn13=isbn13)
             img_id = book.img_id
-            return img_id
+            if img_id == "update_image":
+                return None
+            else:
+                return img_id
         except:
             return "--"
 
