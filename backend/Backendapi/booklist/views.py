@@ -26,6 +26,31 @@ from library.models import BorrowItem
 from models import UserRecommendList, UserPosition
 from .serializers import PositionPostSerializer
 
+from math import radians, cos, sin, asin, sqrt, fabs
+EARTH_RADIUS = 6371  # 地球平均半径，6371km
+
+
+def hav(theta):
+    s = sin(theta / 2)
+    return s * s
+
+
+def get_distance(lat0, lng0, lat1, lng1):
+    """用haversine公式计算球面两点间的距离"""
+
+    # 经纬度转换成弧度
+    lat0 = radians(lat0)
+    lat1 = radians(lat1)
+    lng0 = radians(lng0)
+    lng1 = radians(lng1)
+
+    dlng = fabs(lng0 - lng1)
+    dlat = fabs(lat0 - lat1)
+    h = hav(dlat) + cos(lat0) * cos(lat1) * hav(dlng)
+    distance = 2 * EARTH_RADIUS * asin(sqrt(h))
+
+    return distance
+
 
 class TagBookListView(APIView):
     """
@@ -239,6 +264,7 @@ class NearByBookView(APIView):
     def get(self,request):
         user = request.user
         try:
+            # user为本体,u为其他用户
             user_position = UserPosition.objects.get(user=user)
             user_x_point = user_position.x_point
             user_y_point = user_position.y_point
@@ -250,38 +276,54 @@ class NearByBookView(APIView):
                     continue
                 try:
                     u_position = UserPosition.objects.get(user=u)
-                    u_x_point = user_position.x_point
+                    u_x_point = u_position.x_point
                     u_y_point = u_position.y_point
                     if abs(user_x_point-u_x_point) < 1 and abs(user_y_point-u_y_point) < 1:
-                        nearby_users.append(u)
+                        user_info = dict()
+                        # 计算距离,存储下来
+                        distance = get_distance(user_x_point, user_y_point,
+                                                u_x_point, u_y_point)
+                        user_info['distance'] = distance
+                        user_info['user'] = u
+                        nearby_users.append(user_info)
                 except:
                     continue
             # 找到附近的用户之后,从他们的书单中抽取书籍
-            nearby_books_isbn13 = list()
-            for near_user in nearby_users:
+            nearby_books = list()
+            for user_info in nearby_users:
+                near_user = user_info['user']
+                nearby_dict = dict()  # 存储用户id,距离,书名
+                nearby_dict['book_list'] = list()
+                nearby_dict['user_id'] = near_user.id
+                nearby_dict['distance'] = user_info['distance']
                 try:
                     nearby_borrow_items = BorrowItem.objects.filter(user=near_user)
                     for item in nearby_borrow_items:
-                        nearby_books_isbn13.append(item.isbn13)
+                        nearby_dict['book_list'].append(item.isbn13)
                 except Exception as e:
                     pass
                 try:
                     nearby_star_books = StarBook.objects.filter(user=near_user)
                     for s in nearby_star_books:
-                        nearby_books_isbn13.append(s.book.isbn13)
+                        nearby_dict['book_list'].append(s.book.isbn13)
                 except:
                     pass
-            # 返回书籍信息
-            queryset = list()
-            for isbn13 in nearby_books_isbn13:
-                try:
-                    book = Book.objects.get(isbn13=isbn13)
-                    queryset.append(book)
-                except:
-                    pass
-            serializer = ShortInto(queryset[:20], many=True, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            return Response(serializer.data, HTTP_200_OK)
+                nearby_books.append(nearby_dict)
+            # 返回书籍信息,随机选择20个
+            reply = list()
+            for book_dict in nearby_books[:20]:
+                distance = book_dict['distance']
+                for isbn13 in book_dict['book_list']:
+                    try:
+                        book = Book.objects.get(isbn13=isbn13)
+                        serializer = ShortInto(book, data=request.data)
+                        serializer.is_valid(raise_exception=True)
+                        single_book = serializer.data
+                        single_book['distance'] = distance
+                        reply.append(single_book)
+                    except Exception as e:
+                        pass
+            return Response(reply, HTTP_200_OK)
         except Exception as e:
             print e
             reply = get_reply(153, "can't find position")
