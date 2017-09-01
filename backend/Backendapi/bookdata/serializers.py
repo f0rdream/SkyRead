@@ -378,8 +378,6 @@ class NotePostSerializer(ModelSerializer):
         fields = [
             'content',
             'isbn13',
-            'title',
-            'book_img_url',
             'comment',
         ]
 

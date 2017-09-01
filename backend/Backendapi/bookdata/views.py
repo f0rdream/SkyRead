@@ -466,12 +466,19 @@ class NoteView(APIView):
         serializer.is_valid(raise_exception=True)
         user = request.user
         content = serializer.validated_data['content']
-        title = serializer.validated_data['title']
         isbn13 = serializer.validated_data['isbn13']
+        comment = serializer.validated_data['comment']
+        # 后端去查title和book_img_url
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+            book_img_url = book.img_id
+        except:
+            title = u"暂无标题"
+            book_img_url = u"..."
         import datetime
         date = datetime.datetime.now().date()
-        comment = serializer.validated_data['comment']
-        book_img_url = serializer.validated_data['book_img_url']
+
         note = Note.objects.create(user=user, content=content,
                                    title=title, isbn13=isbn13,
                                    date=date, comment=comment,
