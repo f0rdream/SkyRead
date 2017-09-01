@@ -348,7 +348,9 @@ class ReadPlanDetailSerializer(ModelSerializer):
             'end_time',
             'sum_page',
             'now_page',
-            'last_date'
+            'last_date',
+            'author',
+            'img_id',
         ]
 
     def get_isbn13(self,obj):
