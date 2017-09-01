@@ -2,7 +2,7 @@ import Vue from 'vue'
 import 'es6-promise/auto'
 import { AjaxPlugin } from 'vux'
 
-const baseURL = 'http://skyread.fordream001.cn'
+const baseURL = ''
 Vue.use(AjaxPlugin)
 Vue.http.defaults.baseURL = baseURL
 Vue.http.defaults.withCredentials = true

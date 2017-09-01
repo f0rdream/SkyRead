@@ -9,6 +9,10 @@ import nearby from '../pages/person/children/nearby'
 import relatedlist from '../pages/person/children/relatedlist'
 import bmap from '../pages/person/children/map'
 import feedback from '../pages/person/children/feedback'
+import notelist from '../pages/person/children/notelist'
+import modnote from '../pages/person/children/modnote'
+import addnote from '../pages/person/children/addnote'
+import notedetail from '../pages/person/children/notedetail'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
@@ -16,6 +20,7 @@ import indexpage from '../pages/home/children/indexpage'
 import category from '../pages/home/children/category'
 import list from '../pages/home/children/list'
 import comment from '../pages/home/children/comment'
+import price from '../pages/home/children/price'
 
 import bookshelf from '../pages/cart/bookshelf'
 import renting from '../pages/cart/children/renting'
@@ -67,6 +72,10 @@ export default new Router({
         {
           path: 'comment/:isbn13',
           component: comment
+        },
+        {
+          path: 'price/:isbn13',
+          component: price
         }
       ]
     },
@@ -156,6 +165,22 @@ export default new Router({
     {
       path: '/feedback',
       component: feedback
+    },
+    {
+      path: '/note',
+      component: notelist
+    },
+    {
+      path: '/addnote',
+      component: addnote
+    },
+    {
+      path: '/modnote/',
+      component: modnote
+    },
+    {
+      path: '/notedetail/:id',
+      component: notedetail
     }
   ]
 })

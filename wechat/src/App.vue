@@ -68,7 +68,7 @@ export default {
           timestamp: this.wxSign.timestamp,
           nonceStr: this.wxSign.nonceStr,
           signature: this.wxSign.signature,
-          jsApiList: ['scanQRCode', 'getLocation']
+          jsApiList: ['scanQRCode', 'getLocation', 'chooseImage']
         })
         this.$wechat.ready(function () {
           console.log('wechatOk')

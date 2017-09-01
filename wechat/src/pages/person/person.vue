@@ -39,6 +39,10 @@
           <img class="app-img" src="/static/others/nearby.png">
           <p class="app-title">反馈</p>
         </div>
+        <div class="app-item" @click="$router.push('/modnote')">
+          <img class="app-img" src="/static/others/nearby.png">
+          <p class="app-title">反馈</p>
+        </div>
       </div>
     </div>
     <bottom-bar :activeTab="3" slot="bottom"></bottom-bar>
