@@ -4,7 +4,8 @@ from .views import (UserProfileDetailAPIView,
                     CheckAPIView, SendMessageAPIView,
                     PhoneUserCreateAPIView, OrderMessageOpenOrClose,
                     ReturnMessageOpenOrClose, FeedBackView,
-                    ChangeTimeView, AddLabelView,DeleteLabelView,BookListView)
+                    ChangeTimeView, AddLabelView,DeleteLabelView,
+                    BookListView, StarBookListView, BookListDetailView)
 
 urlpatterns = [
     url(r'^$', UserProfileDetailAPIView.as_view(), name='user_detail'),  # 用户基本信息
@@ -18,4 +19,6 @@ urlpatterns = [
     url(r'^label/$', AddLabelView.as_view()),  # 自己添加的系统分类
     url(r'^label/(?P<pk>\d+)$', DeleteLabelView.as_view()),  # 自己添加的系统分类
     url(r'^book_list/$', BookListView.as_view()),  # 用户自建书单
+    url(r'^book_list/star/$', StarBookListView.as_view()),  # 用户收藏的书单
+    url(r'^book_list/(?P<pk>\d+)/$', BookListDetailView.as_view()),  # 书单详情
 ]

@@ -6,7 +6,10 @@ from serializers import (UserProfileDetailSerializer,
                          FeedBackSerializer,
                          FeedBackDetailSerializer,
                          ChangeTimesSerializer,
-                         AddLabelSerializer,LabelSerializer,BookListCreateSerializer)
+                         AddLabelSerializer,
+                         LabelSerializer,
+                         BookListCreateSerializer,
+                         BookListIdSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -16,12 +19,13 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .models import WeChatUser,PhoneUser, FeedBack, StarList, UserCreateBookList, BookInList
+from .models import (WeChatUser, PhoneUser, FeedBack,
+                     StarList, UserCreateBookList, BookInList,StarBookList)
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
 from library.permissions import have_phone_register
-from bookdata.model import Book
-
+from bookdata.models import Book
+from bookdata.serializers import ShortInto
 
 class UserProfileDetailAPIView(APIView):
     """
@@ -268,7 +272,7 @@ class BookListView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = BookListCreateSerializer
 
-    def post(self,request):
+    def post(self, request):
         serializer = BookListCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         title = serializer.validated_data['title']
@@ -289,6 +293,78 @@ class BookListView(APIView):
             except Exception as e:
                 print e
         return Response(HTTP_200_OK)
+
+    def get(self, request):
+        """获取自己建的书单"""
+        queryset = UserCreateBookList.objects.filter(user=request.user)
+        reply = list()
+        for book_list in queryset:
+            reply_dict = dict()
+            reply_dict['id'] = book_list.id
+            reply_dict['title'] = book_list.title
+            reply_dict['comment'] = book_list.comment
+            reply.append(reply_dict)
+        return Response(reply, HTTP_200_OK)
+
+
+class StarBookListView(APIView):
+    """收藏书单"""
+    permission_classes = [IsAuthenticated]
+    serializer_class = BookListIdSerializer
+
+    def post(self,request):
+        """收藏"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        list_id = serializer.validated_data['list_id']
+        try:
+            book_list = UserCreateBookList.objects.get(pk=list_id)
+            star_book_list = StarBookList.objects.create(user=request.user,
+                                                         book_list=book_list)
+            star_book_list.save()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
+    def get(self,request):
+        queryset = StarBookList.objects.filter(user=request.user)
+        reply = list()
+        for i in queryset:
+            reply_dict = dict()
+            reply_dict['id'] = i.book_list.id
+            reply_dict['title'] = i.book_list.title
+            reply_dict['comment'] = i.book_list.comment
+            reply.append(reply_dict)
+        return Response(reply, HTTP_200_OK)
+
+
+class BookListDetailView(APIView):
+    """
+    书单详情和删除
+    """
+    def get(self,request,pk):
+        try:
+            book_list = UserCreateBookList.objects.get(pk=pk)
+            reply_dict = dict()
+            reply_dict['id'] = book_list.id
+            reply_dict['title'] = book_list.title
+            reply_dict['comment'] = book_list.comment
+            star_count = StarBookList.objects.filter(book_list=book_list)
+            reply_dict['star_count'] = len(star_count)
+            book_in_list = BookInList.objects.filter(book_list=book_list)
+            books = list()  # 存储书单中所有的Book对象
+            for i in book_in_list:
+                books.append(i.book)
+            serializer = ShortInto(books, data=[], many=True)
+            serializer.is_valid(raise_exception=True)
+            reply_dict['books_info'] = serializer.data
+            return Response(reply_dict, HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+
+
 
 
 

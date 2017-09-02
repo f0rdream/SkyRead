@@ -215,3 +215,7 @@ class BookListCreateSerializer(serializers.Serializer):
     comment = serializers.CharField(max_length=10000)
     isbn13_list = serializers.ListField(child=IntegerField())
 
+
+class BookListIdSerializer(serializers.Serializer):
+    list_id = serializers.CharField(max_length=200)
+

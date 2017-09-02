@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from bookdata.models import Book
 
+
 class WeChatUser(models.Model):
     # user = models.OneToOneField(User, related_name="wechat_user")
     nickname = models.CharField(max_length=1000,default='')
@@ -61,6 +62,14 @@ class UserCreateBookList(models.Model):
 class BookInList(models.Model):
     book_list = models.ForeignKey(UserCreateBookList)
     book = models.ForeignKey(Book)
+
+
+class StarBookList(models.Model):
+    """
+    收藏的书单
+    """
+    user = models.ForeignKey(User)
+    book_list = models.ForeignKey(UserCreateBookList)
 
 
 
