@@ -278,10 +278,19 @@ class BookListView(APIView):
         title = serializer.validated_data['title']
         comment = serializer.validated_data['comment']
         isbn13_list = serializer.validated_data['isbn13_list']
+        # 找到第一本书的图片:
+        try:
+            book = Book.objects.get(isbn13=isbn13_list[0])
+            img_id = book.img_id
+            if img_id == "update_image":
+                img_id = "--"
+        except:
+            img_id = "--"
         # 创建书单项:
         user_list = UserCreateBookList.objects.create(user=request.user,
                                                       title=title,
-                                                      comment=comment)
+                                                      comment=comment,
+                                                      img_id=img_id)
         user_list.save()
         # 向书单项中添加书籍
         for isbn13 in isbn13_list:
@@ -303,6 +312,7 @@ class BookListView(APIView):
             reply_dict['id'] = book_list.id
             reply_dict['title'] = book_list.title
             reply_dict['comment'] = book_list.comment
+            reply_dict['img_id'] = book_list.img_id
             reply.append(reply_dict)
         return Response(reply, HTTP_200_OK)
 
@@ -334,6 +344,7 @@ class StarBookListView(APIView):
             reply_dict['id'] = i.book_list.id
             reply_dict['title'] = i.book_list.title
             reply_dict['comment'] = i.book_list.comment
+            reply_dict['img_id'] = i.book_list.img_id
             reply.append(reply_dict)
         return Response(reply, HTTP_200_OK)
 
@@ -349,6 +360,7 @@ class BookListDetailView(APIView):
             reply_dict['id'] = book_list.id
             reply_dict['title'] = book_list.title
             reply_dict['comment'] = book_list.comment
+            reply_dict['img_id'] = book_list.img_id
             star_count = StarBookList.objects.filter(book_list=book_list)
             reply_dict['star_count'] = len(star_count)
             book_in_list = BookInList.objects.filter(book_list=book_list)

@@ -56,6 +56,7 @@ class UserCreateBookList(models.Model):
     """
     user = models.ForeignKey(User)
     title = models.CharField(max_length=1000)
+    img_id = models.CharField(max_length=300, default="--")
     comment = models.TextField()
 
 
