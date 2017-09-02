@@ -24,8 +24,9 @@ from .models import (WeChatUser, PhoneUser, FeedBack,
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
 from library.permissions import have_phone_register
-from bookdata.models import Book
+from bookdata.models import Book, Note
 from bookdata.serializers import ShortInto
+
 
 class UserProfileDetailAPIView(APIView):
     """
@@ -332,6 +333,8 @@ class StarBookListView(APIView):
             star_book_list = StarBookList.objects.create(user=request.user,
                                                          book_list=book_list)
             star_book_list.save()
+            book_list.star += 1
+            book_list.save()
             return Response(HTTP_200_OK)
         except:
             return Response(HTTP_404_NOT_FOUND)
@@ -361,8 +364,9 @@ class BookListDetailView(APIView):
             reply_dict['title'] = book_list.title
             reply_dict['comment'] = book_list.comment
             reply_dict['img_id'] = book_list.img_id
+            # 拿到用户名字
             star_count = StarBookList.objects.filter(book_list=book_list)
-            reply_dict['star_count'] = len(star_count)
+            reply_dict['star_count'] = book_list.star
             book_in_list = BookInList.objects.filter(book_list=book_list)
             books = list()  # 存储书单中所有的Book对象
             for i in book_in_list:
@@ -376,7 +380,71 @@ class BookListDetailView(APIView):
             return Response(HTTP_404_NOT_FOUND)
 
 
-# class
+class CycleView(APIView):
+    """
+    圈子内容
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, page):
+        page = int(page)
+        order = request.GET.get("order")
+        if order == "star":
+            # 按照热度排序
+            # 先查书单15:
+            list_queryset = UserCreateBookList.objects.order_by("star")[page*15-15:page*15]
+            # 再查笔记5
+            note_queryset = Note.objects.filter(shared=True)[page*5-5:page*5]
+            reply = list()
+            for i in range(5):
+                small_list_qs = list_queryset[i*3:i*3+3]
+                small_note_qs = note_queryset[i:i+1]
+                for sl in small_list_qs:
+                    sl_dict = dict()
+                    sl_dict['title'] = sl.title
+                    sl_dict['comment'] = sl.comment
+                    sl_dict['img_id'] = sl.img_id
+                    sl_dict['type'] = u"book_list"
+                    sl_dict['id'] =  sl.id
+                    reply.append(sl_dict)
+                for sn in small_note_qs:
+                    sn_dict = dict()
+                    sn_dict['title'] = sn.title
+                    sn_dict['comment'] = sn.comment
+                    sn_dict['img_id'] = sn.book_img_url
+                    sn_dict['type'] = u"note"
+                    sn_dict['id'] = sn.id
+                    reply.append(sn_dict)
+            return Response(reply, HTTP_200_OK)
+        elif order == "time":
+            # 按照时间排序
+            # 先查书单15:
+            list_queryset = UserCreateBookList.objects.all()[page * 15 - 15:page * 15]
+            # 再查笔记5
+            note_queryset = Note.objects.filter(shared=True)[page * 5 - 5:page * 5]
+            reply = list()
+            for i in range(5):
+                small_list_qs = list_queryset[i * 3:i * 3 + 3]
+                small_note_qs = note_queryset[i:i + 1]
+                for sl in small_list_qs:
+                    sl_dict = dict()
+                    sl_dict['title'] = sl.title
+                    sl_dict['comment'] = sl.comment
+                    sl_dict['img_id'] = sl.img_id
+                    sl_dict['type'] = u"book_list"
+                    sl_dict['id'] = sl.id
+                    reply.append(sl_dict)
+                for sn in small_note_qs:
+                    sn_dict = dict()
+                    sn_dict['title'] = sn.title
+                    sn_dict['comment'] = sn.comment
+                    sn_dict['img_id'] = sn.book_img_url
+                    sn_dict['type'] = u"note"
+                    sn_dict['id'] = sn.id
+                    reply.append(sn_dict)
+            return Response(reply, HTTP_200_OK)
+        else:
+            return Response(HTTP_404_NOT_FOUND)
 
 
 

@@ -58,6 +58,8 @@ class UserCreateBookList(models.Model):
     title = models.CharField(max_length=1000)
     img_id = models.CharField(max_length=300, default="--")
     comment = models.TextField()
+    date = models.CharField(max_length=300,default="xxxx-xx-xx")
+    star = models.IntegerField(default=0)
 
 
 class BookInList(models.Model):
