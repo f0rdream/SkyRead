@@ -6,7 +6,7 @@ from serializers import (UserProfileDetailSerializer,
                          FeedBackSerializer,
                          FeedBackDetailSerializer,
                          ChangeTimesSerializer,
-                         AddLabelSerializer,LabelSerializer)
+                         AddLabelSerializer,LabelSerializer,BookListCreateSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -16,10 +16,11 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .models import WeChatUser,PhoneUser, FeedBack, StarList
+from .models import WeChatUser,PhoneUser, FeedBack, StarList, UserCreateBookList, BookInList
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
 from library.permissions import have_phone_register
+from bookdata.model import Book
 
 
 class UserProfileDetailAPIView(APIView):
@@ -260,14 +261,34 @@ class DeleteLabelView(APIView):
             return Response(HTTP_403_FORBIDDEN)
 
 
-# class CreateBookListView(APIView):
-#     """
-#     用户创建书单
-#     """
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self,request):
+class BookListView(APIView):
+    """
+    用户创建书单
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = BookListCreateSerializer
 
+    def post(self,request):
+        serializer = BookListCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        title = serializer.validated_data['title']
+        comment = serializer.validated_data['comment']
+        isbn13_list = serializer.validated_data['isbn13_list']
+        # 创建书单项:
+        user_list = UserCreateBookList.objects.create(user=request.user,
+                                                      title=title,
+                                                      comment=comment)
+        user_list.save()
+        # 向书单项中添加书籍
+        for isbn13 in isbn13_list:
+            try:
+                book = Book.objects.get(isbn13=isbn13)
+                book_in_list = BookInList.objects.create(book_list=user_list,
+                                                         book=book)
+                book_in_list.save()
+            except Exception as e:
+                print e
+        return Response(HTTP_200_OK)
 
 
 
