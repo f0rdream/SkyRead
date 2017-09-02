@@ -400,7 +400,6 @@ class ReadPlanDetailSerializer(ModelSerializer):
             return "--"
 
 
-
 class Img2TextSerializer(ModelSerializer):
     class Meta:
         model = ImageFile
@@ -432,6 +431,7 @@ class NoteGetSerializer(ModelSerializer):
     date = SerializerMethodField()
     comment = SerializerMethodField()
     book_img_url = SerializerMethodField()
+    shared = SerializerMethodField()
 
     class Meta:
         model = Note
@@ -454,6 +454,9 @@ class NoteGetSerializer(ModelSerializer):
 
     def get_book_img_url(self,obj):
         return obj.book_img_url
+
+    def get_shared(self,obj):
+        return obj.shared
 
 
 class RecordPostSerializer(ModelSerializer):

@@ -113,6 +113,7 @@ class Note(models.Model):
     book_img_url = models.CharField(max_length=1000,default="img_url")
     isbn13 = models.CharField(max_length=1000, default=u"-1")
     date = models.CharField(max_length=200)
+    shared = models.BooleanField(default=False)
 
 
 class ImageFile(models.Model):
