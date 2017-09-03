@@ -9,7 +9,10 @@ from serializers import (UserProfileDetailSerializer,
                          AddLabelSerializer,
                          LabelSerializer,
                          BookListCreateSerializer,
-                         BookListIdSerializer)
+                         BookListIdSerializer,
+                         CycleCommnetSerializer,
+                         ListCommentDetailSerializer,
+                         NoteCommentDetailSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -20,11 +23,12 @@ from rest_framework.status import (
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
 from .models import (WeChatUser, PhoneUser, FeedBack,
-                     StarList, UserCreateBookList, BookInList,StarBookList)
+                     StarList, UserCreateBookList, BookInList,
+                     StarBookList, BookListComment)
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
 from library.permissions import have_phone_register
-from bookdata.models import Book, Note
+from bookdata.models import Book, Note,NoteComment
 from bookdata.serializers import ShortInto
 
 
@@ -445,6 +449,111 @@ class CycleView(APIView):
             return Response(reply, HTTP_200_OK)
         else:
             return Response(HTTP_404_NOT_FOUND)
+
+
+class CycleSearchView(APIView):
+    """
+    搜索
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        keyword = request.GET.get("keyword")
+        # 先去查找书单
+        list_queryset = UserCreateBookList.objects.filter(title__contains=keyword)
+        # 再去查找笔记
+        note_queryset = Note.objects.filter(title__contains=keyword)
+        reply = list()
+        for sl in list_queryset:
+            sl_dict = dict()
+            sl_dict['title'] = sl.title
+            sl_dict['comment'] = sl.comment
+            sl_dict['img_id'] = sl.img_id
+            sl_dict['type'] = u"book_list"
+            sl_dict['id'] = sl.id
+            reply.append(sl_dict)
+        for sn in note_queryset:
+            sn_dict = dict()
+            sn_dict['title'] = sn.title
+            sn_dict['comment'] = sn.comment
+            sn_dict['img_id'] = sn.book_img_url
+            sn_dict['type'] = u"note"
+            sn_dict['id'] = sn.id
+            reply.append(sn_dict)
+        return Response(reply, HTTP_200_OK)
+
+
+class CycleListCommentView(APIView):
+    """
+    添加书单评论和笔记评论
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = CycleCommnetSerializer
+
+    def post(self, request, pk):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        content = serializer.validated_data['content']
+        try:
+            book_list = UserCreateBookList.objects.get(pk=pk)
+            comment_obj = BookListComment.objects.create(book_list=book_list,
+                                                         user=request.user,
+                                                         content=content)
+            comment_obj.save()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk):
+        try:
+            book_list = UserCreateBookList.objects.get(pk=pk)
+            comment_queryset = BookListComment.objects.filter(book_list=book_list)
+            serializer = ListCommentDetailSerializer(comment_queryset,
+                                                     data=request.data,
+                                                     many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
+
+class CycleNoteCommentView(APIView):
+    """
+        添加书单评论和笔记评论
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = CycleCommnetSerializer
+
+    def post(self, request, pk):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        content = serializer.validated_data['content']
+        try:
+            note = Note.objects.get(pk=pk)
+            comment_obj = NoteComment.objects.create(note=note,
+                                                         user=request.user,
+                                                         content=content)
+            comment_obj.save()
+            return Response(HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk):
+        try:
+            note = Note.objects.get(pk=pk)
+            comment_queryset = NoteComment.objects.filter(note=note)
+            serializer = NoteCommentDetailSerializer(comment_queryset,
+                                                     data=request.data,
+                                                     many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, HTTP_200_OK)
+        except Exception as e :
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+
+
 
 
 

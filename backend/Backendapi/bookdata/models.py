@@ -134,3 +134,10 @@ class PlanRecord(models.Model):
     now_page = models.IntegerField(default=0)
 
 
+class NoteComment(models.Model):
+    user = models.ForeignKey(User)
+    note = models.ForeignKey(Note)
+    content = models.CharField(max_length=1000)
+
+
+

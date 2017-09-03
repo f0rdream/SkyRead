@@ -75,4 +75,13 @@ class StarBookList(models.Model):
     book_list = models.ForeignKey(UserCreateBookList)
 
 
+class BookListComment(models.Model):
+    """
+    书单的评论
+    """
+    user = models.ForeignKey(User)
+    book_list = models.ForeignKey(UserCreateBookList)
+    content = models.CharField(max_length=1000)
+
+
 

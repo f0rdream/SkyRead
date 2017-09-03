@@ -6,7 +6,8 @@ from .views import (UserProfileDetailAPIView,
                     ReturnMessageOpenOrClose, FeedBackView,
                     ChangeTimeView, AddLabelView,DeleteLabelView,
                     BookListView, StarBookListView, BookListDetailView,
-                    CycleView)
+                    CycleView, CycleSearchView,CycleListCommentView,
+                    CycleNoteCommentView)
 
 urlpatterns = [
     url(r'^$', UserProfileDetailAPIView.as_view(), name='user_detail'),  # 用户基本信息
@@ -22,5 +23,8 @@ urlpatterns = [
     url(r'^book_list/$', BookListView.as_view()),  # 用户自建书单
     url(r'^book_list/star/$', StarBookListView.as_view()),  # 用户收藏的书单
     url(r'^book_list/(?P<pk>\d+)/$', BookListDetailView.as_view()),  # 书单详情
-    url(r'^cycle/(?P<page>\d+)/$', CycleView.as_view())
+    url(r'^cycle/(?P<page>\d+)/$', CycleView.as_view()),
+    url(r'^cycle/search/$',CycleSearchView.as_view()),
+    url(r'^cycle/list_comment/(?P<pk>\d+)/$', CycleListCommentView.as_view()),  # 书单评论
+    url(r'^cycle/note_comment/(?P<pk>\d+)/$', CycleNoteCommentView.as_view()),  # 笔记评论
 ]
