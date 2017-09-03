@@ -34,7 +34,7 @@ from .serializers import (
     IdSerializer,
     ReturnItemSerializer,
     BorrowIdListSerializer,
-    GetOrderRecordSerializer)
+    GetOrderRecordSerializer,QuickReturnItemSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -1055,63 +1055,67 @@ class FinishGiveOrderItemView(APIView):
         return Response(get_reply(0,'success'))
 
 
-class QuickQRcodeView(APIView):
-    """
-    生成无人还书的二维码
-    """
-    permission_classes = [IsAuthenticated]
-    serializer_class = IdListSerializer
+# class QuickQRcodeView(APIView):
+#     """
+#     生成无人还书的二维码
+#     """
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = IdListSerializer
+#
+#     def post(self, request):
+#         if not have_phone_register(user=request.user):
+#             reply = get_reply(17, 'not register with phone')
+#             return Response(reply, HTTP_403_FORBIDDEN)
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         id_list = serializer.validated_data['id_list']
+#         ctime = time.time()
+#         qrtype = 'quick_return'
+#         url = create_return_qrcode(id_list, ctime, qrtype, -1)
+#         reply = dict()
+#         reply['url'] = url
+#         # return Response(reply, HTTP_200_OK)
 
-    def post(self, request):
-        if not have_phone_register(user=request.user):
-            reply = get_reply(17, 'not register with phone')
-            return Response(reply, HTTP_403_FORBIDDEN)
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        id_list = serializer.validated_data['id_list']
-        ctime = time.time()
-        qrtype = 'quick_return'
-        url = create_return_qrcode(id_list, ctime, qrtype, -1)
-        reply = dict()
-        reply['url'] = url
-        return Response(reply, HTTP_200_OK)
 
-
-class QuickReturnVerify(APIView):
+class QuickReturnView(APIView):
     """
     无人借阅的书籍,quick_check = True
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = ReturnBookSerializer
+    serializer_class = QuickReturnItemSerializer
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def post(self, request):
         user = request.user
-        # 此处判断是否是管理员
         if user.admin_permission.andriod_permisson:
-            serializer = ReturnBookSerializer(data=request.data)
+            serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             id_list = serializer.validated_data['id_list']
-            ctime = serializer.validated_data['ctime']
-            qrtype = serializer.validated_data['qrtype']
-            ctime = float(ctime)
-            now_time = time.time()
-            if now_time - ctime > 120.00:
-                reply = get_reply(154, 'over time')
-                return Response(reply, HTTP_400_BAD_REQUEST)
-            if qrtype != 'quick_return':
-                reply = get_reply(155, 'not a quick_return')
-                return Response(reply, HTTP_400_BAD_REQUEST)
-            queryset = list()
             for id in id_list:
                 try:
-                    borrow_item = BorrowItem.objects.get(pk=id)
-                    # without_check变为True
-                    borrow_item.quick_return = True
-                    borrow_item.save()
+                    borrow_item1 = BorrowItem.objects.get(pk=id)
+                    borrow_item1.finish_return = True
+                    # 更改还书时间
+                    borrow_item1.return_time = str(time.strftime('%Y-%m-%d', time.localtime(time.time())))
+                    # 获取book_id
+                    book_id = borrow_item1.book_id
+                    # 修改馆藏信息
+                    holding = Holding.objects.get(id=book_id)
+                    holding.state = True
+                    holding.back_time = "--"
+                    holding.save()
+                    borrow_item1.save()
+                    # 记录归还操作
+                    record = AdminBorrowItemRecord.objects.create(user=user,
+                                                                  record_type=2,
+                                                                  borrow_item=borrow_item1,
+                                                                  about_user=borrow_item1.user.id
+                                                                  )
+                    record.save()
                 except:
-                    return Response(HTTP_403_FORBIDDEN)
-            return Response(HTTP_200_OK)
+                    pass
+            reply = get_reply(0, 'success')
+            return Response(reply, HTTP_200_OK)
         else:
             reply = get_reply(23, 'not a admin')
             return Response(reply, HTTP_403_FORBIDDEN)

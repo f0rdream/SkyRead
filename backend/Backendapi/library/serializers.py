@@ -357,3 +357,12 @@ class GetOrderRecordSerializer(serializers.Serializer):
     生成取书籍记录
     """
     order_id = IntegerField()
+
+
+class QuickReturnItemSerializer(serializers.Serializer):
+    """
+    批量生成的id的list
+    """
+    id_list = ListField(
+        child = IntegerField()
+    )

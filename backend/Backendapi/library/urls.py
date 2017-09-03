@@ -26,8 +26,7 @@ from .views import (BorrowItemView,
                     ReturnItemConfirmInfo,
                     order_info,
                     FinishGiveOrderItemView,
-                    QuickQRcodeView,
-                    QuickReturnVerify)
+                    QuickReturnView)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$', BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -43,8 +42,8 @@ urlpatterns = [
     url(r'^return/continue', ContinueReturnBook.as_view(), name='continue_return'),
     url(r'^return/confirm/(?P<return_id>\d+)$',ReturnItemConfirmInfo.as_view(),name='confirm_info'),
     # quick_return's urls
-    url(r'^quick_return/qrcode/$', QuickQRcodeView.as_view()),
-    url(r'^quick_return/verify/$',QuickReturnVerify.as_view()),
+    # url(r'^quick_return/qrcode/$', QuickQRcodeView.as_view()),
+    url(r'^quick_return/$', QuickReturnView.as_view()),
     # order's urls
     url(r'^order/success/$',OrderSuccessView.as_view(),name='order_create_list'),
     url(r'^order/success/(?P<pk>\d+)$',SuccessOrderDetailView.as_view(),name='order_de'),
