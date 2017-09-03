@@ -642,7 +642,7 @@ class AddNoteIntoCycleView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def post(self,request,pk):
+    def get(self,request,pk):
         try:
             note = Note.objects.get(pk=pk)
             note.shared = True
