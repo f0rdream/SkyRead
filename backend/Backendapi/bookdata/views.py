@@ -636,5 +636,21 @@ class PlanRecordByDateView(APIView):
         return Response(date_list,HTTP_200_OK)
 
 
+class AddNoteIntoCycleView(APIView):
+    """
+    把笔记分享到圈子
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request,pk):
+        try:
+            note = Note.objects.get(pk=pk)
+            note.shared = True
+            note.save()
+            return Response(HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
 
 
