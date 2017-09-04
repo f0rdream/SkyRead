@@ -11,13 +11,13 @@
   <link href="{% static 'assets2/css/material-dashboard.css' %}" rel="stylesheet" />
   <link href="{% static 'assets2/css/own.css' %}" rel="stylesheet" />
   <!--     Fonts and icons     -->
-  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-  <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet' type='text/css'>
+  <link href="{% static 'assets2/css/font-awesome.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets2/css/material-icons.css' %}" rel='stylesheet' type='text/css'>
 </head>
 
 <body>
 <div class="wrapper">
-    <div class="sidebar" data-color="purple" data-image="../assets2/img/sidebar-1.jpg">
+    <div class="sidebar" data-color="purple" data-image="{% static 'assets2/img/sidebar-1.jpg' %}">
       
           <div class="logo">
             <a href="#" class="simple-text">
@@ -27,12 +27,12 @@
       
           <div class="sidebar-wrapper">
             <ul class="nav">
-              <li>
+              <!-- <li>
                 <a href="user.html">
                     <i class="material-icons">dashboard</i>
                     <p>数据总览</p>
                 </a>
-              </li>
+              </li> -->
               <li class="active">
                 <a href="{%url 'adminer_home'%}">
                     <i class="material-icons">dashboard</i>
@@ -125,26 +125,6 @@
             <div class="container-fluid">
               <nav class="pull-left">
                 <ul>
-                  <li>
-                    <a href="#">
-                        Home
-                      </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                        Company
-                      </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                        Portfolio
-                      </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                         Blog
-                      </a>
-                  </li>
                 </ul>
               </nav>
               <p class="copyright pull-right">
@@ -169,9 +149,6 @@
 
 <!--  Notifications Plugin    -->
 <script src="{% static 'assets2/js/bootstrap-notify.js' %}"></script>
-
-<!--  Google Maps Plugin    -->
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
 
 <!-- Material Dashboard javascript methods -->
 <script src="{% static 'assets2/js/material-dashboard.js' %}"></script>

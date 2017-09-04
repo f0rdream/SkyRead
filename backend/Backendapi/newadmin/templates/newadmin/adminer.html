@@ -58,8 +58,8 @@
                   <form action="{%url 'adminer_detail' user_id%}" method="POST">
                     {%csrf_token%}
                     <button type="submit" rel="tooltip" title="点击查看" class="btn btn-primary btn-simple btn-xs">
-                                  <i class="material-icons">edit</i>
-                              </button>
+                      <i class="material-icons">edit</i>
+                    </button>
                   </form>
                 </td>
               </tr>
@@ -73,48 +73,40 @@
 
 <div align="center">
   <br>
-  <button type="button" class="btn btn-lg btn-primary" \ data-toggle="modal" data-target="#myModal">创建新的管理员</button>
+  <button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#myModal">创建新的管理员</button>
 </div>
-<!--增加书籍模态框-->
-<!-- 模态框（Modal） -->
+
+
+
+{% endblock %}
+{% block modalpart %}
+<!-- Modal Core -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                </button>
-        <h4 class="modal-title" id="myModalLabel">
-          添加管理员
-        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">添加管理员</h4>
       </div>
-      <!--提交表单-->
       <div class="modal-body">
         <form role="form" action="{%url 'create_admin'%}" method="POST">
           {%csrf_token%}
-          <div class="form-group">
-            <label>输入用户名</label>
+          <div class="form-group label-floating is-empty">
+            <label class="control-label">输入用户名</label>
             <input class="form-control" type="text" name="username">
           </div>
-          <div class="form-group">
-            <label>输入密码</label>
+          <div class="form-group label-floating is-empty">
+            <label class="control-label">输入密码</label>
             <input class="form-control" type="password" name="password">
           </div>
-          <div class="form-group">
-            <label>再次输入密码 </label>
+          <div class="form-group label-floating is-empty">
+            <label class="control-label">再次输入密码 </label>
             <input class="form-control" type="password">
           </div>
           <button type="submit" class="btn btn-danger">提交</button>
         </form>
       </div>
-      <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
   </div>
-  <!-- /.modal -->
 </div>
-
-
-
-
-
 {% endblock %}
