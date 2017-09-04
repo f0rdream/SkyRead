@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="page-wrapper">
-    <tab v-model="selectedIndex" bar-active-color="#2bc6b9" active-color="#2bc6b9">
+    <button-tab v-model="selectedIndex" bar-active-color="#2bc6b9" active-color="#2bc6b9">
       <tab-item v-for="item in tabItems" @on-item-click="$router.replace(item.src)" :key="item.src">{{item.label}}</tab-item>
-    </tab>
+    </button-tab>
     <div class="item-container" v-for="item in items" :key="item.id">
       <div class="left"></div>
       <div class="right">
@@ -15,13 +15,13 @@
 </template>
 
 <script>
-import { Tab, TabItem } from 'vux'
+import { ButtonTab, ButtonTabItem } from 'vux'
 import InfiniteLoading from 'vue-infinite-loading'
 
 export default {
   components: {
-    Tab,
-    TabItem,
+    ButtonTab,
+    ButtonTabItem,
     InfiniteLoading
   },
   data () {
