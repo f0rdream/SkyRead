@@ -45,7 +45,7 @@
         <h4 class="modal-title" id="myModalLabel">添加轮播图</h4>
       </div>
       <div class="modal-body">
-          <form role="form" action="{%url 'add_picture'%}" method="POST" class="form-add">
+          <form role="form" action="{%url 'add_picture'%}" method="POST" class="form-add" enctype="multipart/form-data">
               {%csrf_token%}
           <div class="form-group label-floating is-empty">
               <label class="control-label">输入轮播图标题</label>
