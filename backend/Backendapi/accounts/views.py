@@ -318,6 +318,17 @@ class BookListView(APIView):
             reply_dict['title'] = book_list.title
             reply_dict['comment'] = book_list.comment
             reply_dict['img_id'] = book_list.img_id
+            try:
+                # 查找书单中的所有书籍
+                title_list = list()
+                book_queryset = BookInList.objects.filter(book_list=book_list)
+                for book_in_list in book_queryset:
+                    book = book_in_list.book
+                    title = book.title
+                    title_list.append(title)
+                    reply_dict['title_list'] = title_list
+            except:
+                reply_dict['title_list'] = []
             reply.append(reply_dict)
         return Response(reply, HTTP_200_OK)
 
@@ -352,6 +363,25 @@ class StarBookListView(APIView):
             reply_dict['title'] = i.book_list.title
             reply_dict['comment'] = i.book_list.comment
             reply_dict['img_id'] = i.book_list.img_id
+            try:
+                # 查找书单中的所有书籍
+                title_list = list()
+                book_queryset = BookInList.objects.filter(book_list=i.book_list)
+                for book_in_list in book_queryset:
+                    book = book_in_list.book
+                    title = book.title
+                    title_list.append(title)
+                    reply_dict['title_list'] = title_list
+            except:
+                reply_dict['title_list'] = []
+            # 返回微信名字
+            username = i.book_list.user.username
+            try:
+                wechat_user = WeChatUser.objects.get(openid=username)
+                nickname = wechat_user.nickname
+                reply_dict['nick_name'] = nickname
+            except:
+                reply_dict['nick_name'] = "--"
             reply.append(reply_dict)
         return Response(reply, HTTP_200_OK)
 
