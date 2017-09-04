@@ -547,7 +547,7 @@ def file_download(request):
 
 def add_picture(request):
     if request.method == 'POST':
-        picture = request.POST['picture']
+        picture = request.FILES['picture']
         title = request.POST['title']
         isbn13 = request.POST['isbn13']
         try:

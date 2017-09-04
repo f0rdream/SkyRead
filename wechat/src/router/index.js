@@ -13,6 +13,7 @@ import notelist from '../pages/person/children/notelist'
 import modnote from '../pages/person/children/modnote'
 import addnote from '../pages/person/children/addnote'
 import notedetail from '../pages/person/children/notedetail'
+import social from '../pages/person/children/social'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
@@ -142,6 +143,10 @@ export default new Router({
     {
       path: '/person/related',
       component: related
+    },
+    {
+      path: '/person/social',
+      component: social
     },
     {
       path: '/person/related/:index/:item',
