@@ -103,11 +103,11 @@
 
     // Pagination
     $('#footer-pagination').twbsPagination({
-        totalPages: 5,
+        totalPages: {{}},
         visiblePages: 5,
         startPage: {{page}},
         onPageClick: function (event, page) {
-            window.location.href='/book_home/change_page/' + page;
+            window.location.href='/web/book_home/change_page/' + page;
         }
     });
 
