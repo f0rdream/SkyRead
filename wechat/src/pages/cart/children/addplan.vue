@@ -14,9 +14,9 @@
 </template>
 
 <script>
-import { Cell, PopupPicker, Group, Datetime, XButton } from 'vux'
+import { Cell, PopupPicker, Group, Datetime, XButton, dateFormat } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-import { timeJS2PY } from '@/config/utils'
+// import { timeJS2PY } from '@/config/utils'
 
 export default {
   components: {
@@ -39,7 +39,8 @@ export default {
     }),
     todayString () {
       let today = new Date()
-      return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+      // return `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}` 2017-08-02T08:00:00Z
+      return dateFormat(today, 'YYYY-MM-DD')
     }
   },
   mounted () {
@@ -53,7 +54,7 @@ export default {
     submit () {
       // let begin_time = timeJS2PY(this.beginTime)
       // let end_time = timeJS2PY(this.endTime)
-      let form = {isbn13: this.checkedBook[0], begin_time: timeJS2PY(this.beginTime), end_time: timeJS2PY(this.endTime)}
+      let form = {isbn13: this.checkedBook[0], begin_time: dateFormat(this.beginTime, 'YYYY-MM-DDTHH:mm:ssZ'), end_time: dateFormat(this.endTime, 'YYYY-MM-DDTHH:mm:ssZ')}
       this.$http.post('/book/readplan/', form).then(res => {
         this.setErrMsg({text: '信息更新成功'})
         setTimeout(() => {

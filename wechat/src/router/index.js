@@ -30,6 +30,7 @@ import backing from '../pages/cart/children/backing'
 import favorite from '../pages/cart/children/favorite'
 import readplan from '../pages/cart/children/readplan'
 import addplan from '../pages/cart/children/addplan'
+import signin from '../pages/cart/children/signin'
 import ordered from '../pages/cart/children/ordered'
 import ordertime from '../pages/cart/children/ordertime'
 import ordering from '../pages/cart/children/ordering'
@@ -107,6 +108,10 @@ export default new Router({
         {
           path: 'readplan',
           component: readplan
+        },
+        {
+          path: 'signin/:id',
+          component: signin
         },
         {
           path: 'ordered',

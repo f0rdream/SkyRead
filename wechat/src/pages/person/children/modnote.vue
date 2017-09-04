@@ -64,7 +64,7 @@ export default {
         this.bookSelect = [res.data.isbn13]
         this.comment = res.data.comment
         this.imageResult = res.content
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     onFileChange (e) {
       let files = e.target.files || e.dataTransfer.files
@@ -75,7 +75,7 @@ export default {
       formData.append('image', files[0])
       this.$http.post(`/book/img2text/`, formData).then(res => {
         console.log(res)
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     saveResult () {
       this.$http.post(`/book/note/${this.id}`,
@@ -86,7 +86,7 @@ export default {
         }
       ).then(res => {
         this.$router.replace(`/note`)
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     cancel () {
       this.$router.replace(`/note`)

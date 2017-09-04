@@ -10,8 +10,9 @@
       <div class="item-info-container">
         <div class="item-info-left" @click="bookClick">
           <p class="item-info">作者：<span v-for="author in bookInfo.author" :key="bookInfo.isbn13">{{author}} </span></p>
-          <p class="item-info">出版信息：{{ bookInfo.publisher }}</p>
+          <p class="item-info" v-if="this.type !== 'distance'">出版信息：{{ bookInfo.publisher }}</p>
           <p class="item-info">评分：{{ bookInfo.average }}</p>
+          <p class="item-info" v-if="this.type === 'distance'">距离：{{ bookInfo.distance }} 公里</p>
         </div>
         <div class="item-info-right">
           <button class="i-btn" mini @click="addFavorite(bookInfo.isbn13)">收藏</button>
@@ -30,7 +31,11 @@ export default {
     XButton
   },
   props: {
-    itemInfo: Object
+    itemInfo: Object,
+    type: {
+      default: 'normal',
+      type: String
+    }
   },
   data () {
     return {
@@ -43,6 +48,9 @@ export default {
     ]),
     bookClick () {
       this.$router.push(`/home/bookdetail/${this.bookInfo.isbn13}`)
+    },
+    distanceCac (distance) {
+      return distance.split('.')[0] + distance.split('.')[1].substring(0, 2)
     }
   }
 }
