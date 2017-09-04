@@ -34,7 +34,7 @@ from .serializers import (
     IdSerializer,
     ReturnItemSerializer,
     BorrowIdListSerializer,
-    GetOrderRecordSerializer)
+    GetOrderRecordSerializer,QuickReturnItemSerializer)
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
@@ -45,7 +45,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .utils import create_qrcode,create_qrcode_two, get_price, create_order_qrcode,\
+from .utils import create_qrcode, get_price, create_order_qrcode,\
     create_return_qrcode
 from permissions import have_phone_register
 from bookdata.models import Holding,Book
@@ -58,6 +58,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
     def enforce_csrf(self, request):
         return  # To not perform the csrf check previously happening
+
 
 class BorrowItemView(APIView):
     """
@@ -425,7 +426,7 @@ class ManyReturnQrCodeView(APIView):
         qrtype = 'return'
         # 创建一个还书item,得到return_id
         return_item = ReturnItem.objects.create(user=request.user,
-                                             confirm=False)
+                                                confirm=False)
         return_item.save()
         return_id = return_item.id
         url = create_return_qrcode(id_list,ctime,qrtype,return_id)
@@ -1052,3 +1053,69 @@ class FinishGiveOrderItemView(APIView):
         order_item.be_out = True
         order_item.save()
         return Response(get_reply(0,'success'))
+
+
+# class QuickQRcodeView(APIView):
+#     """
+#     生成无人还书的二维码
+#     """
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = IdListSerializer
+#
+#     def post(self, request):
+#         if not have_phone_register(user=request.user):
+#             reply = get_reply(17, 'not register with phone')
+#             return Response(reply, HTTP_403_FORBIDDEN)
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         id_list = serializer.validated_data['id_list']
+#         ctime = time.time()
+#         qrtype = 'quick_return'
+#         url = create_return_qrcode(id_list, ctime, qrtype, -1)
+#         reply = dict()
+#         reply['url'] = url
+#         # return Response(reply, HTTP_200_OK)
+
+
+class QuickReturnView(APIView):
+    """
+    无人借阅的书籍,quick_check = True
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = QuickReturnItemSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    def post(self, request):
+        user = request.user
+        if user.admin_permission.andriod_permisson:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            id_list = serializer.validated_data['id_list']
+            for id in id_list:
+                try:
+                    borrow_item1 = BorrowItem.objects.get(pk=id)
+                    borrow_item1.finish_return = True
+                    # 更改还书时间
+                    borrow_item1.return_time = str(time.strftime('%Y-%m-%d', time.localtime(time.time())))
+                    # 获取book_id
+                    book_id = borrow_item1.book_id
+                    # 修改馆藏信息
+                    holding = Holding.objects.get(id=book_id)
+                    holding.state = True
+                    holding.back_time = "--"
+                    holding.save()
+                    borrow_item1.save()
+                    # 记录归还操作
+                    record = AdminBorrowItemRecord.objects.create(user=user,
+                                                                  record_type=2,
+                                                                  borrow_item=borrow_item1,
+                                                                  about_user=borrow_item1.user.id
+                                                                  )
+                    record.save()
+                except:
+                    pass
+            reply = get_reply(0, 'success')
+            return Response(reply, HTTP_200_OK)
+        else:
+            reply = get_reply(23, 'not a admin')
+            return Response(reply, HTTP_403_FORBIDDEN)

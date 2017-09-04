@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.contrib.auth.models import User
 
-from .models import WeChatUser, PhoneUser, FeedBack, StarList
+from .models import WeChatUser, PhoneUser, FeedBack, StarList, BookListComment
 from rest_framework.serializers import (
     SerializerMethodField,
     ModelSerializer,
@@ -10,6 +10,7 @@ from rest_framework.serializers import (
     CharField,
     IntegerField,
     )
+from bookdata.models import NoteComment
 
 from .accounts_lib.vlidators import CheckString,PhoneValid
 from rest_framework import serializers
@@ -208,6 +209,60 @@ class LabelSerializer(ModelSerializer):
     class Meta:
         model = StarList
         exclude = ['user_list_id', 'user', 'list_type']
+
+
+class BookListCreateSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=1000)
+    comment = serializers.CharField(max_length=10000)
+    isbn13_list = serializers.ListField(child=IntegerField())
+
+
+class BookListIdSerializer(serializers.Serializer):
+    list_id = serializers.CharField(max_length=200)
+
+
+class CycleCommnetSerializer(serializers.Serializer):
+    content = serializers.CharField(max_length=1000)
+
+
+class ListCommentDetailSerializer(ModelSerializer):
+    nickname = SerializerMethodField()
+    class Meta:
+        model = BookListComment
+        fields = [
+            'nickname',
+            'content',
+        ]
+
+    def get_nickname(self, obj):
+        username = obj.user.username
+        try:
+            wechat_user = WeChatUser.objects.get(openid=username)
+            nickname = wechat_user.nickname
+            return nickname
+        except:
+            return '--'
+
+
+class NoteCommentDetailSerializer(ModelSerializer):
+    nickname = SerializerMethodField()
+    class Meta:
+        model = NoteComment
+        fields = [
+            'nickname',
+            'content',
+        ]
+
+    def get_nickname(self, obj):
+        username = obj.user.username
+        try:
+            wechat_user = WeChatUser.objects.get(openid=username)
+            nickname = wechat_user.nickname
+            return nickname
+        except:
+            return '--'
+
+
 
 
 

@@ -1,6 +1,7 @@
 # coding:utf-8
 from django.db import models
 from django.contrib.auth.models import User
+from bookdata.models import Book
 
 
 class WeChatUser(models.Model):
@@ -47,5 +48,40 @@ class StarList(models.Model):
     list_type = models.IntegerField(default=0)  # 0为label,1为用户书单
     key_word = models.CharField(max_length=1000)  # 关键字
     user_list_id = models.IntegerField(default=-1)
+
+
+class UserCreateBookList(models.Model):
+    """
+    用户自己建立的书单
+    """
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=1000)
+    img_id = models.CharField(max_length=300, default="--")
+    comment = models.TextField()
+    date = models.CharField(max_length=300,default="xxxx-xx-xx")
+    star = models.IntegerField(default=0)
+
+
+class BookInList(models.Model):
+    book_list = models.ForeignKey(UserCreateBookList)
+    book = models.ForeignKey(Book)
+
+
+class StarBookList(models.Model):
+    """
+    收藏的书单
+    """
+    user = models.ForeignKey(User)
+    book_list = models.ForeignKey(UserCreateBookList)
+
+
+class BookListComment(models.Model):
+    """
+    书单的评论
+    """
+    user = models.ForeignKey(User)
+    book_list = models.ForeignKey(UserCreateBookList)
+    content = models.CharField(max_length=1000)
+
 
 

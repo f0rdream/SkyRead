@@ -25,7 +25,8 @@ from .views import (BorrowItemView,
                     ContinueReturnBook,
                     ReturnItemConfirmInfo,
                     order_info,
-                    FinishGiveOrderItemView)
+                    FinishGiveOrderItemView,
+                    QuickReturnView)
 urlpatterns = [
     url(r'^borrow/$', BorrowItemView.as_view(), name='borrow_create_list'),
     url(r'^borrow/(?P<pk>\d+)$', BorrowItemDetailDeleteView.as_view(),name='detail_delete'),
@@ -33,13 +34,16 @@ urlpatterns = [
     url(r'^borrow/verify',VarifyAddToReturnBarView.as_view(),name='add'),
     url(r'^borrow/change_bar',AddToReturnBarView.as_view(),name='change_to_return_bar'),
     # return's urls
-    url(r'^return/$',ReturnItemView.as_view(),name='return_list'),
-    url(r'^return/(?P<pk>\d+)$',ReturnItemDetailDeleteView.as_view(),name='detail'),
+    url(r'^return/$', ReturnItemView.as_view(),name='return_list'),
+    url(r'^return/(?P<pk>\d+)$', ReturnItemDetailDeleteView.as_view(),name='detail'),
     url(r'^return/qrcode/$', ManyReturnQrCodeView.as_view(), name='get_return_qrcode'),
-    url(r'^return/verify',VarifyReturnBookBarView.as_view(),name='add'),
+    url(r'^return/verify', VarifyReturnBookBarView.as_view(),name='add'),
     url(r'^return/change_bar',FinishReturnView.as_view(),name='finish_return'),
     url(r'^return/continue', ContinueReturnBook.as_view(), name='continue_return'),
     url(r'^return/confirm/(?P<return_id>\d+)$',ReturnItemConfirmInfo.as_view(),name='confirm_info'),
+    # quick_return's urls
+    # url(r'^quick_return/qrcode/$', QuickQRcodeView.as_view()),
+    url(r'^quick_return/$', QuickReturnView.as_view()),
     # order's urls
     url(r'^order/success/$',OrderSuccessView.as_view(),name='order_create_list'),
     url(r'^order/success/(?P<pk>\d+)$',SuccessOrderDetailView.as_view(),name='order_de'),
@@ -59,4 +63,5 @@ urlpatterns = [
     url(r'^confirm/(?P<pay_id>\d+)$',ConfirmIt.as_view(),name='confirm_it'),
     # history's urls
     url(r'^readed/$',MyReadedBook.as_view(),name='read history'),
+
 ]

@@ -6,7 +6,13 @@ from serializers import (UserProfileDetailSerializer,
                          FeedBackSerializer,
                          FeedBackDetailSerializer,
                          ChangeTimesSerializer,
-                         AddLabelSerializer,LabelSerializer)
+                         AddLabelSerializer,
+                         LabelSerializer,
+                         BookListCreateSerializer,
+                         BookListIdSerializer,
+                         CycleCommnetSerializer,
+                         ListCommentDetailSerializer,
+                         NoteCommentDetailSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.status import (
@@ -16,10 +22,14 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN)
 from rest_framework.response import Response
-from .models import WeChatUser,PhoneUser, FeedBack, StarList
+from .models import (WeChatUser, PhoneUser, FeedBack,
+                     StarList, UserCreateBookList, BookInList,
+                     StarBookList, BookListComment)
 from accounts_lib.phone_verify import send_message,verify
 from l_lib.function import get_reply
 from library.permissions import have_phone_register
+from bookdata.models import Book, Note,NoteComment
+from bookdata.serializers import ShortInto
 
 
 class UserProfileDetailAPIView(APIView):
@@ -258,6 +268,296 @@ class DeleteLabelView(APIView):
             return Response(HTTP_200_OK)
         except:
             return Response(HTTP_403_FORBIDDEN)
+
+
+class BookListView(APIView):
+    """
+    用户创建书单
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = BookListCreateSerializer
+
+    def post(self, request):
+        serializer = BookListCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        title = serializer.validated_data['title']
+        comment = serializer.validated_data['comment']
+        isbn13_list = serializer.validated_data['isbn13_list']
+        # 找到第一本书的图片:
+        try:
+            book = Book.objects.get(isbn13=isbn13_list[0])
+            img_id = book.img_id
+            if img_id == "update_image":
+                img_id = "--"
+        except:
+            img_id = "--"
+        # 创建书单项:
+        user_list = UserCreateBookList.objects.create(user=request.user,
+                                                      title=title,
+                                                      comment=comment,
+                                                      img_id=img_id)
+        user_list.save()
+        # 向书单项中添加书籍
+        for isbn13 in isbn13_list:
+            try:
+                book = Book.objects.get(isbn13=isbn13)
+                book_in_list = BookInList.objects.create(book_list=user_list,
+                                                         book=book)
+                book_in_list.save()
+            except Exception as e:
+                print e
+        return Response(HTTP_200_OK)
+
+    def get(self, request):
+        """获取自己建的书单"""
+        queryset = UserCreateBookList.objects.filter(user=request.user)
+        reply = list()
+        for book_list in queryset:
+            reply_dict = dict()
+            reply_dict['id'] = book_list.id
+            reply_dict['title'] = book_list.title
+            reply_dict['comment'] = book_list.comment
+            reply_dict['img_id'] = book_list.img_id
+            reply.append(reply_dict)
+        return Response(reply, HTTP_200_OK)
+
+
+class StarBookListView(APIView):
+    """收藏书单"""
+    permission_classes = [IsAuthenticated]
+    serializer_class = BookListIdSerializer
+
+    def post(self,request):
+        """收藏"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        list_id = serializer.validated_data['list_id']
+        try:
+            book_list = UserCreateBookList.objects.get(pk=list_id)
+            star_book_list = StarBookList.objects.create(user=request.user,
+                                                         book_list=book_list)
+            star_book_list.save()
+            book_list.star += 1
+            book_list.save()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
+    def get(self,request):
+        queryset = StarBookList.objects.filter(user=request.user)
+        reply = list()
+        for i in queryset:
+            reply_dict = dict()
+            reply_dict['id'] = i.book_list.id
+            reply_dict['title'] = i.book_list.title
+            reply_dict['comment'] = i.book_list.comment
+            reply_dict['img_id'] = i.book_list.img_id
+            reply.append(reply_dict)
+        return Response(reply, HTTP_200_OK)
+
+
+class BookListDetailView(APIView):
+    """
+    书单详情和删除
+    """
+    def get(self,request,pk):
+        try:
+            book_list = UserCreateBookList.objects.get(pk=pk)
+            reply_dict = dict()
+            reply_dict['id'] = book_list.id
+            reply_dict['title'] = book_list.title
+            reply_dict['comment'] = book_list.comment
+            reply_dict['img_id'] = book_list.img_id
+            # 拿到用户名字
+            star_count = StarBookList.objects.filter(book_list=book_list)
+            reply_dict['star_count'] = book_list.star
+            book_in_list = BookInList.objects.filter(book_list=book_list)
+            books = list()  # 存储书单中所有的Book对象
+            for i in book_in_list:
+                books.append(i.book)
+            serializer = ShortInto(books, data=[], many=True)
+            serializer.is_valid(raise_exception=True)
+            reply_dict['books_info'] = serializer.data
+            return Response(reply_dict, HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+
+class CycleView(APIView):
+    """
+    圈子内容
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, page):
+        page = int(page)
+        order = request.GET.get("order")
+        if order == "star":
+            # 按照热度排序
+            # 先查书单15:
+            list_queryset = UserCreateBookList.objects.order_by("star")[page*15-15:page*15]
+            # 再查笔记5
+            note_queryset = Note.objects.filter(shared=True)[page*5-5:page*5]
+            reply = list()
+            for i in range(5):
+                small_list_qs = list_queryset[i*3:i*3+3]
+                small_note_qs = note_queryset[i:i+1]
+                for sl in small_list_qs:
+                    sl_dict = dict()
+                    sl_dict['title'] = sl.title
+                    sl_dict['comment'] = sl.comment
+                    sl_dict['img_id'] = sl.img_id
+                    sl_dict['type'] = u"book_list"
+                    sl_dict['id'] =  sl.id
+                    reply.append(sl_dict)
+                for sn in small_note_qs:
+                    sn_dict = dict()
+                    sn_dict['title'] = sn.title
+                    sn_dict['comment'] = sn.comment
+                    sn_dict['img_id'] = sn.book_img_url
+                    sn_dict['type'] = u"note"
+                    sn_dict['id'] = sn.id
+                    reply.append(sn_dict)
+            return Response(reply, HTTP_200_OK)
+        elif order == "time":
+            # 按照时间排序
+            # 先查书单15:
+            list_queryset = UserCreateBookList.objects.all()[page * 15 - 15:page * 15]
+            # 再查笔记5
+            note_queryset = Note.objects.filter(shared=True)[page * 5 - 5:page * 5]
+            reply = list()
+            for i in range(5):
+                small_list_qs = list_queryset[i * 3:i * 3 + 3]
+                small_note_qs = note_queryset[i:i + 1]
+                for sl in small_list_qs:
+                    sl_dict = dict()
+                    sl_dict['title'] = sl.title
+                    sl_dict['comment'] = sl.comment
+                    sl_dict['img_id'] = sl.img_id
+                    sl_dict['type'] = u"book_list"
+                    sl_dict['id'] = sl.id
+                    reply.append(sl_dict)
+                for sn in small_note_qs:
+                    sn_dict = dict()
+                    sn_dict['title'] = sn.title
+                    sn_dict['comment'] = sn.comment
+                    sn_dict['img_id'] = sn.book_img_url
+                    sn_dict['type'] = u"note"
+                    sn_dict['id'] = sn.id
+                    reply.append(sn_dict)
+            return Response(reply, HTTP_200_OK)
+        else:
+            return Response(HTTP_404_NOT_FOUND)
+
+
+class CycleSearchView(APIView):
+    """
+    搜索
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        keyword = request.GET.get("keyword")
+        # 先去查找书单
+        list_queryset = UserCreateBookList.objects.filter(title__contains=keyword)
+        # 再去查找笔记
+        note_queryset = Note.objects.filter(title__contains=keyword)
+        reply = list()
+        for sl in list_queryset:
+            sl_dict = dict()
+            sl_dict['title'] = sl.title
+            sl_dict['comment'] = sl.comment
+            sl_dict['img_id'] = sl.img_id
+            sl_dict['type'] = u"book_list"
+            sl_dict['id'] = sl.id
+            reply.append(sl_dict)
+        for sn in note_queryset:
+            sn_dict = dict()
+            sn_dict['title'] = sn.title
+            sn_dict['comment'] = sn.comment
+            sn_dict['img_id'] = sn.book_img_url
+            sn_dict['type'] = u"note"
+            sn_dict['id'] = sn.id
+            reply.append(sn_dict)
+        return Response(reply, HTTP_200_OK)
+
+
+class CycleListCommentView(APIView):
+    """
+    添加书单评论和笔记评论
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = CycleCommnetSerializer
+
+    def post(self, request, pk):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        content = serializer.validated_data['content']
+        try:
+            book_list = UserCreateBookList.objects.get(pk=pk)
+            comment_obj = BookListComment.objects.create(book_list=book_list,
+                                                         user=request.user,
+                                                         content=content)
+            comment_obj.save()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk):
+        try:
+            book_list = UserCreateBookList.objects.get(pk=pk)
+            comment_queryset = BookListComment.objects.filter(book_list=book_list)
+            serializer = ListCommentDetailSerializer(comment_queryset,
+                                                     data=request.data,
+                                                     many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data,HTTP_200_OK)
+        except:
+            return Response(HTTP_404_NOT_FOUND)
+
+
+class CycleNoteCommentView(APIView):
+    """
+        添加书单评论和笔记评论
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = CycleCommnetSerializer
+
+    def post(self, request, pk):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        content = serializer.validated_data['content']
+        try:
+            note = Note.objects.get(pk=pk)
+            comment_obj = NoteComment.objects.create(note=note,
+                                                         user=request.user,
+                                                         content=content)
+            comment_obj.save()
+            return Response(HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk):
+        try:
+            note = Note.objects.get(pk=pk)
+            comment_queryset = NoteComment.objects.filter(note=note)
+            serializer = NoteCommentDetailSerializer(comment_queryset,
+                                                     data=request.data,
+                                                     many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, HTTP_200_OK)
+        except Exception as e :
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
+
+
+
+
+
+
 
 
 

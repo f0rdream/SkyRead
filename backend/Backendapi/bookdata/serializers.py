@@ -288,6 +288,7 @@ class StarBookDetailSerializer(ModelSerializer):
         short_info.is_valid(raise_exception=True)
         return short_info.data
 
+
 class PostCommentSerializer(ModelSerializer):
     class Meta:
         model = Comment
@@ -334,6 +335,9 @@ class PostReadPlanSerializer(ModelSerializer):
 
 class ReadPlanDetailSerializer(ModelSerializer):
     title = SerializerMethodField()
+    isbn13 = SerializerMethodField()
+    author = SerializerMethodField()
+    img_id = SerializerMethodField()
 
     class Meta:
         model = ReadPlan
@@ -345,7 +349,9 @@ class ReadPlanDetailSerializer(ModelSerializer):
             'end_time',
             'sum_page',
             'now_page',
-            'last_date'
+            'last_date',
+            'author',
+            'img_id',
         ]
 
     def get_isbn13(self,obj):
@@ -357,6 +363,39 @@ class ReadPlanDetailSerializer(ModelSerializer):
             book = Book.objects.get(isbn13=isbn13)
             title = book.title
             return title
+        except:
+            return "--"
+
+    def get_author(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            authors = book.author
+            if authors == '' or authors == '&':
+                return None
+            else:
+                author_list = []
+                authors = authors.split('&')
+                for author in authors:
+                    if author == '':
+                        continue
+                    else:
+                        if len(author) > 15:
+                            author = author[:15]
+                        author_list.append(author)
+                return author_list
+        except:
+            return "--"
+
+    def get_img_id(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            img_id = book.img_id
+            if img_id == "update_image":
+                return None
+            else:
+                return img_id
         except:
             return "--"
 
@@ -378,8 +417,6 @@ class NotePostSerializer(ModelSerializer):
         fields = [
             'content',
             'isbn13',
-            'title',
-            'book_img_url',
             'comment',
         ]
 
@@ -394,6 +431,7 @@ class NoteGetSerializer(ModelSerializer):
     date = SerializerMethodField()
     comment = SerializerMethodField()
     book_img_url = SerializerMethodField()
+    shared = SerializerMethodField()
 
     class Meta:
         model = Note
@@ -416,6 +454,9 @@ class NoteGetSerializer(ModelSerializer):
 
     def get_book_img_url(self,obj):
         return obj.book_img_url
+
+    def get_shared(self,obj):
+        return obj.shared
 
 
 class RecordPostSerializer(ModelSerializer):

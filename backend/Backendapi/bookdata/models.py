@@ -113,6 +113,7 @@ class Note(models.Model):
     book_img_url = models.CharField(max_length=1000,default="img_url")
     isbn13 = models.CharField(max_length=1000, default=u"-1")
     date = models.CharField(max_length=200)
+    shared = models.BooleanField(default=False)
 
 
 class ImageFile(models.Model):
@@ -131,5 +132,12 @@ class PlanRecord(models.Model):
     last_page = models.IntegerField(default=0)
     record_date = models.CharField(max_length=200, default=u"xxxx-xx-xx")
     now_page = models.IntegerField(default=0)
+
+
+class NoteComment(models.Model):
+    user = models.ForeignKey(User)
+    note = models.ForeignKey(Note)
+    content = models.CharField(max_length=1000)
+
 
 

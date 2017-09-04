@@ -7,3 +7,4 @@ dict = i.split("b")
 for number in dict[1:]:
     id = int(number)
 
+print time.time()

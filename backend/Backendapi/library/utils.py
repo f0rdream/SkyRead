@@ -9,7 +9,7 @@ from models import BorrowItem
 import time
 
 
-def create_qrcode(id_list,ctime,qrtype,pay_id):
+def create_qrcode(id_list, ctime, qrtype, pay_id):
     """
     :param bid:表示书籍的唯一id,用isbn号码
     :param ctime: 创建时间,一分钟后过期
@@ -42,6 +42,7 @@ def create_qrcode(id_list,ctime,qrtype,pay_id):
         url = '/media/return_qrcode/' + str(id) + ".png"
         img.save(filename)
         return url
+
 
 def get_price(id_list):
     sum_price = 0.0
@@ -95,8 +96,8 @@ def create_return_qrcode(id_list,ctime,qrtype,return_id):
     id = ''
     for i in id_list:
         id += 'b'+ str(i)  # 参数最后的样子:id = b1b2b3b56
-    url = "http://115.159.185.170/library/qrcode_info/?ctime="+str(ctime)+\
-          "&id="+str(id)+"&qrtype="+qrtype+"&return_id="+str(return_id)
+    url = "http://115.159.185.170/library/qrcode_info/?ctime="+str(ctime) + \
+          "&id=" + str(id) + "&qrtype=" + qrtype+"&return_id=" + str(return_id)
     qr.add_data(url)
     qr.make(fit=True)
     img = qr.make_image()
@@ -110,12 +111,18 @@ def create_return_qrcode(id_list,ctime,qrtype,return_id):
         url = '/media/return_qrcode/' + str(id) + ".png"
         img.save(filename)
         return url
+    elif qrtype == 'quick_return':
+        filename = 'media_root/quick_return_qrcode/' + str(id) + ".png"
+        url = '/media/quick_return_qrcode/' + str(id) + ".png"
+        img.save(filename)
+        return url
 
-def create_qrcode_two(id1,id2,ctime,qrtype):
-    pass
+
 key = "tangzongyuisgood"
 mode = AES.MODE_CBC
 # 加密函数，如果text不是16的倍数【加密文本text必须为16的倍数！】，那就补足为16的倍数
+
+
 def enpwd(text):
     cryptor = AES.new(key, mode,key)
     # 这里密钥key 长度必须为16（AES-128）、24（AES-192）、或32（AES-256）Bytes 长度.目前AES-128足够用
@@ -127,6 +134,7 @@ def enpwd(text):
     # 因为AES加密时候得到的字符串不一定是ascii字符集的，输出到终端或者保存时候可能存在问题
     # 所以这里统一把加密后的字符串转化为16进制字符串
     return b2a_hex(ciphertext)
+
 
 # 解密后，去掉补足的空格用strip() 去掉
 def depwd(text):

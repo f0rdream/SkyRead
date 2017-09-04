@@ -35,7 +35,6 @@ from function import entry, book_price, image_to_text
 from library.models import BorrowItem
 
 
-
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]
@@ -389,6 +388,20 @@ class ReadPlanDetailView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    def get(self,request,pk):
+        if not have_phone_register(user=request.user):
+            reply = get_reply(17,'not register with phone')
+            return Response(reply,HTTP_403_FORBIDDEN)
+        user = request.user
+        try:
+            plan_item = ReadPlan.objects.get(user=user, pk=pk)
+            serializer = ReadPlanDetailSerializer(plan_item, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
+
     def delete(self,request,pk):
         if not have_phone_register(user=request.user):
             reply = get_reply(17,'not register with phone')
@@ -466,12 +479,19 @@ class NoteView(APIView):
         serializer.is_valid(raise_exception=True)
         user = request.user
         content = serializer.validated_data['content']
-        title = serializer.validated_data['title']
         isbn13 = serializer.validated_data['isbn13']
+        comment = serializer.validated_data['comment']
+        # 后端去查title和book_img_url
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+            book_img_url = book.img_id
+        except:
+            title = u"暂无标题"
+            book_img_url = u"..."
         import datetime
         date = datetime.datetime.now().date()
-        comment = serializer.validated_data['comment']
-        book_img_url = serializer.validated_data['book_img_url']
+
         note = Note.objects.create(user=user, content=content,
                                    title=title, isbn13=isbn13,
                                    date=date, comment=comment,
@@ -615,6 +635,22 @@ class PlanRecordByDateView(APIView):
             date_list.append(record.record_date)
         return Response(date_list,HTTP_200_OK)
 
+
+class AddNoteIntoCycleView(APIView):
+    """
+    把笔记分享到圈子
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,pk):
+        try:
+            note = Note.objects.get(pk=pk)
+            note.shared = True
+            note.save()
+            return Response(HTTP_200_OK)
+        except Exception as e:
+            print e
+            return Response(HTTP_404_NOT_FOUND)
 
 
 

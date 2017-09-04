@@ -15,6 +15,7 @@ class BorrowItem(models.Model):
     qrcode = models.CharField(max_length=1000,blank=True, null=True)
     in_return_bar = models.BooleanField(default=False)
     finish_return = models.BooleanField(default=False)
+    quick_return = models.BooleanField(default=False)
 
     def get_username(self):
         return self.user.username
