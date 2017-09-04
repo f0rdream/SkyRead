@@ -25,8 +25,8 @@ urlpatterns = [
     url(r'^info/$',InfoView.as_view()),
     # urls for web admin
     url(r'^test/$',test_perm),
-    url(r'^index/$',adminer_home,name='newadmin_index'),
-    url(r'^create_admin',create_admin_user,name='create_admin_user'),
+    url(r'^index/$', adminer_home,name='newadmin_index'),
+    url(r'^create_admin', create_admin_user,name='create_admin_user'),
     url(r'^login/$',web_login,name='web_login'),
     url(r'^logout/$',web_logout,name='web_logout'),
     url(r'^read_file/$',parse_the_excel),

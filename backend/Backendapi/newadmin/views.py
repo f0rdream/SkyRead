@@ -134,6 +134,7 @@ def user_detail(request,id):
         "order_success_sum":success_sum,
         "order_wait_sum": wait_sum,
         "username": request.user.username,
+        'active_class': 2
     }
     return render(request,"newadmin/user_detail.html",reply)
 
@@ -230,7 +231,8 @@ def add_book_excel(request):
             reply = {
                 "holdings":holdings,
                 "msg":"添加成功,书籍信息如下",
-                "username": request.user.username
+                "username": request.user.username,
+                'active_class': 3
             }
             return render(request,"newadmin/add_book_by_excel_success.html",reply)
         except Exception as e:
@@ -238,7 +240,8 @@ def add_book_excel(request):
             print e.message
             reply = {
                 "msg": "添加失败",
-                "username": request.user.username
+                "username": request.user.username,
+                'active_class': 3
             }
             return render(request, "newadmin/add_book_by_excel_success.html", reply)
     reply = {
@@ -261,14 +264,16 @@ def add_single_book(request):
             reply = {
                 "msg":"添加成功,添加的信息如下:",
                 "holding":holding,
-                "username": request.user.username
+                "username": request.user.username,
+                'active_class': 3
             }
             return render(request, 'newadmin/add_book_success.html',reply)
         except Exception as e :
             print e
             reply = {
                 "msg": "添加失败",
-                "username": request.user.username
+                "username": request.user.username,
+                'active_class': 3
             }
             return render(request, 'newadmin/add_book_success.html', reply)
     else:
@@ -290,12 +295,14 @@ def adminer_home(request):
                     admin_detail = {
                         'username': user.username,
                         'sign_times': sign.times,
+                        'active_class': 1
                     }
                     reply[user.id] = admin_detail
                 except:
                     admin_detail = {
                         'username': user.username,
                         'sign_times': 0,
+                        'active_class': 1
                     }
                     reply[user.id] = admin_detail
         return render(request,'newadmin/adminer.html',{'reply':reply,"signs":all_signs,
@@ -322,6 +329,7 @@ def adminer_detail(request,user_id):
         "return_sum": len(return_queryset),
         "order_sum": len(order_queryset),
         "username": request.user.username,
+        'active_class': 1
     }
     return render(request, 'newadmin/adminer_detail.html',reply)
 
@@ -350,7 +358,9 @@ def book_home(request):
     reply  = {
         "book_items":book_items,
         "page":1,
-        "username": request.user.username
+        "username": request.user.username,
+        "total_page": 200000,
+        'active_class': 3
     }
     print time.time() - begin
     return render(request, "newadmin/book_home.html",reply)
@@ -376,7 +386,9 @@ def book_home_change_page(request, back_page):
         reply = {
             "book_items":book_items,
             "page": 1,
-            "username": request.user.username
+            "username": request.user.username,
+            "total_page": 200000,
+            'active_class': 1
         }
         return render(request,'newadmin/book_home.html',reply)
     else:
@@ -393,7 +405,9 @@ def book_home_change_page(request, back_page):
         reply = {
             "book_items": book_items,
             "page": back_page,
-            "username": request.user.username
+            "username": request.user.username,
+            "total_page": 200000,
+            'active_class': 1
         }
         return render(request, 'newadmin/book_home.html', reply)
 
@@ -442,18 +456,20 @@ def book_search(request):
         reply = {
             "book_items": book_items,
             "page": 1,
-            "username": request.user.username
+            "username": request.user.username,
+            'active_class': 3
         }
         print time.time()-begin
-        return render(request, 'newadmin/book_home.html', reply)
+        return render(request, 'newadmin/search.html', reply)
     except:
         book_items = Book.objects.all()[20:40]
         reply = {
             "book_items": book_items,
             "page": 1,
-            "username": request.user.username
+            "username": request.user.username,
+            'active_class': 3
         }
-        return render(request, "newadmin/book_home.html", reply)
+        return render(request, "newadmin/search.html", reply)
 
 
 def book_detail(request,isbn13):
@@ -479,7 +495,8 @@ def book_detail(request,isbn13):
     reply = {
         'book':book,
         'holdings':holding_queryset,
-        "username": request.user.username
+        "username": request.user.username,
+        'active_class': 3
     }
     return render(request,"newadmin/book_detail.html",reply)
 
@@ -494,6 +511,7 @@ def user_home(request):
     reply = {
         "wechat_users":all_wechat_user,
         "username": request.user.username,
+        'active_class': 2
     }
     return render(request,"newadmin/user_home.html",reply)
 
@@ -577,6 +595,7 @@ def plant_home(request):
     reply = {
         "all_picture":  all_picture,
         "username": request.user.username,
+        'active_class': 4
     }
     return render(request, "newadmin/plantform_home.html", reply)
 
