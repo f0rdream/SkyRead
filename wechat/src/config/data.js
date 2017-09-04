@@ -1,4 +1,4 @@
-const bookTypes = {
+export const bookTypes = {
   1: {type: '马列主义', img: '/static/class/Mars.png'},
   2: {type: '哲学宗教', img: '/static/class/religion.png'},
   3: {type: '社会科学', img: '/static/class/society.png'},
@@ -16,4 +16,10 @@ const bookTypes = {
   15: {type: '', img: '/static/class/blank.png'} // Blank data
 }
 
-export { bookTypes }
+export const tabItems = [
+  { src: '/bookshelf/scaned', label: '已扫码' },
+  { src: '/bookshelf/ordered', label: '已预订' },
+  { src: '/bookshelf/renting', label: '正在借阅' },
+  { src: '/bookshelf/favorite', label: '收藏夹' },
+  { src: '/bookshelf/readplan', label: '已扫码' }
+]

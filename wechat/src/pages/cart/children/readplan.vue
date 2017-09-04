@@ -1,32 +1,36 @@
 <template lang="html">
   <div class="children-container">
-    <div class="top-part">
-      <button @click="addClick" class="i-btn-round"><i class="round-add"></i></button>
-    </div>
-    <timeline>
-      <timeline-item v-for="item in readPlan" class="time-item" :key="item.id">
-				<div class="time-item-container">
-          <div class="left-part">
-            <h4 class="item-info">{{item.title}}</h4>
-    				<p class="item-info">阅读时间: {{dateFormat(item.begin_time, 'YYYY.MM.DD') + '-' + dateFormat(item.end_time, 'YYYY.MM.DD')}}</p>
-  				</div>
-          <div class="right-part">
-            <button class="i-btn" @click="delReadPlan(item.id)">删除</button>
-          </div>
+    <div v-for="item in readPlan" class="time-item card" :key="item.id">
+      <div class="delete-box" @click="delReadPlan(item.id)"><i class="i-icon-cross i-icon-plus"></i></div>
+			<div class="item-outer">
+        <div class="left-part">
+          <h4 class="item-info">{{item.title}}</h4>
+  				<p class="item-info">开始日期: {{dateFormat(item.begin_time, 'YYYY-MM-DD')}}</p>
+          <p class="item-info">结束日期: {{dateFormat(item.end_time, 'YYYY-MM-DD')}}</p>
 				</div>
-			</timeline-item>
-    </timeline>
+        <div class="right-part">
+          <button class="i-btn" @click="$router.push(`/bookshelf/signin/${item.id}`)">打卡</button>
+        </div>
+			</div>
+      <div class="bar-container">
+        <div class="bar">
+          <div class="bar-inner" :style="{width: `${(item.now_page / item.sum_page) * 100}%`}"></div>
+        </div>
+      </div>
+		</div>
+
+    <div class="spinner-rb spinner" @click="addClick">
+      <i class="i-icon-plus"></i>
+    </div>
   </div>
 </template>
 
 <script>
-import { Timeline, TimelineItem, dateFormat, XButton } from 'vux'
+import { dateFormat, XButton } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
-    Timeline,
-    TimelineItem,
     XButton
   },
   data () {
@@ -55,71 +59,85 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.children-container {
-  background-color: #fbfbfb;
+.card {
+  position: relative;
+  background-color: #fff;
+  margin: .10rem .15rem;
+  box-shadow: 0 1px 1px 1px rgba(50, 50, 50, 0.1);
+  border-radius: 5px;
+  padding: .10rem .15rem;
 }
-.top-part .i-btn-round{
-  margin-left: 8px;
-  margin-top: 8px;
+.delete-box {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  transform: scale(0.75);
 }
-.children-container .vux-timeline {
-  padding: 15px;
+.i-icon-cross {
+  transform: rotate(45deg);
+  color: #777;
+}
+.i-icon-cross:active {
+  color: #aaa;
 }
 
 .item-info {
-  color: #676767;
+  color: #767676;
   font-size: 14px;
 }
-/*.item-info {
-	color: rgb(4, 190, 2);
-}*/
-.time-item-container {
+.item-outer {
   display: flex;
-  border-top: 1px rgba(200, 200, 200, 0.3) solid;
-  padding-top: 10px;
-};
+}
 .left-part {
-  flex: 1;
+  flex: 1 1 auto;
 }
 .right-part {
   flex-grow: 0;
-  flex-shrink: 1;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   margin-right: 8px;
 }
+.right-part .i-btn {
+  background-color: #25d398;
+}
+.right-part .i-btn:active {
+  background-color: #63d5ae;
+}
 
-.i-btn-round {
-  border: 0;
+.bar {
+  height: 10px;
+  border: 1px solid #25d398;
+  margin-top: .05rem;
+}
+.bar, .bar-inner{
+  border-radius: 5px;
+}
+.bar-inner {
+  height: 100%;
+  background-color: #25d398;
+}
+
+.spinner {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  background: #25d398;
   border-radius: 50%;
-  outline: 0;
-  background-color: rgba(255, 255, 255, 0);
+  display: flex;
 }
-.round-add {
-  display: inline-block;
-  position: relative;
-  border: 0;
-  height: 30px;
-  width: 30px;
-  border-radius: 50%;
-  background-color: #279f95;
+.spinner:active {
+  background: #64d3ad;
 }
-.round-add::before, .round-add::after {
-  display: inline-block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  content: '';
-  background-color: #fff;
+.spinner>i {
+  margin: auto;
 }
-.round-add::after {
-  height: 20px;
-  width: 3px;
+.spinner-rb {
+  bottom: 70px;
+  right: 20px;
 }
-.round-add::before {
-  width: 20px;
-  height: 3px;
-}
+
+
+
 </style>

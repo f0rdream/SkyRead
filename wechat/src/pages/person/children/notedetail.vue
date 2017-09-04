@@ -33,17 +33,17 @@ export default {
       this.noteId = this.$route.params.id
       this.$http.get(`/book/note/${this.noteId}`).then(res => {
         this.noteDetail = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     getNotes () {
       this.$http.get(`/book/note/`).then(res => {
         this.noteList = res.data
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     delNote (id) {
       this.$http.delete(`/book/note/${id}`).then(res => {
         this.getNotes()
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     modNote (id) {
       this.$router.push('/modnote')

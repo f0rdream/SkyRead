@@ -65,7 +65,7 @@ export default {
       formData.append('image', files[0])
       this.$http.post(`/book/img2text/`, formData).then(res => {
         console.log(res)
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     saveResult () {
       this.$http.post(`/book/note/`,
@@ -76,7 +76,7 @@ export default {
         }
       ).then(res => {
         this.$router.replace(`/note`)
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err.response.data))
     },
     cancel () {
       this.$router.replace(`/note`)

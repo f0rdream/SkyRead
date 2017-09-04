@@ -193,14 +193,14 @@ export default {
       this.$http.get(`/douban/reviews/${this.isbn13}`).then(res => {
         this.reviewList = res.data
       }).catch(err => {
-        console.log(err)
+        console.log(err.response.data)
       })
     },
     getRelated () {
       this.$http.get(`/book/refer/${this.isbn13}`).then(res => {
         this.related = res.data
       }).catch(err => {
-        console.log(err)
+        console.log(err.response.data)
       })
     },
     getImg (imgId) {

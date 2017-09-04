@@ -4,7 +4,13 @@
     <div class="header" slot="header">
       我的笔记
     </div>
-    <div class="item-container" v-for="item in noteList">
+    <div class="tab-container">
+      <button-tab>
+        <button-tab-item>我的</button-tab-item>
+        <button-tab-item>收藏</button-tab-item>
+      </button-tab>
+    </div>
+    <div class="item-container" v-for="item in myList">
       <div class="left">
         <div class="content-box">
           <div class="item-title">{{item.title}}</div>
@@ -32,12 +38,14 @@
 </template>
 
 <script>
+import { ButtonTab, ButtonTabItem, ViewBox } from 'vux'
 import BottomBar from '@/components/BottomBar'
-import { ViewBox } from 'vux'
 export default {
   components: {
     ViewBox,
-    BottomBar
+    BottomBar,
+    ButtonTab,
+    ButtonTabItem
   },
   data () {
     return {
@@ -48,9 +56,14 @@ export default {
     this.getNotes()
   },
   methods: {
-    getNotes () {
-      this.$http.get(`/book/note/`).then(res => {
-        this.noteList = res.data
+    getMine () {
+      this.$http.get(`/accounts/book_list/`).then(res => {
+        this.myList = res.data
+      }).catch(err => console.log(err.response.data))
+    },
+    getFavor () {
+      this.$http.get(`/accounts/book_list/star/`).then(res => {
+        this.myList = res.data
       }).catch(err => console.log(err.response.data))
     },
     getImg (imgId) {

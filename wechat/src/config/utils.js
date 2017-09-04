@@ -1,4 +1,4 @@
-export const timePY2JS = (old) => {
+export const timePY2JS = (old = '') => {
   let newDate = ''
   old.split(/-|T|Z/).forEach(item => { newDate += `${item} ` })
   return new Date(newDate)
