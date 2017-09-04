@@ -210,7 +210,9 @@ class ShortInto(ModelSerializer):
             author_list = []
             authors = authors.split('&')
             for author in authors:
-                if author == '':
+                # 处理作者,美国,美
+                if author == '' or author == '[美国]' or author == '[美]'\
+                        or author == '[日]':
                     continue
                 else:
                     if len(author) > 15:

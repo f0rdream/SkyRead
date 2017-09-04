@@ -393,6 +393,7 @@ class CycleView(APIView):
     def get(self, request, page):
         page = int(page)
         order = request.GET.get("order")
+        # 9.4加入微信id和微信头像
         if order == "star":
             # 按照热度排序
             # 先查书单15:
@@ -409,7 +410,17 @@ class CycleView(APIView):
                     sl_dict['comment'] = sl.comment
                     sl_dict['img_id'] = sl.img_id
                     sl_dict['type'] = u"book_list"
-                    sl_dict['id'] =  sl.id
+                    sl_dict['id'] = sl.id
+                    username = sl.user.username
+                    try:
+                        wechat_user = WeChatUser.objects.get(openid=username)
+                        nickname = wechat_user.nickname
+                        headimg_url = wechat_user.headimgurl
+                        sl_dict['nick_name'] = nickname
+                        sl_dict['headimgurl'] = headimg_url
+                    except:
+                        sl_dict['nick_name'] = "--"
+                        sl_dict['headimgurl'] = "--"
                     reply.append(sl_dict)
                 for sn in small_note_qs:
                     sn_dict = dict()
@@ -418,6 +429,16 @@ class CycleView(APIView):
                     sn_dict['img_id'] = sn.book_img_url
                     sn_dict['type'] = u"note"
                     sn_dict['id'] = sn.id
+                    username = sn.user.username
+                    try:
+                        wechat_user = WeChatUser.objects.get(openid=username)
+                        nickname = wechat_user.nickname
+                        headimg_url = wechat_user.headimgurl
+                        sn_dict['nick_name'] = nickname
+                        sn_dict['headimgurl'] = headimg_url
+                    except:
+                        sn_dict['nick_name'] = "--"
+                        sn_dict['headimgurl'] = "--"
                     reply.append(sn_dict)
             return Response(reply, HTTP_200_OK)
         elif order == "time":
@@ -437,6 +458,16 @@ class CycleView(APIView):
                     sl_dict['img_id'] = sl.img_id
                     sl_dict['type'] = u"book_list"
                     sl_dict['id'] = sl.id
+                    username = sl.user.username
+                    try:
+                        wechat_user = WeChatUser.objects.get(openid=username)
+                        nickname = wechat_user.nickname
+                        headimg_url = wechat_user.headimgurl
+                        sl_dict['nick_name'] = nickname
+                        sl_dict['headimgurl'] = headimg_url
+                    except:
+                        sl_dict['nick_name'] = "--"
+                        sl_dict['headimgurl'] = "--"
                     reply.append(sl_dict)
                 for sn in small_note_qs:
                     sn_dict = dict()
@@ -445,6 +476,16 @@ class CycleView(APIView):
                     sn_dict['img_id'] = sn.book_img_url
                     sn_dict['type'] = u"note"
                     sn_dict['id'] = sn.id
+                    username = sn.user.username
+                    try:
+                        wechat_user = WeChatUser.objects.get(openid=username)
+                        nickname = wechat_user.nickname
+                        headimg_url = wechat_user.headimgurl
+                        sn_dict['nick_name'] = nickname
+                        sn_dict['headimgurl'] = headimg_url
+                    except:
+                        sn_dict['nick_name'] = "--"
+                        sn_dict['headimgurl'] = "--"
                     reply.append(sn_dict)
             return Response(reply, HTTP_200_OK)
         else:
