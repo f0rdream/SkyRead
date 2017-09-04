@@ -350,7 +350,8 @@ def book_home(request):
     reply  = {
         "book_items":book_items,
         "page":1,
-        "username": request.user.username
+        "username": request.user.username,
+        "total_page": 200000
     }
     print time.time() - begin
     return render(request, "newadmin/book_home.html",reply)
@@ -376,7 +377,8 @@ def book_home_change_page(request, back_page):
         reply = {
             "book_items":book_items,
             "page": 1,
-            "username": request.user.username
+            "username": request.user.username,
+            "total_page": 200000
         }
         return render(request,'newadmin/book_home.html',reply)
     else:
@@ -393,7 +395,8 @@ def book_home_change_page(request, back_page):
         reply = {
             "book_items": book_items,
             "page": back_page,
-            "username": request.user.username
+            "username": request.user.username,
+            "total_page": 200000
         }
         return render(request, 'newadmin/book_home.html', reply)
 
@@ -442,10 +445,10 @@ def book_search(request):
         reply = {
             "book_items": book_items,
             "page": 1,
-            "username": request.user.username
+            "username": request.user.username,
         }
         print time.time()-begin
-        return render(request, 'newadmin/book_home.html', reply)
+        return render(request, 'newadmin/search.html', reply)
     except:
         book_items = Book.objects.all()[20:40]
         reply = {
@@ -453,7 +456,7 @@ def book_search(request):
             "page": 1,
             "username": request.user.username
         }
-        return render(request, "newadmin/book_home.html", reply)
+        return render(request, "newadmin/search.html", reply)
 
 
 def book_detail(request,isbn13):

@@ -393,7 +393,7 @@ class CycleView(APIView):
     def get(self, request, page):
         page = int(page)
         order = request.GET.get("order")
-        # 9.4加入微信id和微信头像
+        # 9.4加入微信id和微信头像 评论数
         if order == "star":
             # 按照热度排序
             # 先查书单15:
