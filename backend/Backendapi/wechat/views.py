@@ -52,6 +52,7 @@ def wexin(request):
         xml = request.body
         msg = parse_message(xml)
         if msg.type == 'text':
+            # 加入关键词处理
             print msg.type
             key = '8b005db5f57556fb96dfd98fbccfab84'
             api = 'http://www.tuling123.com/openapi/api?key=' + key + '&info='

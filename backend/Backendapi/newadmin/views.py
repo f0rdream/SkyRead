@@ -20,6 +20,8 @@ sys.setdefaultencoding('utf-8')
 from library.models import BorrowItem,SuccessOrderItem,WaitOrderItem
 from models import Picture
 from send_message import send_borrow_message,send_back_wechat
+from accounts.models import FeedBack
+
 
 def test_perm(request):
     user = request.user
@@ -301,6 +303,7 @@ def adminer_home(request):
     else:
         return render(request, 'newadmin/login.html')
 
+
 def adminer_detail(request,user_id):
     """
     得到某个管理员的三个记录
@@ -350,7 +353,7 @@ def book_home(request):
         "username": request.user.username
     }
     print time.time() - begin
-    return render(request,"newadmin/book_home.html",reply)
+    return render(request, "newadmin/book_home.html",reply)
 
 
 def book_home_change_page(request, back_page):
@@ -544,14 +547,14 @@ def file_download(request):
 
 def add_picture(request):
     if request.method == 'POST':
-        picture = request.FILES['picture']
+        picture = request.POST['picture']
         title = request.POST['title']
         isbn13 = request.POST['isbn13']
         try:
             about_book = Book.objects.get(isbn13=isbn13)
-            picture = Picture.objects.create(picture=picture,title=title,
-                                             isbn13=isbn13,about_book=about_book)
-            picture.save()
+            new_picture = Picture.objects.create(picture=picture, title=title,
+                                                 isbn13=isbn13, about_book=about_book)
+            new_picture.save()
             return HttpResponseRedirect('/web/plant_home')
         except Exception as e:
             print e
@@ -559,7 +562,7 @@ def add_picture(request):
     return HttpResponseRedirect('/web/plant_home')
 
 
-def picture_delete(request,id):
+def picture_delete(request, id):
     try:
         picture = Picture.objects.get(id=id)
         picture.delete()
@@ -572,14 +575,14 @@ def picture_delete(request,id):
 def plant_home(request):
     all_picture = Picture.objects.all()
     reply = {
-        "all_picture":all_picture,
-        "username":request.user.username,
+        "all_picture":  all_picture,
+        "username": request.user.username,
     }
     return render(request, "newadmin/plantform_home.html", reply)
 
 
 def send_message(request):
-    return render(request,"newadmin/send_message.html")
+    return render(request, "newadmin/send_message.html")
 
 
 def backmsg(request):
@@ -600,3 +603,26 @@ def back_wechat(request):
         send_back_wechat(openid,name,time)
         return render(request, "newadmin/send_message.html")
     return render(request, "newadmin/send_message.html")
+
+
+def feedback(request):
+    """
+    反馈
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        id = request.POST['id']
+        back_content = request.POST['back_content']
+        try:
+            feed_back = FeedBack.objects.get(id=id)
+            feed_back.back_state = True
+            feed_back.back_content = back_content
+            feed_back.save()
+        except:
+            return render(request,"")
+    return
+
+
+
+

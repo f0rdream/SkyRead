@@ -1055,28 +1055,6 @@ class FinishGiveOrderItemView(APIView):
         return Response(get_reply(0,'success'))
 
 
-# class QuickQRcodeView(APIView):
-#     """
-#     生成无人还书的二维码
-#     """
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = IdListSerializer
-#
-#     def post(self, request):
-#         if not have_phone_register(user=request.user):
-#             reply = get_reply(17, 'not register with phone')
-#             return Response(reply, HTTP_403_FORBIDDEN)
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         id_list = serializer.validated_data['id_list']
-#         ctime = time.time()
-#         qrtype = 'quick_return'
-#         url = create_return_qrcode(id_list, ctime, qrtype, -1)
-#         reply = dict()
-#         reply['url'] = url
-#         # return Response(reply, HTTP_200_OK)
-
-
 class QuickReturnView(APIView):
     """
     无人借阅的书籍,quick_check = True
