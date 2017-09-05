@@ -266,7 +266,7 @@ def book_price(book_isbn13, title):
         dict4 = {
             "price": "18.00",
             "source_name": u"博客网",
-            "source_url": "http://www.bookuu.com/"
+            "source_url": "http://www.bookuu.com/",
         }
         price_list.append(dict1)
         price_list.append(dict2)
