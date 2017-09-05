@@ -246,7 +246,7 @@ def book_price(book_isbn13, title):
     """
     利用比价网得到各个渠道的价格和链接,加入用标题索引
     """
-    if isbn13 == "9787506328029":
+    if book_isbn13 == "9787506328029":
         price_list = list()
         dict1 = {
             "price":"16.20",
