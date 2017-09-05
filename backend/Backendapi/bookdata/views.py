@@ -173,6 +173,7 @@ class ReferBookView(APIView):
         except:
             # 当找不到相关书籍的时候,重新爬
             refer_list = refer_book(isbn13)
+            print refer_list
             refer_object_list = list()
             if refer_list != -1:
                 for i in refer_list:

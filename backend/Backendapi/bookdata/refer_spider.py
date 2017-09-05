@@ -33,9 +33,11 @@ def refer_book(isbn13):
     try:
         book = Book.objects.get(isbn13=isbn13)
         id = book.id
-    except:
+    except Exception as e :
+        print e
         return -1
-    api = "https://book.douban.com/subject/" + id
+    print "get_id"
+    api = "https://book.douban.com/subject/" + d_id
     response = requests.get(api, headers=headers)
     if response.status_code == 200:
         main_soup = bs(response.text, "lxml")
@@ -58,6 +60,7 @@ def refer_book(isbn13):
                         refer_id = dl[i].find_all('dd')[0].find('a')['href'].split('/')[-2]
                         r_id.append(refer_id)
             return r_id
-        except:
+        except Exception as e:
+            print e
             print isbn13 +"no refer book"
             return -1
