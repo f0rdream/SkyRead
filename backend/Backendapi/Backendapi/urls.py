@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^douban/', include('douban.urls')),
     # url(r'^amazon/', include('douban.urls')),
     url(r'^history/', include('history.urls')),
-    # url(r'^web/', include('newadmin.urls')),
+    url(r'^web/', include('newadmin.urls')),
     url(r'^list/', include('booklist.urls')),
 ]
 
