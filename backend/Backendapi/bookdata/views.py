@@ -33,7 +33,7 @@ from l_lib.function import get_reply
 from models import Comment, BrowsedBook, Note, PlanRecord
 from function import entry, book_price, image_to_text
 from library.models import BorrowItem
-
+from refer_spider import refer_book
 
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
@@ -62,7 +62,6 @@ class BookInfoView(APIView):
 
         response = Response(serializer.data, HTTP_200_OK)
         return response
-
 
 class Serach(APIView):
     """
@@ -170,6 +169,18 @@ class ReferBookView(APIView):
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data,HTTP_200_OK)
         except:
+            # 当找不到相关书籍的时候,重新爬
+            refer_list = refer_book(isbn13)
+            refer_object_list = list()
+            if refer_list != -1:
+                for i in refer_list:
+                    try:
+                        b = Book.objects.get(d_id=i)
+                        refer_object_list.append(b)
+                    except:
+                        pass
+                serializer = ShortInto(refer_object_list, data=request.data, many=True)
+                serializer.is_valid(raise_exception=True)
             reply = get_reply(91,"not found")
             return Response(reply,HTTP_404_NOT_FOUND)
 
