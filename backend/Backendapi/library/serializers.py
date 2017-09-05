@@ -47,6 +47,7 @@ class BorrowItemDetailSerializer(ModelSerializer):
     return_time = SerializerMethodField()
     title = SerializerMethodField()
     price = SerializerMethodField()
+    image = SerializerMethodField()
     class Meta:
         model = BorrowItem
         fields = [
@@ -62,6 +63,7 @@ class BorrowItemDetailSerializer(ModelSerializer):
             'title',
             'price',
             'quick_return',
+            'image',
         ]
 
     def get_user(self, obj):
@@ -98,6 +100,15 @@ class BorrowItemDetailSerializer(ModelSerializer):
             price = book.price
             return price
         # 这里通过BookModel 拿到价格
+        except:
+            return None
+
+    def get_img(self,obj):
+        isbn13 = obj.isbn13
+        try:
+            book = Book.objects.get(isbn13=isbn13)
+            image = book.img_id
+            return image
         except:
             return None
 # class QrCodeSerializer(ModelSerializer):
