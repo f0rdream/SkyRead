@@ -419,6 +419,14 @@ class BookListDetailView(APIView):
             print e
             return Response(HTTP_404_NOT_FOUND)
 
+    def delete(self, request, pk):
+        try:
+            book_list = UserCreateBookList.objects.get(pk=pk)
+            book_list.delete()
+            book_list.save()
+            return Response(HTTP_200_OK)
+        except:
+            return Response(HTTP_403_FORBIDDEN)
 
 class CycleView(APIView):
     """
