@@ -62,6 +62,6 @@ urlpatterns = [
     url(r'^confirm_info/(?P<pay_id>\d+)$',AdminConfirmInfo.as_view(),name='confirm info'),
     url(r'^confirm/(?P<pay_id>\d+)$',ConfirmIt.as_view(),name='confirm_it'),
     # history's urls
-    url(r'^readed/$',MyReadedBook.as_view(),name='read history'),
+    url(r'^readed/$', MyReadedBook.as_view(),name='read history'),
 
 ]

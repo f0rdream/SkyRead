@@ -116,6 +116,8 @@ class DoubanReviewListView(APIView):
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, HTTP_200_OK)
         else:
+            # 补充书评
+
             reply = {}
             reply['error_code'] = 44
             reply['msg'] = 'not found'
