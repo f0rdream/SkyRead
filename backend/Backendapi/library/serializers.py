@@ -103,7 +103,7 @@ class BorrowItemDetailSerializer(ModelSerializer):
         except:
             return None
 
-    def get_img(self,obj):
+    def get_image(self,obj):
         isbn13 = obj.isbn13
         try:
             book = Book.objects.get(isbn13=isbn13)
