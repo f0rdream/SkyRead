@@ -54,7 +54,7 @@ def wexin(request):
         if msg.type == 'text':
             # 加入关键词处理
             print msg.type
-            if msg.content == u'你好':
+            if msg.content == u'你好' or msg.content == u'你是谁':
                 content = "你好,这里是SkyRead"
             else:
                 key = '8b005db5f57556fb96dfd98fbccfab84'
