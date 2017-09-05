@@ -212,7 +212,7 @@ class ShortInto(ModelSerializer):
             for author in authors:
                 # 处理作者,美国,美
                 if author == '' or author == '[美国]' or author == '[美]'\
-                        or author == '[日]':
+                        or author == '[日]' or author == ['奥地利'] or author==['瑞典']:
                     continue
                 else:
                     if len(author) > 15:
