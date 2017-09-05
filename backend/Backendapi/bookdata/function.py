@@ -242,7 +242,7 @@ def parser(html,book_url):
     return str(isbn13)
 
 
-def book_price(book_isbn13,title):
+def book_price(book_isbn13, title):
     """
     利用比价网得到各个渠道的价格和链接,加入用标题索引
     """
@@ -266,7 +266,7 @@ def book_price(book_isbn13,title):
             source = td.find(attrs={'class':'merptype'}).text
             price_dict['price'] = price
             price_dict['source_name'] = source
-            price_dict['source_url'] = "www.xxxx.com"
+            price_dict['source_url'] = search_url
             price_list.append(price_dict)
             print price_list
         return price_list
@@ -290,7 +290,7 @@ def book_price(book_isbn13,title):
             source = td.find(attrs={'class': 'merptype'}).text
             price_dict['price'] = price
             price_dict['source_name'] = source
-            price_dict['source_url'] = "www.xxxx.com"
+            price_dict['source_url'] = search_url
             price_list.append(price_dict)
             print price_list
         return price_list
