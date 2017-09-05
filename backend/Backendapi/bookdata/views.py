@@ -35,6 +35,7 @@ from function import entry, book_price, image_to_text
 from library.models import BorrowItem
 from refer_spider import refer_book
 
+
 class BookInfoView(APIView):
     serializer_class = BookInfoSerializer
     permission_classes = [AllowAny]
@@ -62,6 +63,7 @@ class BookInfoView(APIView):
 
         response = Response(serializer.data, HTTP_200_OK)
         return response
+
 
 class Serach(APIView):
     """
@@ -444,7 +446,12 @@ class BookPriceView(APIView):
     def get(self,request):
         isbn13 = request.GET.get("isbn13")
         try:
-            reply = book_price(isbn13)
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+        except:
+            title = "--"
+        try:
+            reply = book_price(isbn13, title)
             return Response(reply,HTTP_200_OK)
         except Exception as e:
             print e
