@@ -13,7 +13,7 @@
         <div class="history-box" v-if="selectedIndex === 0">
           <div class="history-item" v-for="item in historyList">
             <div class="left">
-              <img :src="getImg(item.img_id)" class="list-img">
+              <img :src="getImg(item.image)" class="list-img">
             </div>
             <div class="right">
               <div class="item-title">{{ item.title }}</div>

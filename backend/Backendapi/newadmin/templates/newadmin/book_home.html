@@ -105,11 +105,15 @@
     $('#footer-pagination').twbsPagination({
         totalPages: {{ total_page }},
         visiblePages: 5,
-        startPage: {{page}},
-        onPageClick: function (event, page) {
-          if(window.location.href !== '/web/book_home/change_page/{{page}}') {
-            window.location.href='/web/book_home/change_page/' + page;
-          }  
+        startPage: {{ page }},
+        onPageClick: function (event, nextPage) {
+        //     console.log('/web/book_home/change_page/{{page}}')
+        //   if(!window.location.href.test('change_page/{{page}}')) {
+        //     window.location.href='/web/book_home/change_page/' + Page;
+        //   }  
+            if(nextPage !== {{ page }}) {
+                window.location.href='/web/book_home/change_page/' + nextPage;
+            }
         }
     });
 

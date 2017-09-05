@@ -1,50 +1,73 @@
-﻿<!DOCTYPE html>
-{% load staticfiles %}
-<html xmlns="http://www.w3.org/1999/xhtml">
+﻿<!DOCTYPE html> {% load staticfiles %}
+<html>
+
 <head>
-      <meta charset="utf-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkyRead后台管理</title>
-   <!-- BOOTSTRAP STYLES-->
-    <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet" />
-    <!-- FONTAWESOME STYLES-->
-    <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet" />
-    <!-- GOOGLE FONTS-->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+
+    <!-- BOOTSTRAP STYLES-->
+    <link href="{% static 'assets2/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets2/css/material-dashboard.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets2/css/own.css' %}" rel="stylesheet" />
+    <!--     Fonts and icons     -->
+    <link href="{% static 'assets2/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets2/css/material-icons.css' %}" rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        .wrapper {
+            display: flex;
+        }
+        .login-section {
+            margin: auto;
+            max-width: 40%;
+        }
+    </style>
 </head>
-<body style="background-color: #E2E2E2;">
-    <div class="container">
-        <div class="row text-center " style="padding-top:100px;">
-            <div class="col-md-12">
-                <h1>SkyRead 后台管理</h1>
-            </div>
-        </div>
-         <div class="row ">
-                <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
 
-                            <div class="panel-body">
-                                <form role="form" action="{%url 'web_login'%}" method="POST">
-                                    {%csrf_token%}
-                                    <hr />
-                                    <h5></h5>
-                                       <br />
-                                     <div class="form-group input-group">
-                                            <span class="input-group-addon"><i class="fa fa-tag"  ></i></span>
-                                            <input type="text" name="username" class="form-control" placeholder="Your Username " />
-                                        </div>
-                                    <div class="form-group input-group">
-                                            <span class="input-group-addon"><i class="fa fa-lock"  ></i></span>
-                                            <input type="password" name="password" class="form-control"  placeholder="Your Password" />
-                                        </div>
-                                     <button type="submit" class="btn btn-primary ">Login Now</button>
-                                    </form>
+<body>
+    <div class="wrapper">
+        <div class="login-section">
+                <div class="card">
+                    <div class="card-header" data-background-color="purple">
+                        <h4 class="title">登录</h4>
+                    </div>
+                    <div class="card-content table-responsive">
+                        <form role="form" action="{%url 'web_login'%}" method="POST">
+                            {%csrf_token%}
+                            <hr />
+                            <h5></h5>
+                            <br />
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-tag"  ></i></span>
+                                <input type="text" name="username" class="form-control" placeholder="Your Username " />
                             </div>
-
-                        </div>
-
-
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock"  ></i></span>
+                                <input type="password" name="password" class="form-control" placeholder="Your Password" />
+                            </div>
+                            <button type="submit" class="btn btn-primary ">Login Now</button>
+                        </form>
+                    </div>
+                </div>
         </div>
     </div>
-
 </body>
+<!--   Core JS Files   -->
+<script src="{% static 'assets2/js/jquery-3.1.0.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets2/js/bootstrap.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets2/js/material.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets2/js/jquery.twbsPagination.min.js' %}" type="text/javascript"></script>
+
+
+<!--  Charts Plugin -->
+<script src="{% static 'assets2/js/chartist.min.js' %}"></script>
+
+<!--  Notifications Plugin    -->
+<script src="{% static 'assets2/js/bootstrap-notify.js' %}"></script>
+
+<!-- Material Dashboard javascript methods -->
+<script src="{% static 'assets2/js/material-dashboard.js' %}"></script>
+
+
+
 </html>
