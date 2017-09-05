@@ -134,7 +134,7 @@ def user_detail(request,id):
         "order_success_sum":success_sum,
         "order_wait_sum": wait_sum,
         "username": request.user.username,
-        'active_class': 2
+        "active_class": 2
     }
     return render(request,"newadmin/user_detail.html",reply)
 
@@ -295,18 +295,18 @@ def adminer_home(request):
                     admin_detail = {
                         'username': user.username,
                         'sign_times': sign.times,
-                        'active_class': 1
                     }
                     reply[user.id] = admin_detail
                 except:
                     admin_detail = {
                         'username': user.username,
                         'sign_times': 0,
-                        'active_class': 1
+
                     }
                     reply[user.id] = admin_detail
         return render(request,'newadmin/adminer.html',{'reply':reply,"signs":all_signs,
-                                                       "username":request.user.username})
+                                                       "username":request.user.username,
+                                                       "active_class": 1})
     else:
         return render(request, 'newadmin/login.html')
 
