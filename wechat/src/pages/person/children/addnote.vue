@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import { PopupPicker } from 'vux'
 export default {
   components: {
@@ -56,6 +57,9 @@ export default {
     this.getBookList()
   },
   methods: {
+    ...mapActions({
+      setErrMsg: 'setErrMsg'
+    }),
     onFileChange (e) {
       let files = e.target.files || e.dataTransfer.files
       if (!files.length) {
@@ -64,8 +68,15 @@ export default {
       let formData = new FormData()
       formData.append('image', files[0])
       this.$http.post(`/book/img2text/`, formData).then(res => {
-        console.log(res)
-      }).catch(err => console.log(err.response.data))
+        if (res.data === 404) {
+          this.setErrMsg({text: '无法识别', type: 'cancel'})
+        } else {
+          this.imageResult = res.data.content
+        }
+      }).catch(err => {
+        this.setErrMsg({text: '发生错误', type: 'cancel'})
+        console.log(err.response.data)
+      })
     },
     saveResult () {
       this.$http.post(`/book/note/`,
