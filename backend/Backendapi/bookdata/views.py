@@ -269,7 +269,7 @@ class GuideBookView(APIView):
             cursor = connection.cursor()
             sql_guide_id = str(guide_id)
             select_sql = "select isbn13 from bookdata_book where book_guide ='%s' \
-            order by average desc limit %d,20;" % (sql_guide_id,begin_page)
+            order by average desc limit %d,20;" % (sql_guide_id,begin_page+6)
             cursor.execute(select_sql)
             isbn13_rs = cursor.fetchall()
             queryset = list()
