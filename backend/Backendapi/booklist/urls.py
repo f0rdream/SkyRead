@@ -9,5 +9,4 @@ urlpatterns = [
     url(r'^user_like/(?P<order>\d+)/$',SameUserBookDetail.as_view()),
     url(r'^position/$', PositionView.as_view()),
     url(r'^nearby/$', NearByBookView.as_view()),
-
 ]
