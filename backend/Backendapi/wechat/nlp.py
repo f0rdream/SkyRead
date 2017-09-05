@@ -10,4 +10,6 @@ def get_seach(content):
     import jieba.posseg as pseg
     words = pseg.cut(content)
     for word in words:
-        print word, word.flag
+        print word.flag
+
+get_seach("学习机器学习")

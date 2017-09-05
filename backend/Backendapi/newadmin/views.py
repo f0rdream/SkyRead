@@ -407,7 +407,7 @@ def book_home_change_page(request, back_page):
             "page": back_page,
             "username": request.user.username,
             "total_page": 200000,
-            'active_class': 1
+            'active_class': 3
         }
         return render(request, 'newadmin/book_home.html', reply)
 
