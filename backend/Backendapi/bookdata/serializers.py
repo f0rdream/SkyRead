@@ -85,6 +85,7 @@ class BookInfoSerializer(ModelSerializer):
             for author in authors:
                 if author == '' or author == '[美国]' or author == '[美]' \
                         or author == '[日]' or author == ['奥地利'] or author == ['瑞典']:
+                    continue
                 else:
                     if len(author) > 15:
                         author = author[:15]
