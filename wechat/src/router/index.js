@@ -14,6 +14,11 @@ import modnote from '../pages/person/children/modnote'
 import addnote from '../pages/person/children/addnote'
 import notedetail from '../pages/person/children/notedetail'
 import social from '../pages/person/children/social'
+import booklistDetail from '../pages/person/children/booklistdetail'
+import booklist from '../pages/person/children/booklist'
+import addbooklist from '../pages/person/children/addbooklist'
+import booklistsearch from '../pages/person/children/booklistsearch'
+import selectbooklist from '../pages/person/children/selectbooklist'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
@@ -191,6 +196,26 @@ export default new Router({
     {
       path: '/notedetail/:id',
       component: notedetail
+    },
+    {
+      path: '/booklistdetail/:id',
+      component: booklistDetail
+    },
+    {
+      path: '/booklist',
+      component: booklist
+    },
+    {
+      path: '/addbooklist',
+      component: addbooklist
+    },
+    {
+      path: '/booklistsearch',
+      component: booklistsearch
+    },
+    {
+      path: '/selectbooklist/:keyword',
+      component: selectbooklist
     }
   ]
 })

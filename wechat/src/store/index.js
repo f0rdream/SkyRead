@@ -20,7 +20,8 @@ const state = {
   QRInfo: {},
   accountsInfo: {},
   havePhone: true,
-  currentTab: 0
+  currentTab: 0,
+  tempBookList: []
 }
 export default new Vuex.Store({
   state,

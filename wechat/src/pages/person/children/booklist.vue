@@ -2,32 +2,32 @@
 <view-box class="app-wrapper">
   <div class="page-wrapper">
     <div class="header" slot="header">
-      我的笔记
+      我的书单
     </div>
     <div class="tab-container">
-      <button-tab>
+      <button-tab v-model="selectedIndex" class="tab-self">
         <button-tab-item>我的</button-tab-item>
         <button-tab-item>收藏</button-tab-item>
       </button-tab>
     </div>
     <div class="item-container" v-for="item in myList">
-      <div class="left">
-        <div class="content-box">
-          <div class="item-title">{{item.title}}</div>
-          <div class="item-content i-ellipsis">{{item.comment}}</div>
+      <div class="content-box" @click="$router.push(`/booklistdetail/${item.id}`)">
+        <div class="item-title">
+          <span>{{item.title}}</span>
+          <span @click="delNote(item.id)" class="rt-icon">删除</span>
         </div>
-        <div class="opt-box">
-          <div class="time">{{item.date}}</div>
-          <div class="opt-icon">
-            <!--TODO To add icons  -->
-            <span @click="delNote(item.id)">删除</span>
-            <span @click="modNote(item.id)">修改</span>
-          </div>
+        <div class="item-content">
+          <span v-for="itemB in item.title_list" class="title-item">《{{itemB}}》 </span>
         </div>
       </div>
-      <div class="right">
-        <img :src="getImg(item.book_img_url)" class="book-img">
-      </div>
+      <!-- <div class="opt-box">
+        <div class="time">{{item.date}}</div>
+        <div class="opt-icon">
+
+
+          <span @click="modNote(item.id)">修改</span>
+        </div>
+      </div> -->
     </div>
     <div class="spinner-rb spinner" @click="addNote">
       <i class="i-icon-plus"></i>
@@ -49,11 +49,24 @@ export default {
   },
   data () {
     return {
-      noteList: []
+      selectedIndex: 0,
+      myList: []
+    }
+  },
+  watch: {
+    selectedIndex (newValue) {
+      switch (newValue) {
+        case 0:
+          this.getMine()
+          break
+        case 1:
+          this.getFavor()
+          break
+      }
     }
   },
   mounted () {
-    this.getNotes()
+    this.getMine()
   },
   methods: {
     getMine () {
@@ -65,9 +78,6 @@ export default {
       this.$http.get(`/accounts/book_list/star/`).then(res => {
         this.myList = res.data
       }).catch(err => console.log(err.response.data))
-    },
-    getImg (imgId) {
-      return `https://img3.doubanio.com/lpic/${imgId}`
     },
     delNote (id) {
       this.$http.delete(`/book/note/${id}`).then(res => {
@@ -95,27 +105,27 @@ export default {
   margin-top: .13rem;
   background-color: #fff;
   box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.1);
+  color: #818181;
+  padding: .10rem .15rem;
   display: flex;
   justify-content: space-between;
 }
-.right {
-  flex: 0 0 28%;
-  overflow: hidden;
-}
-.right>img {
-  display: block;
-  width: 100%;
-}
-.left {
-  flex: 1 1 auto;
-  padding: .10rem .15rem;
-  color: #818181;
+/*.item-container {
+
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
+}*/
 .item-title {
   font-size: 15px;
+  position: relative;
+}
+.rt-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-block;
 }
 .item-content {
   padding-top: .08rem;
@@ -134,6 +144,7 @@ export default {
   background: #25d398;
   border-radius: 50%;
   display: flex;
+  box-shadow: 1px 1px 1px 1px rgba(70, 70, 70, 0.1);
 }
 .spinner:active {
   background: #64d3ad;
@@ -144,5 +155,22 @@ export default {
 .spinner-rb {
   bottom: 70px;
   right: 20px;
+}
+
+.content-box {
+  overflow: hidden;
+}
+.tab-container {
+  display: flex;
+  padding: .10rem .15rem;
+}
+.tab-self {
+  margin: auto;
+  width: 50%;
+}
+.title-item {
+  display: inline-block;
+  word-wrap: normal;
+  white-space: nowrap;
 }
 </style>

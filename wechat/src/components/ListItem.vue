@@ -15,7 +15,8 @@
           <p class="item-info" v-if="this.type === 'distance'">距离：{{ bookInfo.distance }} 公里</p>
         </div>
         <div class="item-info-right">
-          <button class="i-btn" mini @click="addFavorite(bookInfo.isbn13)">收藏</button>
+          <button class="i-btn" mini @click="addFavorite(bookInfo.isbn13)" v-if="this.type === 'normal'">收藏</button>
+          <button class="i-btn" mini @click="addTempBooklist({ isbn13: bookInfo.isbn13, title: bookInfo.title })" v-if="this.type === 'booklist'">添加</button>
         </div>
       </div>
     </div>
@@ -44,7 +45,8 @@ export default {
   },
   methods: {
     ...mapActions([
-      'addFavorite'
+      'addFavorite',
+      'addTempBooklist'
     ]),
     bookClick () {
       this.$router.push(`/home/bookdetail/${this.bookInfo.isbn13}`)

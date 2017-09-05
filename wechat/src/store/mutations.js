@@ -1,4 +1,4 @@
-import { SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, DEL_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, ADD_FAVROITES, SET_ERRORMSG, SET_ORDEREDCART, SET_READPLAN, SET_ACCOUNTSINFO, SET_HAVEPHONE, SET_CURRENTTAB } from './mutation-types'
+import { SET_WECHATSIGN, SET_QRINFO, SET_SCANEDCART, DEL_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, ADD_FAVROITES, SET_ERRORMSG, SET_ORDEREDCART, SET_READPLAN, SET_ACCOUNTSINFO, SET_HAVEPHONE, SET_CURRENTTAB, SET_TEMPBOOKLIST, DEL_TEMPBOOKLIST } from './mutation-types'
 
 export default {
   [SET_ERRORMSG] (state, payload) {
@@ -39,5 +39,11 @@ export default {
   },
   [SET_CURRENTTAB] (state, payload) {
     state.currentTab = payload
+  },
+  [SET_TEMPBOOKLIST] (state, payload) {
+    state.tempBookList.push(payload)
+  },
+  [DEL_TEMPBOOKLIST] (state, index) {
+    state.tempBookList.splice(index, 1)
   }
 }

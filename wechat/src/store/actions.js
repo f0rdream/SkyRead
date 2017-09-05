@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import store from './index'
-import { SET_ACCOUNTSINFO, SET_ERRORMSG, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN, SET_HAVEPHONE, SET_CURRENTTAB } from './mutation-types'
+import { SET_ACCOUNTSINFO, SET_ERRORMSG, SET_QRINFO, SET_SCANEDCART, SET_RENTINGCART, SET_FAVROITES, SET_READPLAN, SET_HAVEPHONE, SET_CURRENTTAB, SET_TEMPBOOKLIST, DEL_TEMPBOOKLIST } from './mutation-types'
 import '../config/ajax'
 import Router from '../router/index'
 
@@ -161,5 +161,14 @@ export default {
   },
   setCurrentTab ({ commit }, tab) {
     commit(SET_CURRENTTAB, tab)
+  },
+  addTempBooklist ({ commit }, bookObj) {
+    commit(SET_TEMPBOOKLIST, bookObj)
+    commit(SET_ERRORMSG, {text: '添加成功'})
+    Router.replace('/addbooklist')
+  },
+  delTempBookList ({ commit }, index) {
+    commit(DEL_TEMPBOOKLIST, index)
+    commit(SET_ERRORMSG, {text: '添加成功'})
   }
 }

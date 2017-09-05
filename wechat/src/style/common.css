@@ -152,6 +152,14 @@ p.body-info {
   -webkit-box-orient: vertical;
 }
 
+.i-ellipsis-4 {
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
 .i-select {
   display: inline-block;
   max-width: 100%;
@@ -172,14 +180,18 @@ p.body-info {
 }
 
 /* Customed icons*/
-.i-icon-plus {
+.i-icon-container {
+  display: inline-block;
+  line-height: 0;
+}
+.i-icon-plus, .i-icon-cross {
   display: inline-block;
   position: relative;
   height: 30px;
   width: 30px;
   color: #fff;
 }
-.i-icon-plus::before, .i-icon-plus::after {
+.i-icon-cross::before, .i-icon-cross::after, .i-icon-plus::before, .i-icon-plus::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -187,13 +199,16 @@ p.body-info {
   transform: translate(-50%, -50%);
   box-shadow: inset 0 0 0 32px;
 }
-.i-icon-plus::before {
+.i-icon-cross::before ,.i-icon-plus::before {
   width: 20px;
   height: 2px;
 }
-.i-icon-plus::after{
+.i-icon-cross::after, .i-icon-plus::after {
   height: 20px;
   width: 2px;
+}
+.i-icon-cross {
+  transform: rotate(45deg);
 }
 
 .i-area {

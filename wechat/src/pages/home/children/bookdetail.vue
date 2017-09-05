@@ -43,8 +43,8 @@
           </div>
           <div class="opt-part">
             <div class="opt-item" @click="clickFavor">
-              <img src="/static/others/collect.png" class="opt-icon">
-              <div class="opt-text">收藏</div>
+              <img :src="isFavored ? '/static/others/collect_yellow.png' : '/static/others/collect.png'" class="opt-icon">
+              <div class="opt-text">{{isFavored ? '已收藏' : '收藏'}}</div>
             </div>
             <div class="opt-item" @click="comment">
               <img src="/static/others/comment.png" class="opt-icon">
@@ -125,8 +125,13 @@ export default {
       isReviewUnfold: false,
       storeInfo: {},
       selectedIndex: 0,
-      reviewList: [1, 1],
+      reviewList: [],
       related: []
+    }
+  },
+  computed: {
+    isFavored () {
+      return this.bookDetail.stared || false
     }
   },
   mounted () {

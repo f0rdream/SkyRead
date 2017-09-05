@@ -21,5 +21,5 @@ export const tabItems = [
   { src: '/bookshelf/ordered', label: '已预订' },
   { src: '/bookshelf/renting', label: '正在借阅' },
   { src: '/bookshelf/favorite', label: '收藏夹' },
-  { src: '/bookshelf/readplan', label: '已扫码' }
+  { src: '/bookshelf/readplan', label: '阅读计划' }
 ]
