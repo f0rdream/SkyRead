@@ -428,6 +428,7 @@ class BookListDetailView(APIView):
         except:
             return Response(HTTP_403_FORBIDDEN)
 
+
 class CycleView(APIView):
     """
     圈子内容
