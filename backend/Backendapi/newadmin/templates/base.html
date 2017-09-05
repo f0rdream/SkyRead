@@ -34,17 +34,17 @@
                 </a>
               </li> -->
 
-              {% if active_class == 0 %}
-                <li>
+              {% if active_class == 1 %}
+                <li class="active">
               {% else %}
-              <li class="active">
+                <li>
               {% endif %}         
                 <a href="{%url 'adminer_home'%}">
                     <i class="material-icons">dashboard</i>
                     <p>管理员</p>
                 </a>
               </li>
-              {% if active_class == 1 %}
+              {% if active_class == 2 %}
                 <li class="active">
               {% else %}
                 <li >
@@ -54,7 +54,7 @@
                     <p>用户管理</p>
                 </a>
               </li>
-              {% if active_class == 2 %}
+              {% if active_class == 3 %}
                 <li class="active">
               {% else %}
                 <li >
@@ -64,7 +64,7 @@
                     <p>书籍管理</p>
                 </a>
               </li>
-              {% if active_class == 3 %}
+              {% if active_class == 4 %}
                 <li class="active">
               {% else %}
                 <li >
@@ -99,15 +99,7 @@
                   </li>
                 </ul>
       
-                <form class="navbar-form navbar-right" role="search">
-                  <div class="form-group  is-empty">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <span class="material-input"></span>
-                  </div>
-                  <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                      <i class="material-icons">search</i><div class="ripple-container"></div>
-                    </button>
-                </form>
+
               </div>
             </div>
           </nav>
