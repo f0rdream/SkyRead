@@ -32,12 +32,12 @@ def refer_book(isbn13):
     """
     try:
         book = Book.objects.get(isbn13=isbn13)
-        id = book.id
+        id = book.d_id
     except Exception as e :
         print e
         return -1
     print "get_id"
-    api = "https://book.douban.com/subject/" + d_id
+    api = "https://book.douban.com/subject/" + id
     response = requests.get(api, headers=headers)
     if response.status_code == 200:
         main_soup = bs(response.text, "lxml")
