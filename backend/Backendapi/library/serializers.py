@@ -108,7 +108,10 @@ class BorrowItemDetailSerializer(ModelSerializer):
         try:
             book = Book.objects.get(isbn13=isbn13)
             image = book.img_id
-            return image
+            if image == "update_image":
+                return None
+            else:
+                return image
         except:
             return None
 # class QrCodeSerializer(ModelSerializer):
