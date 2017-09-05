@@ -11,12 +11,12 @@
       </button-tab>
     </div>
     <div class="item-container" v-for="item in myList">
-      <div class="content-box" @click="$router.push(`/booklistdetail/${item.id}`)">
+      <div class="content-box">
         <div class="item-title">
-          <span>{{item.title}}</span>
-          <span @click="delNote(item.id)" class="rt-icon">删除</span>
+          <span @click="$router.push(`/booklistdetail/${item.id}`)">{{item.title}}</span>
+          <span @click="delNote(item.id)" class="rt-icon i-icon-container"><i class="i-icon-cross"></i></span>
         </div>
-        <div class="item-content">
+        <div class="item-content" @click="$router.push(`/booklistdetail/${item.id}`)">
           <span v-for="itemB in item.title_list" class="title-item">《{{itemB}}》 </span>
         </div>
       </div>
@@ -172,5 +172,11 @@ export default {
   display: inline-block;
   word-wrap: normal;
   white-space: nowrap;
+}
+.i-icon-container {
+  transform: scale(0.5);
+}
+.i-icon-cross {
+  color: #000;
 }
 </style>

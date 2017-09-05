@@ -23,3 +23,13 @@ export const tabItems = [
   { src: '/bookshelf/favorite', label: '收藏夹' },
   { src: '/bookshelf/readplan', label: '阅读计划' }
 ]
+
+export const findItems = [
+  { src: '/booklist', label: '书单', img: '/static/find/booklist.png' },
+  { src: '/note', label: '读书笔记', img: '/static/find/note.png' },
+  { src: '/person/social', label: '读书圈', img: '/static/find/social.png' },
+  { src: '/person/related', label: '相似用户', img: '/static/find/similar.png' },
+  { src: '/person/nearby', label: '附近的书', img: '/static/find/nearby.png' },
+  { src: '/person/map', label: '导航', img: '/static/find/map.png' },
+  { src: '/feedback', label: '反馈', img: '/static/find/feedback.png' }
+]

@@ -180,6 +180,11 @@ p.body-info {
 }
 
 /* Customed icons*/
+.icon-s {
+  height: 16px;
+  width: 16px;
+  margin: 0 .03rem;
+}
 .i-icon-container {
   display: inline-block;
   line-height: 0;

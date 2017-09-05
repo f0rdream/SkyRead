@@ -26,7 +26,7 @@
           价格: <span class="price-span">{{ item.price }}</span>
         </div>
         <div class="opt-box">
-          <button class="i-btn buy-btn">前往购买</button>
+          <button class="i-btn buy-btn" @click="goTo(item.source_url)">前往购买</button>
         </div>
       </div>
     </div>
@@ -94,6 +94,9 @@ export default {
       }).catch((err) => {
         console.log(err.response.data)
       })
+    },
+    goTo (url) {
+      window.location = url
     }
   }
 }

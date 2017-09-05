@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import person from '../pages/person/person'
+// import person from '../pages/person/person'
+import person from '../pages/person/children/indexpage'
 import phonepage from '../pages/person/children/phone'
 import notfound from '../pages/404/404'
 import related from '../pages/person/children/related'
@@ -19,6 +20,8 @@ import booklist from '../pages/person/children/booklist'
 import addbooklist from '../pages/person/children/addbooklist'
 import booklistsearch from '../pages/person/children/booklistsearch'
 import selectbooklist from '../pages/person/children/selectbooklist'
+import notecomment from '../pages/person/children/notecomment'
+import booklistcomment from '../pages/person/children/booklistcomment'
 
 import home from '../pages/home/home'
 import bookdetail from '../pages/home/children/bookdetail'
@@ -216,6 +219,14 @@ export default new Router({
     {
       path: '/selectbooklist/:keyword',
       component: selectbooklist
+    },
+    {
+      path: '/notecomment/:id',
+      component: notecomment
+    },
+    {
+      path: '/booklistcomment/:id',
+      component: booklistcomment
     }
   ]
 })

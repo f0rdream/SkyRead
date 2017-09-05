@@ -11,8 +11,12 @@
       </div>
       <div class="card-footer">
         <div class="opt-box">
-          <span>评价</span>
-          <span @click="addFavor">收藏</span>
+          <span @click="$router.push(`/booklistcomment/${id}`)">
+            <img :src="'/static/others/comment.png'" class="opt-icon">
+          </span>
+          <span @click="addFavor">
+            <img :src="isFavored ? '/static/others/collect_yellow.png' : '/static/others/collect.png'" class="opt-icon">
+          </span>
         </div>
       </div>
     </div>
@@ -22,6 +26,11 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
+  computed: {
+    isFavored () {
+      return this.listDetail.stared || false
+    }
+  },
   data () {
     return {
       listDetail: {},
@@ -80,7 +89,9 @@ export default {
   display: flex;
   flex-direction: row-reverse;
 }
-.opt-box {
-
+.opt-icon {
+  height: 20px;
+  width: 20px;
+  margin: 0 0.05rem;
 }
 </style>

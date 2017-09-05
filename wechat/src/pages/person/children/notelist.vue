@@ -14,8 +14,8 @@
           <div class="time">{{item.date}}</div>
           <div class="opt-icon">
             <!--TODO To add icons  -->
-            <span @click="delNote(item.id)">删除</span>
-            <span @click="modNote(item.id)">修改</span>
+            <span @click="modNote(item.id)"><img class="icon-s" src="/static/others/modify.png"></span>
+            <span @click="delNote(item.id)"><img class="icon-s" src="/static/others/del.png"></span>
           </div>
         </div>
       </div>

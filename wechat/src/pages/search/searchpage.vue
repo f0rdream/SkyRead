@@ -53,9 +53,9 @@ export default {
   methods: {
     getHistory () {
       this.$http.get('/history/search/').then(res => {
-        for (let index in res.data) {
-          if (index < 5) {
-            this.searchHistory.push({title: res.data[index].key})
+        for (let i = res.data.length - 1; i > 0; i--) {
+          if (this.searchHistory.length < 5) {
+            this.searchHistory.push({title: res.data[i].key})
           }
         }
       }).catch(err => {
