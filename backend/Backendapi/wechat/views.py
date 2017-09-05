@@ -54,12 +54,15 @@ def wexin(request):
         if msg.type == 'text':
             # 加入关键词处理
             print msg.type
-            key = '8b005db5f57556fb96dfd98fbccfab84'
-            api = 'http://www.tuling123.com/openapi/api?key=' + key + '&info='
-            request = api + str(msg.content)
-            response = getHtml(request)
-            dic_json = json.loads(response)
-            content = dic_json['text']
+            if msg.content == u'你好':
+                content = "你好,这里是SkyRead"
+            else:
+                key = '8b005db5f57556fb96dfd98fbccfab84'
+                api = 'http://www.tuling123.com/openapi/api?key=' + key + '&info='
+                request = api + str(msg.content)
+                response = getHtml(request)
+                dic_json = json.loads(response)
+                content = dic_json['text']
             try:
                 reply = TextReply(content=content,message=msg)
                 r_xml = reply.render()
