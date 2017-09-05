@@ -398,6 +398,12 @@ class BookListDetailView(APIView):
             reply_dict['title'] = book_list.title
             reply_dict['comment'] = book_list.comment
             reply_dict['img_id'] = book_list.img_id
+            # 加入是否已经收藏
+            try:
+                star = StarBookList.objects.get(user=request.user,book_list=book_list)
+                reply_dict['stared'] = True
+            except:
+                reply_dict['stared'] = False
             # 拿到用户名字
             star_count = StarBookList.objects.filter(book_list=book_list)
             reply_dict['star_count'] = book_list.star

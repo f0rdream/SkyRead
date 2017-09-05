@@ -33,6 +33,7 @@ from l_lib.function import get_reply
 from models import Comment, BrowsedBook, Note, PlanRecord
 from function import entry, book_price, image_to_text
 from library.models import BorrowItem
+from refer_spider import refer_book
 
 
 class BookInfoView(APIView):
@@ -48,6 +49,13 @@ class BookInfoView(APIView):
             return Response({'error': 'can not find this book'}, HTTP_404_NOT_FOUND)
         serializer = BookInfoSerializer(book,data=request.data)
         serializer.is_valid(raise_exception=True)
+        # 查看是否收藏
+        reply = serializer.data
+        try:
+            star_book = StarBook.objects.get(user=request.user,book=book)
+            reply['stared'] = True
+        except:
+            reply['stared'] = False
         # 存入用户兴趣的isbn13
         try:
             queryset = BrowsedBook.objects.filter(user=user,isbn13=isbn13)
@@ -60,7 +68,7 @@ class BookInfoView(APIView):
             print e
             pass
 
-        response = Response(serializer.data, HTTP_200_OK)
+        response = Response(reply, HTTP_200_OK)
         return response
 
 
@@ -170,6 +178,20 @@ class ReferBookView(APIView):
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data,HTTP_200_OK)
         except:
+            # 当找不到相关书籍的时候,重新爬
+            refer_list = refer_book(isbn13)
+            print refer_list
+            refer_object_list = list()
+            if refer_list != -1:
+                for i in refer_list:
+                    try:
+                        b = Book.objects.get(d_id=i)
+                        refer_object_list.append(b)
+                    except:
+                        pass
+                serializer = ShortInto(refer_object_list, data=request.data, many=True)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.data, HTTP_200_OK)
             reply = get_reply(91,"not found")
             return Response(reply,HTTP_404_NOT_FOUND)
 
@@ -433,7 +455,12 @@ class BookPriceView(APIView):
     def get(self,request):
         isbn13 = request.GET.get("isbn13")
         try:
-            reply = book_price(isbn13)
+            book = Book.objects.get(isbn13=isbn13)
+            title = book.title
+        except:
+            title = "--"
+        try:
+            reply = book_price(isbn13, title)
             return Response(reply,HTTP_200_OK)
         except Exception as e:
             print e

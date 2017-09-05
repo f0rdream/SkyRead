@@ -34,6 +34,7 @@ class DoubanCommentListView(APIView):
     豆瓣评论的list View
     """
     permission_classes = [IsAuthenticated]
+
     def get(self,request,isbn13):
         queryset = Comment.objects.filter(isbn13=isbn13)
         if queryset:
@@ -115,6 +116,8 @@ class DoubanReviewListView(APIView):
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, HTTP_200_OK)
         else:
+            # 补充书评
+
             reply = {}
             reply['error_code'] = 44
             reply['msg'] = 'not found'

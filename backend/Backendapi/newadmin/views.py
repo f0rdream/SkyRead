@@ -592,10 +592,15 @@ def picture_delete(request, id):
 
 def plant_home(request):
     all_picture = Picture.objects.all()
+    # 加入反馈
+    done_feedback = FeedBack.objects.filter(back_state=1)
+    undone_feedback = FeedBack.objects.filter(back_state=0)
     reply = {
         "all_picture":  all_picture,
         "username": request.user.username,
-        'active_class': 4
+        'active_class': 4,
+        # 'done_feedback':done_feedback,
+        # 'undone_feedback':undone_feedback
     }
     return render(request, "newadmin/plantform_home.html", reply)
 
@@ -624,23 +629,25 @@ def back_wechat(request):
     return render(request, "newadmin/send_message.html")
 
 
-def feedback(request):
-    """
-    反馈
-    :param request:
-    :return:
-    """
-    if request.method == 'POST':
-        id = request.POST['id']
-        back_content = request.POST['back_content']
-        try:
-            feed_back = FeedBack.objects.get(id=id)
-            feed_back.back_state = True
-            feed_back.back_content = back_content
-            feed_back.save()
-        except:
-            return render(request,"")
-    return
+# # 增加反馈
+# def post_feedback(request):
+#     """
+#     反馈
+#     :param request:
+#     :return:
+#     """
+#     if request.method == 'POST':
+#         id = request.POST['id']
+#         back_content = request.POST['back_content']
+#         try:
+#             feed_back = FeedBack.objects.get(id=id)
+#             feed_back.back_state = 1
+#             feed_back.back_content = back_content
+#             feed_back.save()
+#         except:
+#             return render(request,"")
+#     return
+
 
 
 
