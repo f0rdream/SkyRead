@@ -5,7 +5,7 @@ from .views import (BookInfoView,Serach,ReferBookView,HoldingView,GuideBookView,
                     PlanRecordView, PlanRecordByDateView,AddNoteIntoCycleView
                     )
 urlpatterns = [
-    url(r'^isbn/(?P<isbn13>\d+)$',BookInfoView.as_view(),name='book'),
+    url(r'^isbn/(?P<isbn13>\d+)$', BookInfoView.as_view(),name='book'),
     url(r'^search/$',Serach.as_view()),
     url(r'^refer/(?P<isbn13>\d+)$', ReferBookView.as_view(),name='refer'),
     url(r'^comments/(?P<isbn13>\d+)/$',CommentView.as_view()),

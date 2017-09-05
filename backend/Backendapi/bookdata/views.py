@@ -49,6 +49,13 @@ class BookInfoView(APIView):
             return Response({'error': 'can not find this book'}, HTTP_404_NOT_FOUND)
         serializer = BookInfoSerializer(book,data=request.data)
         serializer.is_valid(raise_exception=True)
+        # 查看是否收藏
+        reply = serializer.data
+        try:
+            star_book = StarBook.objects.get(user=request.user,book=book)
+            reply['stared'] = True
+        except:
+            reply['stared'] = False
         # 存入用户兴趣的isbn13
         try:
             queryset = BrowsedBook.objects.filter(user=user,isbn13=isbn13)
@@ -61,7 +68,7 @@ class BookInfoView(APIView):
             print e
             pass
 
-        response = Response(serializer.data, HTTP_200_OK)
+        response = Response(reply, HTTP_200_OK)
         return response
 
 
