@@ -29,7 +29,7 @@
         </div>
       </div> -->
     </div>
-    <div class="spinner-rb spinner" @click="addNote">
+    <div class="spinner-rb spinner" @click="addList">
       <i class="i-icon-plus"></i>
     </div>
   </div>
@@ -79,16 +79,8 @@ export default {
         this.myList = res.data
       }).catch(err => console.log(err.response.data))
     },
-    delNote (id) {
-      this.$http.delete(`/book/note/${id}`).then(res => {
-        this.getNotes()
-      }).catch(err => console.log(err.response.data))
-    },
-    modNote (id) {
-      this.$router.push('/modnote')
-    },
-    addNote () {
-      this.$router.push('/addnote')
+    addList () {
+      this.$router.push('/addbooklist')
     }
   }
 }

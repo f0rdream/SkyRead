@@ -93,10 +93,12 @@ export default {
   },
   watch: {
     dateValue (newDate) {
-      this.$http.get(`/book/record/${this.id}?date=${this.dateFormat(newDate, 'YYYY-MM-DD')}`).then(res => {
-        this.planDayDetail = res.data
-        this.showSigned = !this.showSigned
-      })
+      if (this.signedDays.indexOf(newDate) !== -1) {
+        this.$http.get(`/book/record/${this.id}?date=${this.dateFormat(newDate, 'YYYY-MM-DD')}`).then(res => {
+          this.planDayDetail = res.data
+          this.showSigned = !this.showSigned
+        })
+      }
     }
   },
   methods: {

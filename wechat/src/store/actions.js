@@ -42,10 +42,10 @@ export default {
     if (store.state.scanedCart.length >= scanedMax) {
       commit(SET_ERRORMSG, {text: `一次不能超过${scanedMax}本`, type: 'cancel'})
     } else {
-      qrObj = {book_id: qrObj.id, isbn13: qrObj.isbn13} // 当needResult 为 1 时，扫码返回的结果
-      Vue.$http.post('/library/borrow/', qrObj).then(res => {
-        store.dispatch('getScanedList')
+      qrObj = {book_id: qrObj.id, isbn13: qrObj.isbn13}
+      Vue.http.post('/library/borrow/', qrObj).then(res => {
         commit(SET_ERRORMSG, {text: '扫码成功'})
+        store.dispatch('getScanedList')
       }).catch(err => {
         commit(SET_ERRORMSG, {text: '扫码失败', type: 'cancel'})
         console.log(err.response.data)
