@@ -1,7 +1,7 @@
 
 <template lang="html">
   <section class="main-part">
-    <swiper :list="imgList" v-model="imgIndex" :auto="true" :loop="true" :height="'150px'"></swiper>
+    <swiper :list="imgList" v-model="imgIndex" :auto="true" :loop="true"></swiper>
     <div class="category">
       <div class="cate-item" v-for="(value, key) in bookTypes" v-if="key < 8 || isMore">
         <a @click="getToCate(key)">

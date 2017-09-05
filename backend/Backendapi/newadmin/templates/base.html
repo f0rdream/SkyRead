@@ -33,25 +33,42 @@
                     <p>数据总览</p>
                 </a>
               </li> -->
+
+              {% if active_class == 0 %}
+                <li>
+              {% else %}
               <li class="active">
+              {% endif %}         
                 <a href="{%url 'adminer_home'%}">
                     <i class="material-icons">dashboard</i>
                     <p>管理员</p>
                 </a>
               </li>
-              <li>
+              {% if active_class == 1 %}
+                <li class="active">
+              {% else %}
+                <li >
+              {% endif %}   
                 <a href="{%url 'user_home'%}">
                     <i class="material-icons">person</i>
                     <p>用户管理</p>
                 </a>
               </li>
-              <li>
+              {% if active_class == 2 %}
+                <li class="active">
+              {% else %}
+                <li >
+              {% endif %}
                 <a href="{%url 'book_home'%}">
                     <i class="material-icons">content_paste</i>
                     <p>书籍管理</p>
                 </a>
               </li>
-              <li>
+              {% if active_class == 3 %}
+                <li class="active">
+              {% else %}
+                <li >
+              {% endif %}
                 <a href="{%url 'plant_home'%}">
                     <i class="material-icons">library_books</i>
                     <p>平台管理</p>

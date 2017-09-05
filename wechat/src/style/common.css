@@ -25,6 +25,10 @@ body {
   text-overflow:ellipsis;
   white-space: nowrap;
 }
+/*Vux header fix*/
+.main-part .vux-slider > .vux-swiper > .vux-swiper-item > a > .vux-swiper-desc {
+  height: 56px;
+}
 
 .vux-header {
   background: linear-gradient(to right, #2bcba7, #2bc0cb);
