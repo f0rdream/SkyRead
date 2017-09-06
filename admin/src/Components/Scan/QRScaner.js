@@ -13,7 +13,7 @@ export default class QRScaner extends React.Component {
   }
   static defaultProps = {
     cancelButtonVisible: false,
-    cancelButtonTitle: 'Cancel'
+    cancelButtonTitle: '取消'
    }
 
    constructor (props) {

@@ -39,6 +39,7 @@ export default class Scan extends React.Component {
     let url
     switch (type) {
       case 'borrow':
+        this.setState({stop: true})
         url = borrowInfo
         try {
           let response = await fetch(url, {
@@ -54,7 +55,7 @@ export default class Scan extends React.Component {
           let res  = await response.json()
           console.log(res);
           if (response.status >= 200 && response.status < 400) {
-            this.setState({stop: true})
+
             this.props.navigation.navigate('BookScreen', { booksData: res, type: type, pay_id: qrObj.pay_id})
           } else {
             console.log('Toast before')

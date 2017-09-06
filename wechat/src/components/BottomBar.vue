@@ -75,6 +75,9 @@ export default {
         success: function (res) {
           let qrObj = querystring.parse(res.resultStr)
           vueThis.addScanedList(qrObj)
+        },
+        fail: function (res) {
+          alert(res.errMsg)
         }
       })
     },
