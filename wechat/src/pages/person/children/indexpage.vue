@@ -24,7 +24,7 @@
         </div>
         <div class="find-box" v-if="selectedIndex === 1">
           <grid :rows="4">
-            <grid-item :label="item.label" v-for="item in findItems" :link="item.src">
+            <grid-item :label="item.label" v-for="item in findItems" :link="item.src" :key="item.label">
               <img slot="icon" :src="item.img">
             </grid-item>
           </grid>
@@ -124,7 +124,7 @@ export default {
       }).catch(err => console.log(err.response.data))
     },
     getImg (imgId) {
-      return imgId ? `https://img3.doubanio.com/lpic/${imgId}` : null
+      return imgId && imgId !== '--' ? `https://img3.doubanio.com/lpic/${imgId}` : '/static/others/nocover.png'
     }
   }
 }

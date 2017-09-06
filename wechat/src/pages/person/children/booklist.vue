@@ -14,7 +14,7 @@
       <div class="content-box">
         <div class="item-title">
           <span @click="$router.push(`/booklistdetail/${item.id}`)">{{item.title}}</span>
-          <span @click="delNote(item.id)" class="rt-icon i-icon-container"><i class="i-icon-cross"></i></span>
+          <!-- <span @click="delNote(item.id)" class="rt-icon i-icon-container"><i class="i-icon-cross"></i></span> -->
         </div>
         <div class="item-content" @click="$router.push(`/booklistdetail/${item.id}`)">
           <span v-for="itemB in item.title_list" class="title-item">《{{itemB}}》 </span>

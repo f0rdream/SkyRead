@@ -53,7 +53,7 @@ export default {
       })
     },
     pay () {
-      this.$http.get(`/library/pay/6${this.currentQRInfo.pay_id}`).then(res => {
+      this.$http.get(`/library/pay/${this.currentQRInfo.pay_id}`).then(res => {
         if (res.data.error_code === 94) {
           this.$vux.toast.show({
             text: '支付失败'

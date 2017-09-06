@@ -6,9 +6,9 @@
     </div>
     <div class="item-container" v-for="item in noteList">
       <div class="left">
-        <div class="content-box">
+        <div class="content-box" @click="$router.push(`/notedetail/${item.id}`)">
           <div class="item-title">{{item.title}}</div>
-          <div class="item-content i-ellipsis">{{item.comment}}</div>
+          <div class="item-content i-ellipsis">{{item.content}}</div>
         </div>
         <div class="opt-box">
           <div class="time">{{item.date}}</div>
