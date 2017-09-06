@@ -345,12 +345,17 @@ class StarBookListView(APIView):
         list_id = serializer.validated_data['list_id']
         try:
             book_list = UserCreateBookList.objects.get(pk=list_id)
-            star_book_list = StarBookList.objects.create(user=request.user,
+            try:
+                before_list = StarBookList.objects.get(user=request.user,
                                                          book_list=book_list)
-            star_book_list.save()
-            book_list.star += 1
-            book_list.save()
-            return Response(HTTP_200_OK)
+                return Response(HTTP_404_NOT_FOUND)
+            except:
+                star_book_list = StarBookList.objects.create(user=request.user,
+                                                             book_list=book_list)
+                star_book_list.save()
+                book_list.star += 1
+                book_list.save()
+                return Response(HTTP_200_OK)
         except:
             return Response(HTTP_404_NOT_FOUND)
 
