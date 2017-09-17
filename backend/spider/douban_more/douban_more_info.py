@@ -44,7 +44,7 @@ def douban_spider(id):
         # 爬取短评论
         comments_spider(id)
 
-        # # 爬取书评,时间长
+        # 爬取书评,时间长
         review_spider(id)
 
         #爬取相关书籍

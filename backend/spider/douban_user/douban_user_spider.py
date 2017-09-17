@@ -101,6 +101,7 @@ def get_user_href(book_id,begin,end):
 a = time.time()
 dict = ["1827374","1029159","6388661","2159042","1030052","3369600","1949338"]
 # 蔡康永的说话之道  用爬虫把id爬下来
+
 for i  in dict:
     get_user_href(i,0,15)  # 500-560页码
     print time.time() - a
