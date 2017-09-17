@@ -13,7 +13,7 @@
       </div>
       <div class="lower">
         <div class="left">
-          <img :src="getImg(item.img_id)" class="list-img">
+          <img :src="getImg(item.img_id)" class="list-img" @click="itemClick(item.id, item.type)">
         </div>
         <div class="right">
           <div class="item-title">{{ item.title }}</div>
@@ -78,8 +78,17 @@ export default {
       })
     },
     getImg (imgId) {
-      return imgId ? `https://img3.doubanio.com/lpic/${imgId}` : null
+      return imgId && imgId !== '--' ? `https://img3.doubanio.com/lpic/${imgId}` : '/static/others/nocover.png'
+    },
+    itemClick (id, type) {
+      console.log(id, type)
+      if (type === 'note') {
+        this.$router.push(`/notedetail/${id}`)
+      } else if (type === 'book_list') {
+        this.$router.push(`/booklistdetail/${id}`)
+      }
     }
+
   }
 }
 </script>

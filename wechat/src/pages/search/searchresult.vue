@@ -1,13 +1,7 @@
 <template lang="html">
   <view-box class="list-container">
     <div class="title-container">
-      <div class="title">
-        <i-select class="select-tab" v-on:emitIndex="typeIndex = arguments[0]" :items="typeItems"></i-select>
-        <i-select class="select-tab" v-on:emitIndex="bookIndex = arguments[0]" :items="bookItems"></i-select>
-      </div>
-      <list-item v-for="item in this.result.title_result"  :itemInfo="item" :key="item.isbn13" v-if="bookIndex === 0 && typeIndex === 0"></list-item>
-      <list-item v-for="item in this.result.author_result"  :itemInfo="item" :key="item.isbn13" v-if="bookIndex === 0 && typeIndex === 1"></list-item>
-      <list-item v-for="item in this.result.author_result"  :itemInfo="item" :key="item.isbn13" v-if="bookIndex === 1"></list-item>
+      <list-item v-for="item in this.result.title_result"  :itemInfo="item" :key="item.isbn13"></list-item>
     </div>
     <bottom-bar :activeTab="1" slot="bottom"></bottom-bar>
   </view-box>

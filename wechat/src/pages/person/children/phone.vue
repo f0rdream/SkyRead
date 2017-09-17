@@ -71,7 +71,7 @@ export default {
         }
       }).catch(err => {
         this.$vux.toast.show({
-          text: err
+          text: err.response.data
         })
       })
     },

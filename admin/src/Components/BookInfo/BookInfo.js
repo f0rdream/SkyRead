@@ -257,28 +257,28 @@ class ConfirmBtn extends React.Component {
           })
           let res  = await response.json()
           if (response.status >= 200 && response.status < 400) {
-            Toast.show({
-              supportedOrientations: ['portrait','landscape'],
-              text: '确认成功',
-              position: 'bottom',
-              buttonText: 'Okay'
-            })
+            // Toast.show({
+            //   supportedOrientations: ['portrait','landscape'],
+            //   text: '确认成功',
+            //   position: 'bottom',
+            //   buttonText: 'Okay'
+            // })
           } else {
             console.log('Toast before')
-            Toast.show({
-              supportedOrientations: ['portrait','landscape'],
-              text: res,
-              position: 'bottom',
-              buttonText: 'Okay'
-            })
+            // Toast.show({
+            //   supportedOrientations: ['portrait','landscape'],
+            //   text: res,
+            //   position: 'bottom',
+            //   buttonText: 'Okay'
+            // })
           }
         } catch(err) {
-          Toast.show({
-            supportedOrientations: ['portrait','landscape'],
-            text: err,
-            position: 'bottom',
-            buttonText: 'Okay'
-          })
+          // Toast.show({
+          //   supportedOrientations: ['portrait','landscape'],
+          //   text: err,
+          //   position: 'bottom',
+          //   buttonText: 'Okay'
+          // })
         }
       }
       getIt()
@@ -300,31 +300,31 @@ class ConfirmBtn extends React.Component {
           console.log(res);
           if (response.status >= 200 && response.status < 400) {
             // btnThis.setState(toast, {show: true, word: '确认成功'})
-            Toast.show({
-              supportedOrientations: ['portrait','landscape'],
-              text: '确认成功',
-              position: 'bottom',
-              buttonText: 'Okay'
-            })
+            // Toast.show({
+            //   supportedOrientations: ['portrait','landscape'],
+            //   text: '确认成功',
+            //   position: 'bottom',
+            //   buttonText: 'Okay'
+            // })
           } else {
             console.log('Toast before')
             // btnThis.setState(toast, {show: true, word: res})
-            Toast.show({
-              supportedOrientations: ['portrait','landscape'],
-              text: '错误',
-              position: 'bottom',
-              buttonText: 'Okay'
-            })
+            // Toast.show({
+            //   supportedOrientations: ['portrait','landscape'],
+            //   text: '错误',
+            //   position: 'bottom',
+            //   buttonText: 'Okay'
+            // })
           }
         } catch(err) {
           console.log(err)
           // btnThis.setState(toast, {show: true, word: err})
-          Toast.show({
-            supportedOrientations: ['portrait','landscape'],
-            text: '错误',
-            position: 'bottom',
-            buttonText: 'Okay'
-          })
+          // Toast.show({
+          //   supportedOrientations: ['portrait','landscape'],
+          //   text: '错误',
+          //   position: 'bottom',
+          //   buttonText: 'Okay'
+          // })
         }
       }
       getIt()
@@ -346,28 +346,28 @@ class ConfirmBtn extends React.Component {
           let res  = await response.json()
           console.log(res);
           if (response.status >= 200 && response.status < 400) {
-            Toast.show({
-              supportedOrientations: ['portrait','landscape'],
-              text: '确认成功',
-              position: 'bottom',
-              buttonText: 'Okay'
-            })
+            // Toast.show({
+            //   supportedOrientations: ['portrait','landscape'],
+            //   text: '确认成功',
+            //   position: 'bottom',
+            //   buttonText: 'Okay'
+            // })
           } else {
             console.log('Toast before')
-            Toast.show({
-              supportedOrientations: ['portrait','landscape'],
-              text: res,
-              position: 'bottom',
-              buttonText: 'Okay'
-            })
+            // Toast.show({
+            //   supportedOrientations: ['portrait','landscape'],
+            //   text: res,
+            //   position: 'bottom',
+            //   buttonText: 'Okay'
+            // })
           }
         } catch(err) {
-          Toast.show({
-            supportedOrientations: ['portrait','landscape'],
-            text: err,
-            position: 'bottom',
-            buttonText: 'Okay'
-          })
+          // Toast.show({
+          //   supportedOrientations: ['portrait','landscape'],
+          //   text: err,
+          //   position: 'bottom',
+          //   buttonText: 'Okay'
+          // })
         }
       }
       getIt()

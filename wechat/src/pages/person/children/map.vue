@@ -16,11 +16,11 @@ export default {
   },
   data () {
     return {
-      start: {lng: 114, lat: 30},
+      start: {lng: 118.948207, lat: 32.134965},
       // end: {lng: 114.369348, lat: 30.541621},
       // location: '北京'
       // start: {lng: 0, lat: 0},
-      // end: {lng: 0, lat: 0},
+      end: {lng: 0, lat: 0}
     }
   },
   methods: {
@@ -32,10 +32,10 @@ export default {
       //       this.start.longitude = res.longitude // 经度，浮点数，范围为180 ~ -180
       //   }
       // })
-      console.log(BMap, map)
-      this.start = {lng: 114.365415, lat: 30.535169}
-      this.end = {lng: 114.369348, lat: 30.541621}
-      this.location = '武汉'
+      // console.log(BMap, map)
+      this.start = {lng: 118.721456, lat: 31.999355}
+      this.end = {lng: 118.948207, lat: 32.134965}
+      this.location = '南京'
     }
   }
 }
